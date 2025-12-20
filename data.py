@@ -7,7 +7,7 @@ MOCK_ACTIVITIES = [
         duration_hours=3.0,
         tags=["Sightseeing", "Landmark"],
         description="Visit the iconic Eiffel Tower and enjoy the view.",
-        image_url="https://images.unsplash.com/photo-1511739001486-6bfe10ce7859?q=80&w=600&auto=format&fit=crop",
+        image_url="https://image.pollinations.ai/prompt/Eiffel%20Tower%20Paris%20aesthetic?width=800&height=600&nologo=true",
     ),
     Activity(
         name="Louvre Museum",
@@ -15,7 +15,7 @@ MOCK_ACTIVITIES = [
         duration_hours=4.0,
         tags=["Art", "Museum"],
         description="See the Mona Lisa and thousands of other works of art.",
-        image_url="https://images.unsplash.com/photo-1499856871940-a09627c6d7db?q=80&w=600&auto=format&fit=crop",
+        image_url="https://image.pollinations.ai/prompt/Louvre%20Museum%20Paris%20aesthetic?width=800&height=600&nologo=true",
     ),
     Activity(
         name="Seine River Cruise",
@@ -23,7 +23,7 @@ MOCK_ACTIVITIES = [
         duration_hours=1.5,
         tags=["Relaxing", "Sightseeing"],
         description="A relaxing boat ride along the Seine river.",
-        image_url="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=600&auto=format&fit=crop",
+        image_url="https://image.pollinations.ai/prompt/Seine%20River%20Cruise%20Paris%20aesthetic?width=800&height=600&nologo=true",
     ),
     Activity(
         name="Montmartre Walking Tour",
@@ -31,7 +31,7 @@ MOCK_ACTIVITIES = [
         duration_hours=2.0,
         tags=["Walking", "History"],
         description="Explore the historic Montmartre district.",
-        image_url="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=600&auto=format&fit=crop",
+        image_url="https://image.pollinations.ai/prompt/Montmartre%20Paris%20aesthetic?width=800&height=600&nologo=true",
     ),
     Activity(
         name="Fancy French Dinner",
@@ -39,7 +39,7 @@ MOCK_ACTIVITIES = [
         duration_hours=2.5,
         tags=["Food", "Luxury"],
         description="A 3-course meal at a Michelin-rated restaurant.",
-        image_url="https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?q=80&w=600&auto=format&fit=crop",
+        image_url="https://image.pollinations.ai/prompt/French%20Dinner%20Paris%20aesthetic?width=800&height=600&nologo=true",
     ),
     Activity(
         name="Street Crêpes",
@@ -47,7 +47,7 @@ MOCK_ACTIVITIES = [
         duration_hours=0.5,
         tags=["Food", "Budget"],
         description="Delicious sweet or savory crêpes from a street vendor.",
-        image_url="https://images.unsplash.com/photo-1519671482538-518b5c2bf1c6?q=80&w=600&auto=format&fit=crop",
+        image_url="https://image.pollinations.ai/prompt/French%20Crepes%20Paris%20aesthetic?width=800&height=600&nologo=true",
     ),
     Activity(
         name="Versailles Palace",
@@ -55,7 +55,7 @@ MOCK_ACTIVITIES = [
         duration_hours=5.0,
         tags=["History", "Landmark"],
         description="Visit the opulent Palace of Versailles just outside Paris.",
-        image_url="https://images.unsplash.com/photo-1566324831278-6515c0e5aae9?q=80&w=600&auto=format&fit=crop",
+        image_url="https://image.pollinations.ai/prompt/Versailles%20Palace%20Paris%20aesthetic?width=800&height=600&nologo=true",
     ),
     Activity(
         name="Local Park Picnic",
@@ -63,6 +63,6 @@ MOCK_ACTIVITIES = [
         duration_hours=2.0,
         tags=["Relaxing", "Budget"],
         description="Buy some bread and cheese and relax in the park.",
-        image_url="https://images.unsplash.com/photo-1565886728033-fa3207559cb3?q=80&w=600&auto=format&fit=crop",
+        image_url="https://image.pollinations.ai/prompt/Paris%20Picnic%20aesthetic?width=800&height=600&nologo=true",
     ),
 ]

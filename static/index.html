@@ -10,19 +10,20 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header>
         <div class="theme-switch-wrapper">
-            <span style="font-size: 1.2rem; margin-right: 8px;">☀️</span>
+            <span style="font-size: 1.2rem; margin-right: 8px;" aria-hidden="true">☀️</span>
             <label class="theme-switch" for="checkbox">
                 <input type="checkbox" id="checkbox" aria-label="Toggle Dark Mode" />
                 <div class="slider"></div>
             </label>
-            <span style="font-size: 1.2rem; margin-left: 8px;">🌙</span>
+            <span style="font-size: 1.2rem; margin-left: 8px;" aria-hidden="true">🌙</span>
         </div>
         <h1>✈️ Travel Planner Agent</h1>
     </header>
 
-    <main class="container">
+    <main id="main-content" class="container">
         <form id="planForm" aria-label="Trip planning form">
             <div class="form-group">
                 <label for="city">City Destination</label>
@@ -159,7 +160,6 @@
         }
 
         toggleSwitch.addEventListener('change', switchTheme, false);
-
         // Core App Logic
         document.getElementById('planForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -223,6 +223,8 @@
                             const msg = JSON.parse(line);
                             if (msg.type === 'status') {
                                 btn.textContent = msg.message;
+                            } else if (msg.type === 'token') {
+                                // No longer displaying tokens
                             } else if (msg.type === 'result') {
                                 renderItinerary(msg.data);
                             } else if (msg.type === 'error') {
@@ -265,33 +267,108 @@
                 return;
             }
 
-            let html = `<h2 style="text-align:center; margin-bottom: 2rem;">Itinerary for ${data.city}</h2>`;
+            // Store data for PDF download
+            window.itineraryData = data;
 
-            data.days.forEach(day => {
-                html += `
-                    <div class="itinerary-day">
-                        <h3>Day ${day.day_number}</h3>
-                        ${day.activities.map(act => `
-                            <div class="activity">
-                                ${act.image_url ? `<img src="${act.image_url}" alt="${act.name} photo" class="activity-image">` : ''}
-                                <div class="activity-details">
-                                    <div>
-                                        <strong>${act.name}</strong>
-                                        <small>${act.description}</small>
-                                        <span class="cost-tag">${typeof act.cost === 'string' ? act.cost : '$' + act.cost}</span>
-                                    </div>
-                                </div>
+            let html = `
+                <h2 style="text-align:center; margin-bottom: 2rem;">Itinerary for ${data.city}</h2>
+                
+                <div class="trip-days">
+                    ${data.days.map(day => `
+                        <div class="day-card" style="animation-delay: ${day.day_number * 0.1}s">
+                            <div class="day-header">
+                                <h2>Day ${day.day_number}</h2>
+                                <span class="day-total">
+                                    $${day.activities.reduce((sum, act) => sum + (act.cost || 0), 0)}
+                                </span>
                             </div>
-                        `).join('')}
-                        <div class="day-total">
-                            Day Total: $${day.total_cost}
-                        </div>
-                    </div>
-                `;
-            });
+                            <div class="activities-list">
+                                ${day.activities.map(activity => `
+                                    <div class="activity-item">
+                                        <div class="activity-layout">
+                                            <!-- Image Column -->
+                                            <div class="activity-image-wrapper">
+                                                <img 
+                                                    src="${activity.image_url || `https://image.pollinations.ai/prompt/${encodeURIComponent(activity.name)}?width=800&height=600&nologo=true`}" 
+                                                    alt="Photo of ${activity.name}" 
+                                                    class="activity-image"
+                                                    loading="lazy"
+                                                    onerror="this.onerror=null; this.src='https://image.pollinations.ai/prompt/${encodeURIComponent(activity.name + ' ' + data.city)}?width=800&height=600&nologo=true';"
+                                                >
+                                            </div>
 
-            html += `<div class="total-trip-cost">Total Trip Cost: $${data.total_cost}</div>`;
+                                            <!-- Content Column -->
+                                            <div class="activity-content">
+                                                <h3>${activity.name}</h3>
+                                                <p>${activity.description}</p>
+                                                
+                                                <div class="activity-meta">
+                                                    <span class="cost-tag">$${activity.cost || 0}</span>
+                                                    ${activity.duration_str ? `<span class="duration-tag">⏱ ${activity.duration_str}</span>` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Add total cost at the bottom
+            const total = data.days.reduce((sum, day) =>
+                sum + day.activities.reduce((dSum, act) => dSum + (act.cost || 0), 0), 0
+            );
+            html += `<div class="total-trip-cost" style="text-align:center; margin-top:2rem; font-size:1.2rem; font-weight:bold;">Total Trip Cost: $${total}</div>`;
+
+            // Add Download Button at the bottom
+            html += `
+                <div class="summary-container" style="text-align: center; margin: 30px 0;">
+                    <button onclick="downloadPdf()" class="plan-btn" style="background: var(--surface-2); color: var(--text-1); border: 1px solid var(--surface-3);">
+                        <span class="icon">📄</span> Download PDF
+                    </button>
+                </div>
+            `;
+
             resultDiv.innerHTML = html;
+        }
+
+        async function downloadPdf() {
+            if (!itineraryData) return;
+
+            const btn = document.querySelector('button[onclick="downloadPdf()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="icon">⏳</span> Generating...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(itineraryData)
+                });
+
+                if (!response.ok) throw new Error('PDF generation failed');
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Trip_to_${itineraryData.city}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('Download failed:', error);
+                alert('Could not download PDF. Please try again.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
     </script>
 </body>

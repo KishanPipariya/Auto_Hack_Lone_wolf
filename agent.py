@@ -3,6 +3,7 @@ import json
 import urllib.request
 from google import genai
 from google.genai import types
+from ddgs import DDGS
 from models import Preferences, Itinerary
 from data import MOCK_ACTIVITIES
 from dotenv import load_dotenv
@@ -40,6 +41,27 @@ class TravelPlanner:
             print("WARNING: GOOGLE_API_KEY not found in environment.")
         else:
             self.client = genai.Client(api_key=api_key)
+
+    def _search_real_image(self, query: str) -> str | None:
+        """
+        Searches for a real image URL using DuckDuckGo.
+        Returns None if no image found or error occurs.
+        """
+        try:
+            with DDGS() as ddgs:
+                # Search for 1 image
+                results = list(ddgs.images(
+                    query,
+                    max_results=1,
+                    safesearch='on',
+                ))
+                if results and 'image' in results[0]:
+                    print(f"DEBUG: Found real image for '{query}': {results[0]['image']}")
+                    return results[0]['image']
+        except Exception as e:
+            print(f"WARNING: Image search failed for '{query}': {e}")
+        
+        return None
 
     def _call_openrouter(self, prompt: str) -> str:
         """
@@ -208,38 +230,57 @@ class TravelPlanner:
                     
                     if "activities" in day and isinstance(day["activities"], list):
                         for activity in day["activities"]:
-                             # Normalize Cost (LLM often returns strings like "$10" or "Free")
-                             cost_val = activity.get("cost", 0)
-                             if isinstance(cost_val, str):
-                                 import re
-                                 # Extract first number found
-                                 nums = re.findall(r"[-+]?\d*\.\d+|\d+", cost_val)
-                                 if nums:
-                                     activity["cost"] = float(nums[0])
-                                 else:
-                                     activity["cost"] = 0.0
-                             
-                             # Normalize Duration
-                             dur_val = activity.get("duration", activity.get("duration_hours", 0))
-                             if isinstance(dur_val, str):
-                                 import re
-                                 nums = re.findall(r"[-+]?\d*\.\d+|\d+", dur_val)
-                                 if nums:
-                                     activity["duration_hours"] = float(nums[0])
-                                 else:
-                                     activity["duration_hours"] = 1.0 # Default
-                             elif isinstance(dur_val, (int, float)):
-                                 activity["duration_hours"] = float(dur_val)
+                            # Normalize Cost (LLM often returns strings like "$10" or "Free")
+                            cost_val = activity.get("cost", 0)
+                            if isinstance(cost_val, str):
+                                import re
+                                # Extract first number found
+                                nums = re.findall(r"[-+]?\d*\.\d+|\d+", cost_val)
+                                if nums:
+                                    activity["cost"] = float(nums[0])
+                                else:
+                                    activity["cost"] = 0.0
                             
-                             # Ensure required fields exist
-                             if "duration_hours" not in activity:
-                                 activity["duration_hours"] = 1.0
-                             if "tags" not in activity:
-                                 activity["tags"] = ["General"]
-                             if "description" not in activity:
-                                 activity["description"] = activity.get("name", "Activity")
-                             if "image_url" not in activity:
-                                 activity["image_url"] = None
+                            # Normalize Duration
+                            # Capture the raw string first for display
+                            if "duration" in activity and isinstance(activity["duration"], str):
+                                activity["duration_str"] = activity["duration"]
+                            elif "duration_hours" in activity and isinstance(activity["duration_hours"], str):
+                                activity["duration_str"] = activity["duration_hours"]
+
+                            dur_val = activity.get("duration", activity.get("duration_hours", 0))
+                            if isinstance(dur_val, str):
+                                import re
+                                nums = re.findall(r"[-+]?\d*\.\d+|\d+", dur_val)
+                                if nums:
+                                    activity["duration_hours"] = float(nums[0])
+                                else:
+                                    activity["duration_hours"] = 1.0 # Default
+                            elif isinstance(dur_val, (int, float)):
+                                activity["duration_hours"] = float(dur_val)
+                            
+                            # Ensure required fields exist
+                            if "duration_hours" not in activity:
+                                activity["duration_hours"] = 1.0
+                            if "duration_str" not in activity:
+                                # Fallback if no string provided
+                                activity["duration_str"] = f"{activity['duration_hours']} hours"
+
+                            if "tags" not in activity:
+                                activity["tags"] = ["General"]
+                            if "description" not in activity:
+                                activity["description"] = activity.get("name", "Activity")
+                            if "image_url" not in activity or not activity["image_url"] or True: # Force refresh
+                                # 1. Try Real Search (DDG)
+                                # We prioritize this over LLM hallucinations
+                                real_image = self._search_real_image(f"{activity['name']} {data.get('city', '')}")
+                                if real_image:
+                                    activity["image_url"] = real_image
+                                else:
+                                    # 2. Dynamic fallback (Pollinations)
+                                    import urllib.parse
+                                    safe_query = urllib.parse.quote(f"{activity['name']} {data.get('city', '')} aesthetic")
+                                    activity["image_url"] = f"https://image.pollinations.ai/prompt/{safe_query}?width=800&height=600&nologo=true"
 
             # --- Fuzzy Normalization End ---
 
@@ -268,7 +309,19 @@ class TravelPlanner:
              activities_context = """
              AVAILABLE ACTIVITIES:
              You are free to find real activities using Google Search.
-             Please ensure you estimate realistic costs and duration.
+             
+             **CRITICAL INSTRUCTION: COST & CURRENCY**
+             - Estimate costs in the destination's LOCAL currency first (e.g. Rupees, Yen, Euros).
+             - CONVERT all costs to USD using current exchange rates.
+             - **BE REALISTIC**: Street food in Asia is cheap (<$5 USD). Public transport is cheap. Fine dining is expensive.
+             - Output ONLY the USD number in the `cost` field.
+
+             **CRITICAL INSTRUCTION: IMAGE URLs**
+             - You MUST SEARCH for a real, public, direct image URL for each activity.
+             - Prefer URLs from trusted sources like **Wikimedia Commons**, **Wikipedia**, or **official tourism sites**.
+             - The URL SHOULD end in an image extension (e.g., .jpg, .png, .webp) to ensure it renders.
+             - Do NOT use placeholder text like "http/..." or "image_url_here".
+             - If you cannot find a reliable URL, leave the field null (our system will auto-generate one).
              """
 
         prompt = f"""
@@ -287,7 +340,16 @@ class TravelPlanner:
             "days": [
                 {{
                     "day_number": 1,
-                    "activities": [ ... activity objects ... ]
+                    "activities": [ 
+                        {{
+                            "name": "Activity Name",
+                            "description": "Short description",
+                            "cost": 20,
+                            "duration": "1-2 hours", 
+                            "image_url": "https://example.com/real-photo.jpg",
+                            "tags": ["Tag1", "Tag2"]
+                        }}
+                    ]
                 }}
             ]
         }}
@@ -312,6 +374,7 @@ class TravelPlanner:
              activities_context = """
              AVAILABLE ACTIVITIES:
              You are free to find real activities using Google Search.
+             **REMINDER**: Estimate costs in LOCAL currency, then convert to USD. Be realistic (e.g. Mumbai street food is <$5).
              """
 
         extra_instruction = ""
@@ -390,6 +453,6 @@ class TravelPlanner:
         for item in self.plan_trip_stream(preferences):
             if isinstance(item, Itinerary):
                 result = item
-            else:
+            elif isinstance(item, str):
                 print(f"DEBUG: {item}")
         return result

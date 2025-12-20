@@ -4,7 +4,8 @@
     --color-bg-body: #F5F7FA;
     --color-bg-card: #FFFFFF;
     --color-text-primary: #1F2937;
-    --color-text-secondary: #4B5563;
+    --color-text-secondary: #374151;
+    /* Darkened for accessibility */
     --color-primary: #2563EB;
     /* WCAG Accessible Blue */
     --color-primary-hover: #1D4ED8;
@@ -298,42 +299,61 @@ button:focus-visible,
     margin-bottom: 1rem;
 }
 
-/* Activity Items */
-.activity {
-    display: flex;
-    align-items: flex-start;
-    padding: 1rem 0;
+/* Activity Items Refactored */
+.activity-item {
+    padding: 1.5rem 0;
     border-bottom: 1px solid var(--color-border);
 }
 
-.activity:last-child {
+.activity-item:last-child {
     border-bottom: none;
 }
 
+.activity-layout {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.activity-image-wrapper {
+    width: 180px;
+    flex-shrink: 0;
+}
+
 .activity-image {
-    width: 80px;
-    height: 80px;
+    width: 100%;
+    height: 120px;
     object-fit: cover;
     border-radius: 8px;
-    margin-right: 1.25rem;
     border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
 }
 
-.activity-details {
+.activity-content {
     flex: 1;
+    min-width: 0;
 }
 
-.activity-details strong {
-    display: block;
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
+.activity-content h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
     color: var(--color-text-primary);
+    font-size: 1.1rem;
 }
 
-.activity-details small {
-    display: block;
+.activity-content p {
+    margin: 0;
     color: var(--color-text-secondary);
     font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.activity-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    align-items: center;
 }
 
 .cost-tag {
@@ -347,13 +367,52 @@ button:focus-visible,
     margin-top: 0.5rem;
 }
 
-.day-total {
-    text-align: right;
-    font-weight: 600;
+.duration-tag {
+    display: inline-block;
+    background-color: #F3F4F6;
+    /* Neutral gray */
     color: var(--color-text-secondary);
-    margin-top: 1rem;
-    padding-top: 0.5rem;
-    border-top: 1px dashed var(--color-border);
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+/* Dark mode override for duration tag */
+body.dark-mode .duration-tag {
+    background-color: #374151;
+    color: #D1D5DB;
+}
+
+/* Day Card Header */
+.day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 1rem;
+}
+
+.day-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--color-text-primary);
+}
+
+.day-total {
+    background-color: #059669;
+    /* Emerald 600 - Accessible Green */
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    margin: 0;
+    box-shadow: var(--shadow-sm);
 }
 
 .total-trip-cost {
@@ -467,6 +526,37 @@ input:checked+.slider:before {
     }
 }
 
+/* Accessibility Enhancements */
+
+/* Skip Link */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--color-primary);
+    color: white;
+    padding: 8px;
+    z-index: 100;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 /* Mobile Responsive */
 @media (max-width: 600px) {
     body {
@@ -499,5 +589,19 @@ input:checked+.slider:before {
     .chip {
         padding: 0.5rem 0.8rem;
         font-size: 0.85rem;
+    }
+
+    /* Stack Activity Layout */
+    .activity-layout {
+        flex-direction: column;
+    }
+
+    .activity-image-wrapper {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .activity-image {
+        height: 180px;
     }
 }

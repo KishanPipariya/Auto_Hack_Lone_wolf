@@ -18,6 +18,7 @@ class Activity(BaseModel):
     tags: List[str]
     description: str
     image_url: Optional[str] = None
+    duration_str: Optional[str] = None
 
 
 class DayPlan(BaseModel):
