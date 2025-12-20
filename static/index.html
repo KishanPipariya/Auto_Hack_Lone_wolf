@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Planner Agent</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="theme-switch-wrapper">
+            <span style="font-size: 1.2rem; margin-right: 8px;">☀️</span>
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" aria-label="Toggle Dark Mode" />
+                <div class="slider"></div>
+            </label>
+            <span style="font-size: 1.2rem; margin-left: 8px;">🌙</span>
+        </div>
+        <h1>✈️ Travel Planner Agent</h1>
+    </header>
+
+    <main class="container">
+        <form id="planForm" aria-label="Trip planning form">
+            <div class="form-group">
+                <label for="city">City Destination</label>
+                <input type="text" id="city" required placeholder="e.g. Paris" autocomplete="address-level2">
+            </div>
+
+            <div class="form-group">
+                <label for="budget">Total Budget ($)</label>
+                <input type="number" id="budget" required placeholder="e.g. 500" min="1">
+            </div>
+
+            <div class="form-group">
+                <label for="days">Duration (Days)</label>
+                <input type="number" id="days" required placeholder="e.g. 3" min="1" max="14">
+            </div>
+
+            <div class="form-group">
+                <label for="interests">Interests</label>
+                <div id="chipContainer" class="chip-container" role="group" aria-label="Predefined interests">
+                    <!-- Chips injected here by JS -->
+                </div>
+                <input type="text" id="interests" placeholder="Other interests (e.g. Hiking, Photography)">
+            </div>
+
+            <button type="submit" id="submitBtn">Plan My Trip</button>
+        </form>
+
+        <div id="loading" class="spinner" style="display: none;" role="status" aria-label="Loading itinerary"></div>
+        <div id="result" aria-live="polite"></div>
+    </main>
+
+    <script>
+        // Interest Chips Logic
+        const POPULAR_INTERESTS = [
+            "🏛️ History", "🎨 Art", "🍜 Food", "🍷 Nightlife",
+            "🌲 Nature", "🛍️ Shopping", "👨‍👩‍👧 Family", "💑 Romantic"
+        ];
+
+        const chipContainer = document.getElementById('chipContainer');
+        const selectedInterests = new Set();
+
+        POPULAR_INTERESTS.forEach(interest => {
+            const btn = document.createElement('button');
+            btn.type = 'button'; // Prevent form submit
+            btn.className = 'chip';
+            btn.textContent = interest;
+            btn.setAttribute('aria-pressed', 'false');
+
+            btn.addEventListener('click', () => {
+                const isSelected = selectedInterests.has(interest);
+                if (isSelected) {
+                    selectedInterests.delete(interest);
+                    btn.classList.remove('selected');
+                    btn.setAttribute('aria-pressed', 'false');
+                } else {
+                    selectedInterests.add(interest);
+                    btn.classList.add('selected');
+                    btn.setAttribute('aria-pressed', 'true');
+                }
+            });
+
+            chipContainer.appendChild(btn);
+        });
+
+        // Dark Mode Logic
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme) {
+            document.body.classList.add(currentTheme);
+            if (currentTheme === 'dark-mode') {
+                toggleSwitch.checked = true;
+            }
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            // Auto-detect system preference
+            document.body.classList.add('dark-mode');
+            toggleSwitch.checked = true;
+        }
+
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light-mode');
+            }
+        }
+
+        toggleSwitch.addEventListener('change', switchTheme, false);
+
+        // Core App Logic
+        document.getElementById('planForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+
+            btn.disabled = true;
+            btn.textContent = 'Planning...';
+
+            // Show Spinner
+            resultDiv.style.display = 'none';
+            resultDiv.innerHTML = '';
+            loadingDiv.style.display = 'block';
+
+            // Combine chips + text input
+            const customInput = document.getElementById('interests').value;
+            const finalInterests = [...selectedInterests, ...customInput.split(',')]
+                .map(s => s.trim())
+                .filter(s => s);
+
+            const data = {
+                city: document.getElementById('city').value,
+                budget: parseFloat(document.getElementById('budget').value),
+                days: parseInt(document.getElementById('days').value),
+                interests: finalInterests
+            };
+
+            try {
+                const response = await fetch('/plan_stream', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+
+                    // Process all complete lines
+                    buffer = lines.pop(); // Keep the incomplete line in buffer
+
+                    for (const line of lines) {
+                        if (!line.trim()) continue;
+
+                        try {
+                            const msg = JSON.parse(line);
+                            if (msg.type === 'status') {
+                                btn.textContent = msg.message;
+                            } else if (msg.type === 'result') {
+                                renderItinerary(msg.data);
+                            } else if (msg.type === 'error') {
+                                throw new Error(msg.message);
+                            }
+                        } catch (e) {
+                            console.error("Error parsing stream line:", e);
+                            if (e.message) throw e; // Rethrow actual errors
+                        }
+                    }
+                }
+
+            } catch (error) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <div class="error-card" style="text-align: center; padding: 2rem; background: #fff; border-radius: 12px; border: 1px solid #ffccc7; box-shadow: 0 4px 12px rgba(255, 0, 0, 0.05);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">😔</div>
+                        <h3 style="color: #d32f2f; margin: 0 0 0.5rem 0;">Oops! Something went wrong</h3>
+                        <p style="color: #555; margin-bottom: 1.5rem;">${error.message.replace('API Error: ', '')}</p>
+                        <button onclick="document.getElementById('submitBtn').click()" style="background: #d32f2f; width: auto; padding: 0.75rem 1.5rem;">Try Again</button>
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Plan My Trip';
+                loadingDiv.style.display = 'none';
+            }
+        });
+
+        function renderItinerary(data) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+
+            if (!data.valid) {
+                resultDiv.innerHTML = `
+                    <div class="error-card" role="alert">
+                        <h3>Validation Error</h3>
+                        <p>${data.validation_error}</p>
+                    </div>`;
+                return;
+            }
+
+            let html = `<h2 style="text-align:center; margin-bottom: 2rem;">Itinerary for ${data.city}</h2>`;
+
+            data.days.forEach(day => {
+                html += `
+                    <div class="itinerary-day">
+                        <h3>Day ${day.day_number}</h3>
+                        ${day.activities.map(act => `
+                            <div class="activity">
+                                ${act.image_url ? `<img src="${act.image_url}" alt="${act.name} photo" class="activity-image">` : ''}
+                                <div class="activity-details">
+                                    <div>
+                                        <strong>${act.name}</strong>
+                                        <small>${act.description}</small>
+                                        <span class="cost-tag">${typeof act.cost === 'string' ? act.cost : '$' + act.cost}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <div class="day-total">
+                            Day Total: $${day.total_cost}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `<div class="total-trip-cost">Total Trip Cost: $${data.total_cost}</div>`;
+            resultDiv.innerHTML = html;
+        }
+    </script>
+</body>
+
+</html>

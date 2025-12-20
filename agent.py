@@ -1,0 +1,395 @@
+import os
+import json
+import urllib.request
+from google import genai
+from google.genai import types
+from models import Preferences, Itinerary
+from data import MOCK_ACTIVITIES
+from dotenv import load_dotenv
+
+import logging
+
+load_dotenv()
+
+# Configure logger (inherits config when running in server)
+logger = logging.getLogger("travel_agent_server.agent")
+
+
+# Prioritized list of models to try
+MODEL_CANDIDATES = [
+    "gemini-2.0-flash",
+    "gemini-flash-latest",
+    "gemini-1.5-flash",
+    "gemini-pro-latest",
+]
+
+OPENROUTER_CANDIDATES = [
+    "google/gemini-2.0-flash-exp:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "google/gemma-3-27b-it:free",
+]
+
+
+class TravelPlanner:
+    def __init__(self):
+        self.activities = MOCK_ACTIVITIES
+        self.client = None
+
+        api_key = os.environ.get("GOOGLE_API_KEY")
+        if not api_key:
+            print("WARNING: GOOGLE_API_KEY not found in environment.")
+        else:
+            self.client = genai.Client(api_key=api_key)
+
+    def _call_openrouter(self, prompt: str) -> str:
+        """
+        Fallback to OpenRouter if Google API fails.
+        Tries multiple OpenRouter models in sequence.
+        """
+        api_key = os.environ.get("OPENROUTER_API_KEY")
+        if not api_key:
+            raise ValueError("OPENROUTER_API_KEY not found. Cannot use fallback.")
+
+        url = "https://openrouter.ai/api/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "http://localhost:8000",
+            "User-Agent": "TravelPlannerAgent/1.0",
+        }
+
+        last_error = None
+        for model in OPENROUTER_CANDIDATES:
+            print(f"DEBUG: Attempting OpenRouter fallback with {model}...")
+            data = {
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}]
+            }
+
+            try:
+                req = urllib.request.Request(url, json.dumps(data).encode(), headers)
+                with urllib.request.urlopen(req) as response:
+                    result = json.loads(response.read().decode())
+                    if "choices" in result and result["choices"]:
+                         print(f"DEBUG: Success with OpenRouter ({model})!")
+                         return result["choices"][0]["message"]["content"]
+            except Exception as e:
+                print(f"WARNING: OpenRouter ({model}) failed: {e}")
+                last_error = e
+                continue
+        
+        raise ValueError(f"All OpenRouter candidates failed. Last error: {last_error}")
+
+    def _call_model_with_fallback(self, prompt: str) -> str:
+        """
+        Tries to generate content using models in preference order.
+        Returns the text response of the first successful call.
+        """
+        # Try Google Direct First
+        if self.client:
+            # Enable Grounding
+            config = types.GenerateContentConfig(
+                tools=[types.Tool(google_search=types.GoogleSearch())]
+            )
+
+            last_error = None
+            for model_name in MODEL_CANDIDATES:
+                try:
+                    logger.info(f"DEBUG: Attempting with model: {model_name}...")
+                    # Add timeout to avoid hanging indefinitely
+                    config.response_mime_type = "application/json" 
+                    response = self.client.models.generate_content(
+                        model=model_name, 
+                        contents=prompt, 
+                        config=config,
+                    )
+                    logger.info(f"DEBUG: Success with {model_name}!")
+                    return response.text
+                except Exception as e:
+                    print(f"WARNING: Failed with {model_name}: {e}")
+                    last_error = e
+                    continue
+        
+        # If all Google models fail, try OpenRouter
+        try:
+            return self._call_openrouter(prompt)
+        except Exception as or_error:
+            # If everything fails, raise the last Google error if it exists, else OpenRouter error
+            final_error = last_error if 'last_error' in locals() and last_error else or_error
+            raise RuntimeError(f"All model candidates failed. Last error: {final_error}")
+
+    def _check_constraints(
+        self, itinerary: Itinerary, preferences: Preferences
+    ) -> bool:
+        """
+        Validates the itinerary against preferences constraints.
+        Updates the itinerary.valid and itinerary.validation_error fields.
+        """
+        # 1. Check Budget
+        total_cost = itinerary.calculate_total_cost()
+        if total_cost > preferences.budget:
+            itinerary.valid = False
+            itinerary.validation_error = (
+                f"Total cost ${total_cost} exceeds budget ${preferences.budget}."
+            )
+            return False
+
+        # 2. Check Days
+        if len(itinerary.days) != preferences.days:
+            itinerary.valid = False
+            itinerary.validation_error = f"Itinerary has {len(itinerary.days)} days, expected {preferences.days}."
+            return False
+
+        itinerary.valid = True
+        itinerary.validation_error = None
+        return True
+
+    def _parse_llm_response(self, response_text: str) -> Itinerary:
+        """
+        Parses JSON from LLM response, handling markdown code blocks.
+        """
+        try:
+            cleaned_text = (
+                response_text.replace("```json", "").replace("```", "").strip()
+            )
+            # Sometimes models return text before the JSON, try to find the first { or [
+            start_idx = cleaned_text.find("{")
+            end_idx = cleaned_text.rfind("}")
+            
+            # If object not found, check for list
+            if start_idx == -1:
+                start_idx = cleaned_text.find("[")
+                end_idx = cleaned_text.rfind("]")
+
+            if start_idx != -1:
+                # Use raw_decode to parse the JSON and ignore trailing text
+                # clean from the start of the JSON-like structure
+                candidate_json = cleaned_text[start_idx:]
+                try:
+                    data, _ = json.JSONDecoder().raw_decode(candidate_json)
+                except Exception:
+                     # Fallback to previous logic if raw_decode fails (e.g. if it's incomplete)
+                     if end_idx != -1:
+                         cleaned_text = cleaned_text[start_idx : end_idx + 1]
+                         data = json.loads(cleaned_text)
+                     else:
+                         raise
+            else:
+                 data = json.loads(cleaned_text)
+            
+            # --- Fuzzy Normalization Start ---
+            
+            # 1. unwrapping: Find the "days" list
+            if "city" not in data and "days" not in data:
+                # Recursively search for a dictionary containing "days"
+                def find_days_dict(obj):
+                     if isinstance(obj, dict):
+                         if "days" in obj and isinstance(obj["days"], list):
+                             return obj
+                         for v in obj.values():
+                             res = find_days_dict(v)
+                             if res: return res
+                     return None
+                
+                found_data = find_days_dict(data)
+                if found_data:
+                    data = found_data
+
+            # 2. Fix City if missing
+            if "city" not in data:
+                 data["city"] = "Unknown"
+
+            # 3. Normalize Days and Activities
+            if "days" in data and isinstance(data["days"], list):
+                for day in data["days"]:
+                    # Handle Day structure quirks
+                    if "day" in day and "day_number" not in day:
+                        day["day_number"] = day.pop("day")
+                    
+                    if "activities" in day and isinstance(day["activities"], list):
+                        for activity in day["activities"]:
+                             # Normalize Cost (LLM often returns strings like "$10" or "Free")
+                             cost_val = activity.get("cost", 0)
+                             if isinstance(cost_val, str):
+                                 import re
+                                 # Extract first number found
+                                 nums = re.findall(r"[-+]?\d*\.\d+|\d+", cost_val)
+                                 if nums:
+                                     activity["cost"] = float(nums[0])
+                                 else:
+                                     activity["cost"] = 0.0
+                             
+                             # Normalize Duration
+                             dur_val = activity.get("duration", activity.get("duration_hours", 0))
+                             if isinstance(dur_val, str):
+                                 import re
+                                 nums = re.findall(r"[-+]?\d*\.\d+|\d+", dur_val)
+                                 if nums:
+                                     activity["duration_hours"] = float(nums[0])
+                                 else:
+                                     activity["duration_hours"] = 1.0 # Default
+                             elif isinstance(dur_val, (int, float)):
+                                 activity["duration_hours"] = float(dur_val)
+                            
+                             # Ensure required fields exist
+                             if "duration_hours" not in activity:
+                                 activity["duration_hours"] = 1.0
+                             if "tags" not in activity:
+                                 activity["tags"] = ["General"]
+                             if "description" not in activity:
+                                 activity["description"] = activity.get("name", "Activity")
+                             if "image_url" not in activity:
+                                 activity["image_url"] = None
+
+            # --- Fuzzy Normalization End ---
+
+            # Lowercase keys if needed (some models return capitalized keys)
+            # (Skipping global lowercase as it breaks mixedCase keys if we rely on normalized ones)
+            # data = {k.lower(): v for k, v in data.items()} 
+            
+            return Itinerary(**data)
+        except Exception as e:
+            logger.error(f"ERROR parsing LLM response: {e}")
+            logger.error(f"RAW Response: {response_text}") # Log raw response for debugging
+            # If everything fails, return empty structure to avoid 500 error, 
+            # but logged error will help debug.
+            return Itinerary(city="Unknown", days=[])
+
+    def generate_initial_plan(self, preferences: Preferences) -> Itinerary:
+        """
+        Uses Gemini to generate the initial plan based on available activities.
+        """
+        if preferences.city.lower() == "paris":
+             activities_context = f"""
+             AVAILABLE ACTIVITIES (You must ONLY use these, do not invent new ones):
+             {json.dumps([a.model_dump() for a in self.activities], indent=2)}
+             """
+        else:
+             activities_context = """
+             AVAILABLE ACTIVITIES:
+             You are free to find real activities using Google Search.
+             Please ensure you estimate realistic costs and duration.
+             """
+
+        prompt = f"""
+        You are an expert travel agent. Create a {preferences.days}-day itinerary for {preferences.city} with a budget of ${preferences.budget}.
+        User Interests: {", ".join(preferences.interests)}
+
+        {activities_context}
+
+        OUTPUT FORMAT:
+        You MUST return valid JSON.
+        Do NOT wrap the JSON in markdown code blocks (e.g. ```json ... ```).
+        Do NOT write any introduction or conclusion.
+        Return ONLY a JSON object matching this structure:
+        {{
+            "city": "{preferences.city}",
+            "days": [
+                {{
+                    "day_number": 1,
+                    "activities": [ ... activity objects ... ]
+                }}
+            ]
+        }}
+        """
+
+        print("DEBUG: Calling Gemini for initial plan...")
+        response_text = self._call_model_with_fallback(prompt)
+        return self._parse_llm_response(response_text)
+
+    def refine_plan(
+        self, previous_plan: Itinerary, error: str, preferences: Preferences
+    ) -> Itinerary:
+        """
+        Asks Gemini to check the error and generate a new plan.
+        """
+        if preferences.city.lower() == "paris":
+             activities_context = f"""
+             AVAILABLE ACTIVITIES:
+             {json.dumps([a.model_dump() for a in self.activities], indent=2)}
+             """
+        else:
+             activities_context = """
+             AVAILABLE ACTIVITIES:
+             You are free to find real activities using Google Search.
+             """
+
+        extra_instruction = ""
+        if "0 days" in error or "valid JSON" in error:
+            extra_instruction = """
+            CRITICAL: The previous output was NOT valid JSON or was empty.
+            You MUST return a pure JSON object. 
+            Do NOT support markdown. 
+            Do NOT add explanations.
+            """
+
+        prompt = f"""
+        The previous itinerary for {preferences.city} was INVALID.
+        Error: {error}
+        
+        Previous Plan Total Cost: ${previous_plan.total_cost}
+        Budget: ${preferences.budget}
+
+        Please fix the plan by removing or swapping activities to meet the constraints.
+        
+        {extra_instruction}
+        
+        {activities_context}
+
+        OUTPUT FORMAT:
+        Return a valid JSON object matching the Itinerary structure.
+        """
+
+        print(f"DEBUG: Calling Gemini to fix error: {error}")
+        response_text = self._call_model_with_fallback(prompt)
+        return self._parse_llm_response(response_text)
+
+    def plan_trip_stream(self, preferences: Preferences):
+        """
+        Generates the itinerary while yielding status updates.
+        Yields:
+            str: Status message
+            Itinerary: Final result
+        """
+        # Step 1: Initial Plan
+        yield "Generating initial plan with AI..."
+        itinerary = self.generate_initial_plan(preferences)
+        cost = itinerary.calculate_total_cost()
+        yield f"Initial plan generated. Cost: ${cost}"
+
+        # Step 2: Check Constraints
+        yield "Verifying constraints (Budget & Time)..."
+        is_valid = self._check_constraints(itinerary, preferences)
+
+        # Step 3: Feedback Loop
+        max_retries = 3
+        attempts = 0
+        while not is_valid and attempts < max_retries:
+            attempts += 1
+            yield f"Plan invalid: {itinerary.validation_error}"
+            yield f"Re-planning attempt {attempts}/{max_retries}..."
+
+            itinerary = self.refine_plan(
+                itinerary, itinerary.validation_error, preferences
+            )
+            itinerary.calculate_total_cost()
+
+            is_valid = self._check_constraints(itinerary, preferences)
+
+        if not is_valid:
+            yield "Warning: Could not fully satisfy constraints, returning best effort."
+        
+        yield "Finalizing itinerary..."
+        yield itinerary
+
+    def plan_trip(self, preferences: Preferences) -> Itinerary:
+        """
+        Wrapper for non-streaming callers.
+        """
+        result = None
+        for item in self.plan_trip_stream(preferences):
+            if isinstance(item, Itinerary):
+                result = item
+            else:
+                print(f"DEBUG: {item}")
+        return result

@@ -1,0 +1,68 @@
+from models import Activity
+
+MOCK_ACTIVITIES = [
+    Activity(
+        name="Eiffel Tower Visit",
+        cost=30.0,
+        duration_hours=3.0,
+        tags=["Sightseeing", "Landmark"],
+        description="Visit the iconic Eiffel Tower and enjoy the view.",
+        image_url="https://images.unsplash.com/photo-1511739001486-6bfe10ce7859?q=80&w=600&auto=format&fit=crop",
+    ),
+    Activity(
+        name="Louvre Museum",
+        cost=20.0,
+        duration_hours=4.0,
+        tags=["Art", "Museum"],
+        description="See the Mona Lisa and thousands of other works of art.",
+        image_url="https://images.unsplash.com/photo-1499856871940-a09627c6d7db?q=80&w=600&auto=format&fit=crop",
+    ),
+    Activity(
+        name="Seine River Cruise",
+        cost=15.0,
+        duration_hours=1.5,
+        tags=["Relaxing", "Sightseeing"],
+        description="A relaxing boat ride along the Seine river.",
+        image_url="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=600&auto=format&fit=crop",
+    ),
+    Activity(
+        name="Montmartre Walking Tour",
+        cost=0.0,
+        duration_hours=2.0,
+        tags=["Walking", "History"],
+        description="Explore the historic Montmartre district.",
+        image_url="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=600&auto=format&fit=crop",
+    ),
+    Activity(
+        name="Fancy French Dinner",
+        cost=80.0,
+        duration_hours=2.5,
+        tags=["Food", "Luxury"],
+        description="A 3-course meal at a Michelin-rated restaurant.",
+        image_url="https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?q=80&w=600&auto=format&fit=crop",
+    ),
+    Activity(
+        name="Street Crêpes",
+        cost=5.0,
+        duration_hours=0.5,
+        tags=["Food", "Budget"],
+        description="Delicious sweet or savory crêpes from a street vendor.",
+        image_url="https://images.unsplash.com/photo-1519671482538-518b5c2bf1c6?q=80&w=600&auto=format&fit=crop",
+    ),
+    Activity(
+        name="Versailles Palace",
+        cost=25.0,
+        duration_hours=5.0,
+        tags=["History", "Landmark"],
+        description="Visit the opulent Palace of Versailles just outside Paris.",
+        image_url="https://images.unsplash.com/photo-1566324831278-6515c0e5aae9?q=80&w=600&auto=format&fit=crop",
+    ),
+    Activity(
+        name="Local Park Picnic",
+        cost=10.0,
+        duration_hours=2.0,
+        tags=["Relaxing", "Budget"],
+        description="Buy some bread and cheese and relax in the park.",
+        image_url="https://images.unsplash.com/photo-1565886728033-fa3207559cb3?q=80&w=600&auto=format&fit=crop",
+    ),
+]

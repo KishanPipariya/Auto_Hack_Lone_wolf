@@ -1,0 +1,408 @@
+/* Design System Tokenization */
+:root {
+    /* Color Palette - Light Mode */
+    --color-bg-body: #F5F7FA;
+    --color-bg-card: #FFFFFF;
+    --color-text-primary: #1F2937;
+    --color-text-secondary: #4B5563;
+    --color-primary: #2563EB;
+    /* WCAG Accessible Blue */
+    --color-primary-hover: #1D4ED8;
+    --color-border: #E5E7EB;
+    --color-accent-bg: #EFF6FF;
+    --color-success: #059669;
+    --color-error-bg: #FEF2F2;
+    --color-error-border: #FECACA;
+    --color-error-text: #B91C1C;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Animation */
+    --transition-base: 200ms ease-in-out;
+}
+
+/* Dark Mode Tokens */
+body.dark-mode {
+    --color-bg-body: #111827;
+    --color-bg-card: #1F2937;
+    --color-text-primary: #F9FAFB;
+    --color-text-secondary: #D1D5DB;
+    --color-primary: #3B82F6;
+    /* Lighter Blue for Dark Mode */
+    --color-primary-hover: #60A5FA;
+    --color-border: #374151;
+    --color-accent-bg: #1E3A8A;
+    --color-error-bg: #450A0A;
+    --color-error-border: #7F1D1D;
+    --color-error-text: #FCA5A5;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+}
+
+/* Reset & Base Styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--color-bg-body);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    padding: 2rem;
+    margin: 0;
+    transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 0;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+h1 {
+    font-size: 2.25rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-text-primary);
+}
+
+/* Layout */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--color-bg-card);
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-border);
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: var(--color-bg-card);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Chip Selector */
+.chip-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.chip {
+    background-color: var(--color-bg-body);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    user-select: none;
+    color: var(--color-text-secondary);
+    width: auto;
+    /* Fixes layout issue where chips took full width */
+    margin-bottom: 0;
+}
+
+.chip:hover {
+    background-color: var(--color-border);
+    transform: translateY(-1px);
+}
+
+.chip.selected {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+}
+
+.chip:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Buttons */
+button {
+    background-color: var(--color-primary);
+    color: #ffffff;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 100ms ease, background-color var(--transition-base);
+}
+
+button:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Accessibility: Focus Rings */
+button:focus-visible,
+.theme-switch input:focus-visible+.slider {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Results Area */
+#result {
+    margin-top: 2.5rem;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Itinerary Cards */
+.itinerary-day {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.itinerary-day:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.itinerary-day h3 {
+    color: var(--color-primary);
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Activity Items */
+.activity {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.activity:last-child {
+    border-bottom: none;
+}
+
+.activity-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 1.25rem;
+    border: 1px solid var(--color-border);
+}
+
+.activity-details {
+    flex: 1;
+}
+
+.activity-details strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    color: var(--color-text-primary);
+}
+
+.activity-details small {
+    display: block;
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+}
+
+.cost-tag {
+    display: inline-block;
+    background-color: var(--color-accent-bg);
+    color: var(--color-primary);
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.day-total {
+    text-align: right;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--color-border);
+}
+
+.total-trip-cost {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    box-shadow: var(--shadow-md);
+}
+
+/* States */
+.error-card {
+    background-color: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+    color: var(--color-error-text);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+/* Toggle Switch */
+.theme-switch-wrapper {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #CBD5E1;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input:checked+.slider {
+    background-color: var(--color-primary);
+}
+
+input:checked+.slider:before {
+    transform: translateX(24px);
+}
+
+/* Spinner */
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--color-border);
+    border-bottom-color: var(--color-primary);
+    border-radius: 50%;
+    margin: 2rem auto;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    body {
+        padding: 1rem;
+    }
+
+    .container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .theme-switch-wrapper {
+        top: 1rem;
+        right: 1rem;
+    }
+}
