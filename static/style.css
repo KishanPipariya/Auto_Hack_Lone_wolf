@@ -113,6 +113,86 @@ input:focus {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
+/* Hide default spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+/* Custom Number Control */
+.number-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-bg-card);
+    overflow: hidden;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.number-control:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.number-control input {
+    border: none;
+    border-radius: 0;
+    text-align: left;
+    /* Text aligns left usually for spinners */
+    width: 100%;
+    padding-left: 1rem;
+    flex: 1;
+    /* Take remaining space */
+}
+
+.number-control input:focus {
+    box-shadow: none;
+    /* Focus ring handles by container */
+}
+
+.spinner-controls {
+    display: flex;
+    flex-direction: column;
+    width: 32px;
+    /* Increased from 24px for better touch target */
+    gap: 6px;
+    margin-right: 4px;
+}
+
+.control-btn {
+    background-color: var(--color-bg-body);
+    color: var(--color-text-secondary);
+    border: none;
+    width: 100%;
+    flex: 1;
+    font-size: 0.8rem;
+    /* Increased from 0.6rem for readability */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-base);
+    padding: 0;
+    border-radius: 4px;
+    /* distinct buttons */
+}
+
+.control-btn:hover {
+    background-color: var(--color-border);
+    color: var(--color-primary);
+}
+
+.control-btn:active {
+    background-color: #D1D5DB;
+}
+
 /* Chip Selector */
 .chip-container {
     display: flex;
@@ -394,7 +474,7 @@ input:checked+.slider:before {
     }
 
     .container {
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
 
     h1 {
@@ -404,5 +484,20 @@ input:checked+.slider:before {
     .theme-switch-wrapper {
         top: 1rem;
         right: 1rem;
+    }
+
+    /* Prevent iOS zoom on focus */
+    input,
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    /* Stack chips better */
+    .chip {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
     }
 }

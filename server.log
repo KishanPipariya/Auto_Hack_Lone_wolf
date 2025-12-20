@@ -1142,3 +1142,9 @@ days.2.activities.3.tags
 2025-12-20 12:52:13,859 - travel_agent_server - INFO - Received streaming request for city: Amsterdam, budget: 600.0
 2025-12-20 12:52:13,863 - travel_agent_server.agent - INFO - DEBUG: Attempting with model: gemini-2.0-flash...
 2025-12-20 12:52:21,438 - travel_agent_server.agent - INFO - DEBUG: Success with gemini-2.0-flash!
+2025-12-20 13:52:49,463 - travel_agent_server - INFO - Received streaming request for city: Amsterdam, budget: 650.0
+2025-12-20 13:52:49,465 - travel_agent_server.agent - INFO - DEBUG: Attempting with model: gemini-2.0-flash...
+2025-12-20 13:52:56,660 - travel_agent_server.agent - INFO - DEBUG: Success with gemini-2.0-flash!
+2025-12-20 13:55:50,388 - travel_agent_server - INFO - Received streaming request for city: Amsterdam, budget: 654.0
+2025-12-20 13:55:50,390 - travel_agent_server.agent - INFO - DEBUG: Attempting with model: gemini-2.0-flash...
+2025-12-20 13:55:56,206 - travel_agent_server.agent - INFO - DEBUG: Success with gemini-2.0-flash!
