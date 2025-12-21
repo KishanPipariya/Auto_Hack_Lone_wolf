@@ -16,7 +16,7 @@ A smart AI-powered travel agent that creates personalized itineraries using Gemi
 
 1.  **Clone the repository** (if you haven't already):
     ```bash
-    git clone https://github.com/KishanPipariya/Auto_Hack_Lone_wolf#
+    git clone https://github.com/KishanPipariya/Auto_Hack_Lone_wolf
     cd autonomous-hacks
     ```
 
