@@ -57,7 +57,6 @@ Once running, open your browser and go to:
 
 - **AI Trip Planning**: Generates detailed day-by-day itineraries based on city, budget, and interests.
 - **Dynamic Photos**: Automatically finds relevant photos for every activity.
-- **Real-time Streaming**: Watch the plan being generated step-by-step.
 - **Responsive UI**: Works great on mobile and desktop.
 - **Dark Mode**: Toggle between light and dark themes.
 
