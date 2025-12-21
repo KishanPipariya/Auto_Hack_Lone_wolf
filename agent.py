@@ -31,7 +31,7 @@ OPENROUTER_CANDIDATES = [
 ]
 
 
-class TravelPlanner:
+class TravelAgent:
     def __init__(self):
         self.activities = MOCK_ACTIVITIES
         self.client = None
@@ -298,7 +298,7 @@ class TravelPlanner:
 
     def generate_initial_plan(self, preferences: Preferences) -> Itinerary:
         """
-        Uses Gemini to generate the initial plan based on available activities.
+        Uses Google Gen AI to generate the initial plan based on available activities.
         """
         if preferences.city.lower() == "paris":
              activities_context = f"""
@@ -355,7 +355,7 @@ class TravelPlanner:
         }}
         """
 
-        print("DEBUG: Calling Gemini for initial plan...")
+        print("DEBUG: Google ADK Agent generating initial plan...")
         response_text = self._call_model_with_fallback(prompt)
         return self._parse_llm_response(response_text)
 
@@ -363,7 +363,7 @@ class TravelPlanner:
         self, previous_plan: Itinerary, error: str, preferences: Preferences
     ) -> Itinerary:
         """
-        Asks Gemini to check the error and generate a new plan.
+        Asks Google Gen AI to check the error and generate a new plan.
         """
         if preferences.city.lower() == "paris":
              activities_context = f"""
@@ -403,33 +403,37 @@ class TravelPlanner:
         Return a valid JSON object matching the Itinerary structure.
         """
 
-        print(f"DEBUG: Calling Gemini to fix error: {error}")
+        print(f"DEBUG: Calling Google Gen AI to fix error: {error}")
         response_text = self._call_model_with_fallback(prompt)
         return self._parse_llm_response(response_text)
 
     def plan_trip_stream(self, preferences: Preferences):
         """
-        Generates the itinerary while yielding status updates.
-        Yields:
-            str: Status message
-            Itinerary: Final result
+        Generates the itinerary following the Google ADK 4-Step Agentic Process.
+        1. Break down plan & allocate activities.
+        2. Check constraints.
+        3. Re-plan if needed.
+        4. Finalize.
         """
-        # Step 1: Initial Plan
-        yield "Generating initial plan with AI..."
+        # Step 1: Breakdown & Allocation
+        yield "Google ADK Agent: Step 1 - Breaking plan into days & allocating activities..."
         itinerary = self.generate_initial_plan(preferences)
         cost = itinerary.calculate_total_cost()
-        yield f"Initial plan generated. Cost: ${cost}"
+        yield f"Initial allocation complete. Estimated Cost: ${cost}"
 
-        # Step 2: Check Constraints
-        yield "Verifying constraints (Budget & Time)..."
+        # Step 2: Constraints
+        yield "Google ADK Agent: Step 2 - Verifying budget & time constraints..."
         is_valid = self._check_constraints(itinerary, preferences)
 
-        # Step 3: Feedback Loop
+        # Step 3: Re-planning (Feedback Loop)
         max_retries = 3
         attempts = 0
+        if not is_valid:
+             yield "Google ADK Agent: Step 3 - Budget exceeded. Initiating Re-planning Loop..."
+
         while not is_valid and attempts < max_retries:
             attempts += 1
-            yield f"Plan invalid: {itinerary.validation_error}"
+            yield f"Constraint Violation: {itinerary.validation_error}"
             yield f"Re-planning attempt {attempts}/{max_retries}..."
 
             itinerary = self.refine_plan(
@@ -440,9 +444,10 @@ class TravelPlanner:
             is_valid = self._check_constraints(itinerary, preferences)
 
         if not is_valid:
-            yield "Warning: Could not fully satisfy constraints, returning best effort."
+            yield "Warning: Constraints not fully met after re-planning. Returning best effort."
         
-        yield "Finalizing itinerary..."
+        # Step 4: Finalize
+        yield "Google ADK Agent: Step 4 - Finalizing itinerary & generating artifacts..."
         yield itinerary
 
     def plan_trip(self, preferences: Preferences) -> Itinerary:

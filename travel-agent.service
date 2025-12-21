@@ -1,0 +1,17 @@
+[Unit]
+Description=Travel Planner Agent
+After=network.target
+
+[Service]
+# CHANGE User to your actual user (e.g. ubuntu or ec2-user)
+User=ec2-user
+# CHANGE WorkingDirectory to your actual project path
+WorkingDirectory=/home/ec2-user/autonomous-hacks
+# Command to start the app
+ExecStart=/home/ec2-user/.cargo/bin/uv run uvicorn fast_api_server:app --host 0.0.0.0 --port 8000 --workers 1
+Restart=always
+# Load environment variables
+EnvironmentFile=/home/ec2-user/autonomous-hacks/.env
+
+[Install]
+WantedBy=multi-user.target

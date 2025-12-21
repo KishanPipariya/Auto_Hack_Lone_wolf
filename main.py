@@ -1,6 +1,6 @@
 import argparse
 from models import Preferences
-from agent import TravelPlanner
+from agent import TravelAgent
 
 
 def main():
@@ -29,7 +29,7 @@ def main():
     )
     print(f"Interests: {', '.join(prefs.interests)}")
 
-    agent = TravelPlanner()
+    agent = TravelAgent()
     itinerary = agent.plan_trip(prefs)
 
     print("\n=== Final Itinerary ===")
