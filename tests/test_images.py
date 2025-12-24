@@ -1,8 +1,11 @@
 import pytest
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 import urllib.request
 import urllib.error
-from agent import TravelPlanner
+from agent import TravelAgent
 from models import Itinerary
 
 from unittest.mock import patch
@@ -10,7 +13,7 @@ from unittest.mock import patch
 class TestImageSystem:
     def test_fallback_injection(self):
         """Test that the parser injects a fallback URL when image_url is missing."""
-        agent = TravelPlanner()
+        agent = TravelAgent()
         
         # Simulating an LLM response with no image_url
         raw_response = json.dumps({
@@ -39,7 +42,7 @@ class TestImageSystem:
 
     def test_fallback_injection_empty_string(self):
         """Test that the parser injects a fallback URL when image_url is empty string."""
-        agent = TravelPlanner()
+        agent = TravelAgent()
         
         raw_response = json.dumps({
             "city": "Test City",

@@ -1,0 +1,41 @@
+project_report.txt
+
+1. Project Description
+1. Project Description
+   Planning a trip is often an overwhelming experience characterized by "tab fatigue" and information overload. Travelers are forced to juggle disparate sources—flight aggregators, blogs, maps, and currency converters—to piece together a coherent itinerary. Existing AI tools often fall short, ensuring only a generic list of tourist traps that ignore practical constraints like opening hours, geographic proximity, or strict budget limits. This gap necessitates a solution that moves beyond simple text generation to true autonomous planning, capable of reasoning like a human expert.
+
+   The Autonomous Travel Planner Agent is a sophisticated application designed to reclaim the joy of discovery. Built on the Google Agent Development Kit (ADK) pattern, it functions not merely as a chatbot, but as a goal-oriented intelligent system. When a user requests a trip, the agent doesn't just guess; it deeply analyzes the request through a structured cognitive loop. It breaks the trip into logical daily segments, allocates activities based on specific user interests (e.g., "Art" or "Food"), and rigorously validates every choice against the specified budget and time constraints using context-aware reasoning.
+
+   What sets this project apart is its commitment to "grounded functionality." Unlike standard LLMs that might hallucinate costs, this agent employs a self-correcting feedback loop. If an initial plan exceeds the budget, the agent detects the violation, autonomously iterates on the itinerary to find more affordable alternatives, and only presents the final plan when it is mathematically and logically sound. The experience culminates in a professionally generated, downloadable PDF guide, complete with real-time curated imagery and cost breakdowns, transforming a complex planning ordeal into a seamless, visual, and actionable journey.
+
+2. Technology Stack Used
+   - Core Language: Python 3.13+
+   - Agentic Framework: Google Gen AI SDK (Gemini Models) & Google ADK Pattern
+   - Backend: FastAPI (High-performance Async API)
+   - Search & Data: DuckDuckGo Search (DDGS) for real-time image sourcing
+   - Document Generation: FPDF2 (Programmatic PDF creation)
+   - Frontend: HTML5, CSS3, JavaScript (Responsive, ADA Compliant)
+   - Infrastructure: AWS EC2 (t2.micro optimized), Systemd, Bash Scripting
+
+3. Key Autonomous / Agentic Features
+   - 4-Step Cognitive Architecture: Explicitly models the thought process: Breakdown -> Allocate -> Check Constraints -> Finalize.
+   - Self-Correction Loop: If the agent generates a plan over budget, it catches its own error (Constraint Step) and re-prompts itself to swap expensive activities for cheaper ones (Re-planning Step).
+   - Real-Time "Thought" Streaming: The UI displays the agent's internal state (e.g., "Verifying budget constraints...") to the user as it works.
+   - Visual Grounding: Autonomously searches for and verifies real images for every activity using DuckDuckGo, rejecting broken links or placeholders.
+   - Smart Currency Handling: Context-aware prompting to estimate costs in local currency first (e.g., Yen in Tokyo) before converting to USD for accuracy.
+
+4. Innovation & Uniqueness
+   - Strict Constraint Adherence: Unlike standard LLM chatbots that often hallucinate prices, this agent rigorously validates math and logic before showing the result.
+   - "Downloadable Brain": Instantly converts the ephemeral AI conversation into a permanent, professionally formatted PDF guide that looks manually curated.
+   - Hybrid Search-Generation: Combines the creativity of Gen AI with the factual grounding of search engines for images and locations.
+
+5. Challenges Faced
+   - Currency Hallucination: Initial models would guess prices in USD directly, leading to unrealistic estimates (e.g., $50 for street food). Solved by enforcing a "Local Currency First" chain-of-thought in the system prompt.
+   - PDF Asset Loading: Generating PDFs with remote images caused timeouts. Solved by implementing an asynchronous (aiohttp) fetcher that downloads all assets in parallel, reducing generation time by 80%.
+   - Context Window Limits: Managing the entire activity database in the prompt for "Paris" vs. open-ended search for other cities required dynamic prompt injection.
+
+6. Future Enhancements
+   - Calendar Integration: Auto-export itinerary to Google Calendar or Outlook (.ics).
+   - Booking Connectivity: Integrate with flight/hotel APIs (e.g., Amadeus) for real-time pricing and booking links.
+   - Collaborative Planning: Allow multiple users to vote on activities or edit the generated plan in real-time.
+   - Multi-Destination Support: Scaling the agent to handle complex trips across multiple cities or countries.

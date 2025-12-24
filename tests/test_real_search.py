@@ -1,12 +1,15 @@
 import pytest
-from agent import TravelPlanner
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from agent import TravelAgent
 
 class TestRealImageSearch:
     def test_search_real_image_integration(self):
         """
         Integration test to verify DuckDuckGo search returns a real URL.
         """
-        agent = TravelPlanner()
+        agent = TravelAgent()
         query = "Eiffel Tower Paris"
         
         print(f"\nSearching for: {query}...")

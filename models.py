@@ -7,6 +7,7 @@ class Preferences(BaseModel):
     budget: float
     days: int
     interests: List[str] = Field(default_factory=list)
+    start_date: Optional[str] = None
 
 
 class Activity(BaseModel):
@@ -14,7 +15,7 @@ class Activity(BaseModel):
     
     name: str
     cost: Union[float, str]
-    duration_hours: Union[float, str] = Field(alias="duration")
+    duration_hours: Union[float, str]
     tags: List[str]
     description: str
     image_url: Optional[str] = None

@@ -1,8 +1,10 @@
-
 import pytest
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 from fastapi.testclient import TestClient
-from fast_api_server import app, planner
+from fast_api_server import app, agent
 from unittest.mock import MagicMock, patch
 
 client = TestClient(app)
@@ -24,7 +26,7 @@ def test_plan_endpoint_success():
         "days": []
     }
     
-    with patch.object(planner, "plan_trip") as mock_plan:
+    with patch.object(agent, "plan_trip") as mock_plan:
         # We need the return value to accept .model_dump() or just be a dict if Pydantic handles it,
         # but since planner returns an Itinerary object, let's mock the object.
         mock_obj = MagicMock()
@@ -57,7 +59,7 @@ def test_plan_stream_structure():
         from models import Itinerary
         yield Itinerary(city="Stream City", days=[])
         
-    with patch.object(planner, "plan_trip_stream", side_effect=mock_generator):
+    with patch.object(agent, "plan_trip_stream", side_effect=mock_generator):
         response = client.post("/plan_stream", json={
             "city": "Stream City",
             "budget": 500,
@@ -82,7 +84,8 @@ def test_plan_stream_structure():
 def test_api_error_handling():
     """Verifies that exceptions are sanitized."""
     
-    with patch.object(planner, "plan_trip_stream", side_effect=Exception("Wait 429 Error")):
+    from agent import TravelAgent
+    with patch.object(TravelAgent, "plan_trip_stream", side_effect=Exception("Wait 429 Error")):
         response = client.post("/plan_stream", json={
             "city": "Fail City",
             "budget": 500,

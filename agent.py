@@ -7,6 +7,7 @@ from ddgs import DDGS
 from models import Preferences, Itinerary
 from data import MOCK_ACTIVITIES
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 
 import logging
 
@@ -41,6 +42,40 @@ class TravelAgent:
             print("WARNING: GOOGLE_API_KEY not found in environment.")
         else:
             self.client = genai.Client(api_key=api_key)
+
+    def _get_calendar_context(self, preferences: Preferences) -> str:
+        """
+        Generates a string describing the day of week for each day of the trip.
+        Used to prompt the LLM to check for opening hours.
+        """
+        if not preferences.start_date:
+            return "No specific dates provided. Assume standard opening hours."
+        
+        try:
+            # support both YYYY-MM-DD (standard) and DD-MM-YYYY (user request)
+            start_dt = None
+            for fmt in ("%Y-%m-%d", "%d-%m-%Y"):
+                try:
+                    start_dt = datetime.strptime(preferences.start_date, fmt)
+                    break
+                except ValueError:
+                    continue
+            
+            if not start_dt:
+                return "Invalid date format. Assume standard opening hours."
+
+            context = "SPECIFIC CALENDAR:\n"
+            for i in range(preferences.days):
+                current_dt = start_dt + timedelta(days=i)
+                day_str = current_dt.strftime("%A, %B %d, %Y")
+                context += f"- Day {i+1}: {day_str}\n"
+            
+            context += "\nCRITICAL INSTRUCTION: Check opening hours for all venues for the specific DAY OF THE WEEK listed above.\n"
+            context += "If a museum/location is CLOSED on that day (e.g. Louvre is closed Tuesdays), you MUST reschedule it to another day or choose a different activity."
+            return context
+        except Exception as e:
+            print(f"WARNING: Date parsing failed: {e}")
+            return ""
 
     def _search_real_image(self, query: str) -> str | None:
         """
@@ -249,6 +284,11 @@ class TravelAgent:
                                 activity["duration_str"] = activity["duration_hours"]
 
                             dur_val = activity.get("duration", activity.get("duration_hours", 0))
+                            
+                            # Remove 'duration' to prevent Pydantic alias collision
+                            if "duration" in activity:
+                                activity.pop("duration")
+                                
                             if isinstance(dur_val, str):
                                 import re
                                 nums = re.findall(r"[-+]?\d*\.\d+|\d+", dur_val)
@@ -328,6 +368,9 @@ class TravelAgent:
         You are an expert travel agent. Create a {preferences.days}-day itinerary for {preferences.city} with a budget of ${preferences.budget}.
         User Interests: {", ".join(preferences.interests)}
 
+        TRIP DATES & OPENING HOURS:
+        {self._get_calendar_context(preferences)}
+
         {activities_context}
 
         OUTPUT FORMAT:
@@ -392,6 +435,9 @@ class TravelAgent:
         
         Previous Plan Total Cost: ${previous_plan.total_cost}
         Budget: ${preferences.budget}
+        
+        DATES:
+        {self._get_calendar_context(preferences)}
 
         Please fix the plan by removing or swapping activities to meet the constraints.
         

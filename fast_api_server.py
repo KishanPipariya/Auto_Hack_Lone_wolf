@@ -117,12 +117,34 @@ async def stream_plan_endpoint(preferences: Preferences):
     return StreamingResponse(event_generator(), media_type="application/x-ndjson")
 
 
+from fpdf_utils import generate_pdf as generate_pdf_util
+from calendar_utils import generate_ics
+
 @app.post("/pdf")
 async def generate_pdf(itinerary: Itinerary):
     # Delegate to utils
-    from fpdf_utils import generate_pdf as generate_pdf_util
     return await generate_pdf_util(itinerary)
 
+
+from fastapi import Body
+
+@app.post("/calendar")
+async def generate_calendar_endpoint(itinerary: Itinerary, start_date: str = None):
+    from fastapi.responses import Response
+    
+    try:
+        # Generate ICS bytes
+        ics_bytes = generate_ics(itinerary, start_date)
+        
+        filename = f"Trip_to_{itinerary.city}.ics"
+        return Response(
+            content=ics_bytes,
+            media_type="text/calendar",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        logger.exception("Failed to generate calendar file.")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

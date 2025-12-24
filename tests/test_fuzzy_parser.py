@@ -1,6 +1,8 @@
-
 import unittest
-from agent import TravelPlanner
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from agent import TravelAgent
 import json
 
 # This JSON mimics the real "broken" response from server.log
@@ -27,10 +29,10 @@ REAL_BROKEN_JSON = """
 
 class TestFuzzyParser(unittest.TestCase):
     def test_fuzzy_parser_normalization(self):
-        planner = TravelPlanner()
+        agent = TravelAgent()
         # Mock client not needed for pure parsing test
         
-        itinerary = planner._parse_llm_response(REAL_BROKEN_JSON)
+        itinerary = agent._parse_llm_response(REAL_BROKEN_JSON)
         
         # Verify unnesting
         assert len(itinerary.days) == 1

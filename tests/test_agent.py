@@ -1,7 +1,9 @@
-
 import pytest
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from unittest.mock import MagicMock, patch
-from agent import TravelPlanner
+from agent import TravelAgent
 from models import Preferences, Itinerary
 
 # Mock data for valid plan
@@ -21,11 +23,11 @@ VALID_JSON_RESPONSE = """
 
 @pytest.fixture
 def planner():
-    """Returns a TravelPlanner instance with mocked Google Client."""
+    """Returns a TravelAgent instance with mocked Google Client."""
     with patch("agent.genai.Client") as mock_client:
-        planner = TravelPlanner()
-        planner.client = mock_client
-        return planner
+        agent = TravelAgent()
+        agent.client = mock_client
+        return agent
 
 def test_initial_plan_success(planner):
     """Verifies that plan_trip parses a valid JSON response correctly."""
