@@ -38,4 +38,5 @@ project_report.txt
    - Calendar Integration: Auto-export itinerary to Google Calendar or Outlook (.ics).
    - Booking Connectivity: Integrate with flight/hotel APIs (e.g., Amadeus) for real-time pricing and booking links.
    - Collaborative Planning: Allow multiple users to vote on activities or edit the generated plan in real-time.
-   - Multi-Destination Support: Scaling the agent to handle complex trips across multiple cities or countries.
+   - Multi-Destination Support: 
+Scaling the agent to handle complex trips across multiple cities or countries.

@@ -96,7 +96,12 @@ async def generate_pdf(itinerary: Itinerary):
             
             pdf.set_font("helvetica", "B", 16)
             pdf.set_text_color(37, 99, 235) # Blue-600
-            pdf.cell(100, 8, f" Day {day.day_number}", border=0)
+            
+            header_text = f" Day {day.day_number}"
+            if day.city:
+                header_text += f" - {day.city}"
+                
+            pdf.cell(100, 8, header_text, border=0)
             
             pdf.set_text_color(75, 85, 99) # Gray-600
             pdf.set_font("helvetica", "", 12)

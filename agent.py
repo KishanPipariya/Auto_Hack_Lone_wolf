@@ -365,8 +365,20 @@ class TravelAgent:
              """
 
         prompt = f"""
-        You are an expert travel agent. Create a {preferences.days}-day itinerary for {preferences.city} with a budget of ${preferences.budget}.
-        User Interests: {", ".join(preferences.interests)}
+        You are an expert travel agent. Create a detailed, day-by-day itinerary for {preferences.city}.
+        User Budget: ${preferences.budget}
+        Trip Duration: {preferences.days} days
+        Interests: {', '.join(preferences.interests)}
+
+        CRITICAL INSTRUCTIONS:
+        1. You are a expert travel agent. Create a detailed, day-by-day itinerary.
+        2. MULTI-CITY LOGIC: If the user requests multiple destinations (e.g. 'Paris and London'), split the days logically between them. 
+           - You MUST specify the 'city' field for EACH DayPlan object so we know where the user is.
+           - Account for travel time between cities as an activity (e.g. 'Train to London').
+        3. REALISM: Account for opening hours (closed on Mondays?) and logical travel times between venues.
+        4. IMAGES: For every activity, generate a specific, search-friendly 'image_url' query (e.g. 'Eiffel Tower sunset').
+        5. COSTS: Estimate costs realistically. '0' for free activities. Ensure total stays under budget.
+        6. VALID VALID JSON: You must return PURE JSON matching the 'Itinerary' pydantic schema. No markdown, no pre-amble.
 
         TRIP DATES & OPENING HOURS:
         {self._get_calendar_context(preferences)}
@@ -374,9 +386,6 @@ class TravelAgent:
         {activities_context}
 
         OUTPUT FORMAT:
-        You MUST return valid JSON.
-        Do NOT wrap the JSON in markdown code blocks (e.g. ```json ... ```).
-        Do NOT write any introduction or conclusion.
         Return ONLY a JSON object matching this structure:
         {{
             "city": "{preferences.city}",

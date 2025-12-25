@@ -24,6 +24,7 @@ class Activity(BaseModel):
 
 class DayPlan(BaseModel):
     day_number: int
+    city: Optional[str] = None
     activities: List[Activity]
     total_cost: float = 0.0
 
