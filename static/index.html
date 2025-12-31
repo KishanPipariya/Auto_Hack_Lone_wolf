@@ -12,73 +12,315 @@
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <header>
-        <div class="theme-switch-wrapper">
-            <span style="font-size: 1.2rem; margin-right: 8px;" aria-hidden="true">☀️</span>
-            <label class="theme-switch" for="checkbox">
-                <input type="checkbox" id="checkbox" aria-label="Toggle Dark Mode" />
-                <div class="slider"></div>
-            </label>
-            <span style="font-size: 1.2rem; margin-left: 8px;" aria-hidden="true">🌙</span>
+        <div class="header-top"
+            style="width: 100%; position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; min-height: 40px;">
+            <h1 style="cursor: pointer; margin: 0;" onclick="window.location.reload()">✈️ Travel Planner Agent</h1>
+
+            <div class="theme-switch-wrapper"
+                style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); white-space: nowrap;">
+                <span style="font-size: 1.2rem; margin-right: 8px;" aria-hidden="true">☀️</span>
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" aria-label="Toggle Dark Mode" />
+                    <div class="slider"></div>
+                </label>
+                <span style="font-size: 1.2rem; margin-left: 8px;" aria-hidden="true">🌙</span>
+            </div>
         </div>
-        <h1>✈️ Travel Planner Agent</h1>
+
+        <div class="header-bottom"
+            style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+            <div class="nav-left">
+                <button id="nav-dashboard" class="nav-btn" style="display: none;">🏠 Home</button>
+            </div>
+
+            <div class="header-right">
+                <nav id="auth-nav" style="display: flex; gap: 10px; margin-left: 20px;">
+                    <!-- nav-new-trip removed -->
+                    <!-- nav-dashboard moved to left -->
+                    <button id="nav-logout" class="nav-btn" style="display: none;">👋 Logout</button>
+                    <button id="nav-login" class="nav-btn">🔐 Login</button>
+                </nav>
+            </div>
+        </div>
     </header>
 
+    <style>
+        /* New Styles for SPA */
+        /* New Styles for SPA */
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        /* Removed header-left styles, added header-bottom logic inline or here if needed */
+
+
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .nav-btn {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            padding: 10px 20px;
+            border-radius: 20px;
+            /* Pill shape */
+            cursor: pointer;
+            color: var(--color-text-primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+
+        #nav-logout:hover {
+            border-color: var(--color-error-text);
+            color: var(--color-error-text);
+        }
+
+        /* Views */
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Auth Card */
+        #auth-view {
+            max-width: 400px;
+            margin: 4rem auto;
+            text-align: center;
+        }
+
+        .auth-card {
+            background: var(--color-bg-card);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--color-border);
+            background: var(--color-bg-body);
+            color: var(--color-text-primary);
+            font-size: 1rem;
+        }
+
+        .auth-input:focus {
+            display: block;
+            border-color: var(--color-primary);
+            outline: none;
+        }
+
+        /* Dashboard */
+        .trip-history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .history-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            /* Button Reset for ADA */
+            display: block;
+            width: 100%;
+            text-align: left;
+            color: inherit;
+            font-family: inherit;
+        }
+
+        .history-card:hover,
+        .history-card:focus-visible {
+            transform: translateY(-3px);
+            border-color: var(--color-primary);
+            outline: 2px solid var(--color-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .history-date {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .history-city {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--color-primary);
+            display: block;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid #22c55e;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+
     <main id="main-content" class="container">
-        <form id="planForm" aria-label="Trip planning form">
-            <div class="form-group">
-                <label for="destinationInput">Destinations</label>
+        <!-- Toast Container -->
+        <div id="toast-container"></div>
+        <!-- Auth View -->
+        <div id="auth-view" class="view-section">
+            <div class="auth-card">
+                <h2 id="auth-title">Login</h2>
+                <label for="auth-email" class="sr-only"
+                    style="position:absolute; width:1px; height:1px; overflow:hidden;">Email</label>
+                <input type="email" id="auth-email" class="auth-input" placeholder="Email" autocomplete="username"
+                    aria-label="Email Address">
 
-                <div class="destination-control"
-                    style="background: var(--surface-2); padding: 5px; border-radius: 8px; border: 1px solid var(--surface-3); display: flex; flex-wrap: wrap; gap: 5px; min-height: 48px; align-items: center;">
-                    <div id="destinationChips" style="display: contents;" aria-live="polite"></div>
-                    <input type="text" id="destinationInput" placeholder="Add a city (Press Enter)"
-                        style="border: none; background: transparent; flex: 1; min-width: 120px; outline: none; padding: 8px;"
-                        autocomplete="address-level2">
+                <label for="auth-password" class="sr-only"
+                    style="position:absolute; width:1px; height:1px; overflow:hidden;">Password</label>
+                <input type="password" id="auth-password" class="auth-input" placeholder="Password"
+                    autocomplete="current-password" aria-label="Password">
+
+                <button id="auth-action-btn" class="nav-btn"
+                    style="width:100%; margin-top:10px; background:var(--color-primary); color:white; border:none;">Login</button>
+                <p style="margin-top:15px; font-size:0.9rem;">
+                    <span id="auth-toggle-text">New here?</span>
+                    <a href="#" id="auth-toggle-link" role="button" can-tab="0"
+                        style="color:var(--color-primary); font-weight:bold;">Register</a>
+                </p>
+                <button id="auth-guest-btn" class="nav-btn"
+                    style="width:100%; margin-top:20px; background:transparent; border:1px solid var(--color-border);">Continue
+                    as Guest</button>
+            </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view-section">
+            <h2 style="margin-bottom: 20px;">My Trips</h2>
+            <div id="trip-history-grid" class="trip-history-grid">
+                <!-- Injected by JS -->
+            </div>
+            <button id="dashboard-new-trip-btn" class="nav-btn"
+                style="margin-top: 30px; background: var(--color-primary); color: white; width: auto; padding: 12px 24px;">+
+                Plan New Trip</button>
+        </div>
+
+        <!-- Planner View -->
+        <div id="planner-view" class="view-section active">
+            <form id="planForm" aria-label="Trip planning form">
+                <div class="form-group">
+                    <label for="destinationInput">Destinations</label>
+
+                    <div class="destination-control"
+                        style="background: var(--color-bg-body); padding: 5px; border-radius: 8px; border: 1px solid var(--color-border); display: flex; flex-wrap: wrap; gap: 5px; min-height: 48px; align-items: center;">
+                        <div id="destinationChips" style="display: contents;" aria-live="polite"></div>
+                        <input type="text" id="destinationInput" placeholder="Add a city (Press Enter)"
+                            style="border: none; background: transparent; flex: 1; min-width: 120px; outline: none; padding: 8px;"
+                            autocomplete="address-level2">
+                    </div>
+                    <input type="hidden" id="city" required>
                 </div>
-                <input type="hidden" id="city" required>
-            </div>
 
-            <div class="form-group">
-                <label for="start_date">Start Date (Optional)</label>
-                <input type="date" id="start_date">
-            </div>
+                <div class="form-group">
+                    <label for="start_date">Start Date (Optional)</label>
+                    <input type="date" id="start_date">
+                </div>
 
-            <div class="form-group">
-                <label for="budget">Total Budget ($)</label>
-                <div class="number-control">
-                    <input type="number" id="budget" required placeholder="e.g. 500" min="1" step="1" data-step="50"
-                        value="500">
-                    <div class="spinner-controls">
-                        <button type="button" class="control-btn plus" aria-label="Increase budget">▲</button>
-                        <button type="button" class="control-btn minus" aria-label="Decrease budget">▼</button>
+                <div class="form-group">
+                    <label for="budget">Total Budget ($)</label>
+                    <div class="number-control">
+                        <input type="number" id="budget" required placeholder="e.g. 500" min="1" step="1" data-step="50"
+                            value="500">
+                        <div class="spinner-controls">
+                            <button type="button" class="control-btn plus" aria-label="Increase budget">▲</button>
+                            <button type="button" class="control-btn minus" aria-label="Decrease budget">▼</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="days">Duration (Days)</label>
-                <div class="number-control">
-                    <input type="number" id="days" required placeholder="e.g. 3" min="1" max="14" step="1" value="3">
-                    <div class="spinner-controls">
-                        <button type="button" class="control-btn plus" aria-label="Increase days">▲</button>
-                        <button type="button" class="control-btn minus" aria-label="Decrease days">▼</button>
+                <div class="form-group">
+                    <label for="days">Duration (Days)</label>
+                    <div class="number-control">
+                        <input type="number" id="days" required placeholder="e.g. 3" min="1" max="14" step="1"
+                            value="3">
+                        <div class="spinner-controls">
+                            <button type="button" class="control-btn plus" aria-label="Increase days">▲</button>
+                            <button type="button" class="control-btn minus" aria-label="Decrease days">▼</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="interests">Interests</label>
-                <div id="chipContainer" class="chip-container" role="group" aria-label="Predefined interests">
-                    <!-- Chips injected here by JS -->
+                <div class="form-group">
+                    <label for="interests">Interests</label>
+                    <div id="chipContainer" class="chip-container" role="group" aria-label="Predefined interests">
+                        <!-- Chips injected here by JS -->
+                    </div>
+                    <input type="text" id="interests" placeholder="Other interests (e.g. Hiking, Photography)">
                 </div>
-                <input type="text" id="interests" placeholder="Other interests (e.g. Hiking, Photography)">
-            </div>
 
-            <button type="submit" id="submitBtn">Plan My Trip</button>
-        </form>
+                <button type="submit" id="submitBtn">Plan My Trip</button>
+            </form>
 
-        <div id="loading" class="spinner" style="display: none;" role="status" aria-label="Loading itinerary"></div>
-        <div id="result" aria-live="polite"></div>
+            <div id="loading" class="spinner" style="display: none;" role="status" aria-label="Loading itinerary"></div>
+            <div id="result" aria-live="polite"></div>
+        </div>
     </main>
 
     <script>
@@ -297,6 +539,7 @@
                                 // No longer displaying tokens
                             } else if (msg.type === 'result') {
                                 renderItinerary(msg.data);
+                                // saveHistory(msg.data); // Auto-save disabled per request
                             } else if (msg.type === 'error') {
                                 throw new Error(msg.message);
                             }
@@ -326,9 +569,12 @@
 
         function renderItinerary(data) {
             const resultDiv = document.getElementById('result');
+            const planForm = document.getElementById('planForm');
+
             resultDiv.style.display = 'block';
 
             if (!data.valid) {
+                // Validation error: Keep form visible so user can fix
                 resultDiv.innerHTML = `
                     <div class="error-card" role="alert">
                         <h3>Validation Error</h3>
@@ -336,6 +582,9 @@
                     </div>`;
                 return;
             }
+
+            // Valid Itinerary: Hide form to focus on details
+            planForm.style.display = 'none';
 
             // Store data for PDF download
             window.itineraryData = data;
@@ -395,10 +644,13 @@
             // Add Download Button at the bottom
             html += `
                 <div class="summary-container" style="display: flex; gap: 15px; justify-content: center; margin: 30px 0;">
-                    <button onclick="downloadPdf()" class="plan-btn" style="background: var(--surface-2); color: var(--text-1); border: 1px solid var(--surface-3);">
+                    <button onclick="saveHistory(window.itineraryData)" class="plan-btn" style="background: var(--color-primary); color: white; border: none; font-weight: bold;">
+                        <span class="icon">💾</span> Save Trip
+                    </button>
+                    <button onclick="downloadPdf()" class="plan-btn" style="background: var(--color-bg-card); color: var(--color-text-primary); border: 1px solid var(--color-border);">
                         <span class="icon">📄</span> Download PDF
                     </button>
-                    <button onclick="downloadCalendar()" class="plan-btn" style="background: var(--surface-2); color: var(--text-1); border: 1px solid var(--surface-3);">
+                    <button onclick="downloadCalendar()" class="plan-btn" style="background: var(--color-bg-card); color: var(--color-text-primary); border: 1px solid var(--color-border);">
                         <span class="icon">📅</span> Add to Calendar
                     </button>
                 </div>
@@ -485,6 +737,222 @@
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
+        }
+
+        // --- AUTH & HISTORY LOGIC ---
+        let currentToken = localStorage.getItem('token');
+        let authMode = 'login'; // or 'register'
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            updateNav();
+        }
+
+        function updateNav() {
+            const isAuth = !!currentToken;
+            document.getElementById('nav-login').style.display = isAuth ? 'none' : 'block';
+            document.getElementById('nav-logout').style.display = isAuth ? 'inline-block' : 'none';
+            document.getElementById('nav-dashboard').style.display = isAuth ? 'block' : 'none';
+            // nav-new-trip removed
+        }
+
+        document.getElementById('nav-login').addEventListener('click', () => showView('auth-view'));
+        document.getElementById('nav-dashboard').addEventListener('click', () => {
+            showView('dashboard-view');
+            loadHistory();
+        });
+        // nav-new-trip listener removed
+
+        document.getElementById('dashboard-new-trip-btn').addEventListener('click', () => {
+            showView('planner-view');
+            // Show form again
+            document.getElementById('planForm').style.display = 'block';
+            // Clear result and reset form for fresh start
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('planForm').reset();
+            // Reset chips
+            document.getElementById('destinationChips').innerHTML = '';
+            document.getElementById('city').value = '';
+            document.getElementById('chipContainer').querySelectorAll('.chip.selected').forEach(c => c.click());
+        });
+
+        document.getElementById('nav-logout').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            currentToken = null;
+            showView('auth-view');
+        });
+        document.getElementById('auth-guest-btn').addEventListener('click', () => showView('planner-view'));
+
+        // Toggle Auth Mode
+        document.getElementById('auth-toggle-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            authMode = authMode === 'login' ? 'register' : 'login';
+            document.getElementById('auth-title').textContent = authMode === 'login' ? 'Login' : 'Register';
+            document.getElementById('auth-action-btn').textContent = authMode === 'login' ? 'Login' : 'Register';
+            document.getElementById('auth-toggle-text').textContent = authMode === 'login' ? 'New here?' : 'Already have an account?';
+            document.getElementById('auth-toggle-link').textContent = authMode === 'login' ? 'Register' : 'Login';
+        });
+
+        // Auth Action
+        document.getElementById('auth-action-btn').addEventListener('click', async () => {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const endpoint = authMode === 'login' ? '/auth/token' : '/auth/register';
+
+            // Password flow requires form data for token endpoint
+            let body;
+            let headers = {};
+
+            if (authMode === 'login') {
+                body = new URLSearchParams();
+                body.append('username', email);
+                body.append('password', password);
+                headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            } else {
+                body = JSON.stringify({ email, password });
+                headers['Content-Type'] = 'application/json';
+            }
+
+            try {
+                const res = await fetch(endpoint, { method: 'POST', headers, body });
+                if (!res.ok) throw new Error(await res.text());
+
+                const data = await res.json();
+                localStorage.setItem('token', data.access_token);
+                currentToken = data.access_token;
+
+                showView('dashboard-view');
+                loadHistory();
+            } catch (e) {
+                alert('Auth Failed: ' + e.message);
+            }
+        });
+
+        async function loadHistory() {
+            if (!currentToken) return;
+            try {
+                const res = await fetch('/history', {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                if (!res.ok) throw new Error("Failed to load history");
+
+                const history = await res.json();
+                const grid = document.getElementById('trip-history-grid');
+                grid.innerHTML = history.map(h => `
+                    <button type="button" class="history-card" 
+                        onclick="loadHistoryItem(${h.id})" 
+                        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); loadHistoryItem(${h.id});}"
+                        aria-label="View Info for trip to ${h.city}"
+                        tabindex="0">
+                        <span class="history-city" style="display:block">${h.city}</span>
+                        <span class="history-date" style="display:block">${h.days} Days • ${new Date(h.created_at).toLocaleDateString()}</span>
+                        <span style="font-size:0.8rem; color:#666; display:block">View Itinerary →</span>
+                    </button>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadHistoryItem(id) {
+            try {
+                const res = await fetch(`/history/${id}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                if (!res.ok) throw new Error("Failed to load item: " + res.status);
+
+                const text = await res.text();
+                console.log("Raw response:", text);
+                if (!text) throw new Error("Empty response from server");
+
+                const data = JSON.parse(text);
+                console.log("Loaded history item:", data);
+
+                if (!data) {
+                    throw new Error("No data received from server");
+                }
+                if (!data.full_json_blob) {
+                    // Fallback: If full_json_blob is missing, maybe data ITSELF is the blob?
+                    // Or maybe it's the old format?
+                    console.warn("full_json_blob missing, trying fallback");
+                    if (data.days && data.city) {
+                        renderItinerary(data); // Assume data is the blob
+                        showView('planner-view');
+                        return;
+                    }
+                    throw new Error("Invalid history data: missing full_json_blob");
+                }
+
+                renderItinerary(data.full_json_blob);
+                showView('planner-view');
+            } catch (e) {
+                console.error("loadHistoryItem Error:", e);
+                alert("Error loading trip: " + e.message);
+            }
+        }
+
+        async function saveHistory(data) {
+            if (!currentToken) {
+                showToast("Login to save this trip to your history.", "error");
+                return;
+            }
+            try {
+                const response = await fetch('/history', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        city: data.city,
+                        days: data.days.length,
+                        start_date: data.start_date, // fixed property name
+                        full_json_blob: data
+                    })
+                });
+
+                if (response.ok) {
+                    console.log("History saved");
+                    showToast("Trip saved to history!", "success");
+                    // Optionally reload history if dashboard is open/cached?
+                    // But usually user is on planner view now.
+                } else {
+                    console.error("Failed to save history:", await response.text());
+                    showToast("Failed to save trip to history.", "error");
+                }
+            } catch (e) {
+                console.error("Failed to save history", e);
+                showToast("Network error saving history.", "error");
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            // Trigger animation
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        if (currentToken) {
+            showView('dashboard-view');
+            loadHistory();
+        } else {
+            showView('auth-view');
         }
     </script>
 </body>

@@ -10,6 +10,22 @@ from models import Preferences, Itinerary
 from agent import TravelAgent
 from dotenv import load_dotenv
 
+# New DB and Auth imports
+from database import engine, Base
+from auth_routes import router as auth_router
+from history_routes import router as history_router
+
+from contextlib import asynccontextmanager
+
+# Initialize DB (Moved to lifespan)
+# Base.metadata.create_all(bind=engine)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database initialized.")
+    yield
+
 # Configure Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("travel_agent_server")
@@ -20,7 +36,11 @@ logger.addHandler(handler)
 
 load_dotenv()
 
-app = FastAPI(title="Travel Planner Agent API")
+app = FastAPI(title="Travel Planner Agent API", lifespan=lifespan)
+
+# Mount routers
+app.include_router(auth_router)
+app.include_router(history_router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
