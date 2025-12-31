@@ -1,6 +1,12 @@
+import sys
+import os
 import argparse
-from models import Preferences
-from agent import TravelAgent
+
+# Add root to path to allow imports from app
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app.models.domain import Preferences
+from app.core.agent import TravelAgent
 
 
 def main():

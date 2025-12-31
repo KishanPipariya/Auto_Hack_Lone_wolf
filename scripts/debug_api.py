@@ -1,8 +1,8 @@
-
 import requests
 import json
 
 BASE_URL = "http://localhost:8000"
+
 
 def run():
     print("1. Registering/Login...")
@@ -10,17 +10,21 @@ def run():
     # Register/Login
     email = "debug_user@test.com"
     pwd = "password123"
-    
+
     # Try login first
     res = s.post(f"{BASE_URL}/auth/token", data={"username": email, "password": pwd})
     if res.status_code != 200:
         print("Registering...")
-        res = s.post(f"{BASE_URL}/auth/register", json={"email": email, "password": pwd})
+        res = s.post(
+            f"{BASE_URL}/auth/register", json={"email": email, "password": pwd}
+        )
         if res.status_code != 200:
             print(f"Registration failed: {res.text}")
             return
-        res = s.post(f"{BASE_URL}/auth/token", data={"username": email, "password": pwd})
-    
+        res = s.post(
+            f"{BASE_URL}/auth/token", data={"username": email, "password": pwd}
+        )
+
     token = res.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
     print(f"Got token: {token[:10]}...")
@@ -33,15 +37,15 @@ def run():
         "full_json_blob": {
             "city": "Debug City",
             "days": [{"day_number": 1, "activities": []}],
-            "valid": True
-        }
+            "valid": True,
+        },
     }
     res = s.post(f"{BASE_URL}/history/", json=payload, headers=headers)
     print(f"Save Status: {res.status_code}")
     print(f"Save Response: {res.text}")
     if res.status_code != 200:
         return
-        
+
     history_id = res.json()["id"]
 
     print(f"\n3. Fetching History Detail {history_id}...")
@@ -51,8 +55,10 @@ def run():
         data = res.json()
         print("Response Keys:", data.keys())
         print("full_json_blob type:", type(data.get("full_json_blob")))
-        print("full_json_blob content:", json.dumps(data.get("full_json_blob"), indent=2))
-        
+        print(
+            "full_json_blob content:", json.dumps(data.get("full_json_blob"), indent=2)
+        )
+
         if data.get("full_json_blob") is None:
             print("ERROR: full_json_blob is None!")
         elif isinstance(data.get("full_json_blob"), str):
@@ -62,6 +68,7 @@ def run():
     except Exception as e:
         print(f"Failed to parse JSON: {e}")
         print("Raw text:", res.text)
+
 
 if __name__ == "__main__":
     run()

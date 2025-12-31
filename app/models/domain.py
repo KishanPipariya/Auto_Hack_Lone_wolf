@@ -12,7 +12,7 @@ class Preferences(BaseModel):
 
 class Activity(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
-    
+
     name: str
     cost: Union[float, str]
     duration_hours: Union[float, str]
@@ -29,7 +29,9 @@ class DayPlan(BaseModel):
     total_cost: float = 0.0
 
     def calculate_cost(self):
-        self.total_cost = sum(a.cost for a in self.activities)
+        self.total_cost = sum(
+            a.cost for a in self.activities if isinstance(a.cost, (int, float))
+        )
         return self.total_cost
 
 

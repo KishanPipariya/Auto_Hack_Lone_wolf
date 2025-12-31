@@ -1,4 +1,3 @@
-
 try:
     with open("server.log", "r") as f:
         lines = f.readlines()
