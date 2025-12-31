@@ -1,4 +1,4 @@
-from app.models.domain import Activity
+from models import Activity
 
 MOCK_ACTIVITIES = [
     Activity(

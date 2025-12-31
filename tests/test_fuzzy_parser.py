@@ -3,7 +3,8 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from app.core.agent import TravelAgent
+from agent import TravelAgent
+import json
 
 # This JSON mimics the real "broken" response from server.log
 REAL_BROKEN_JSON = """

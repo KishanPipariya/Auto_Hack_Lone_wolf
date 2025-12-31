@@ -1,9 +1,4 @@
-import sys
-import os
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from app.services.auth import get_password_hash, verify_password
+from auth_utils import get_password_hash, verify_password
 
 try:
     pwd = "testpassword"

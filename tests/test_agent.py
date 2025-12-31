@@ -4,8 +4,8 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from unittest.mock import MagicMock, patch
-from app.core.agent import TravelAgent
-from app.models.domain import Preferences, Itinerary, DayPlan, Activity
+from agent import TravelAgent
+from models import Preferences, Itinerary, DayPlan, Activity
 
 # Mock data for valid plan
 VALID_JSON_RESPONSE = """
@@ -26,7 +26,7 @@ VALID_JSON_RESPONSE = """
 @pytest.fixture
 def planner():
     """Returns a TravelAgent instance with mocked Google Client."""
-    with patch("app.core.agent.genai.Client") as mock_client:
+    with patch("agent.genai.Client") as mock_client:
         agent = TravelAgent()
         agent.client = mock_client
         return agent

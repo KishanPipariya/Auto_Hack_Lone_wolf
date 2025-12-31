@@ -1,10 +1,11 @@
 import os
 import json
 import urllib.request
+from typing import List
 from google import genai
 from google.genai import types
 from ddgs import DDGS
-from app.models.domain import Preferences, Itinerary
+from app.models.domain import Preferences, Itinerary, DestinationSuggestion
 from app.core.data import MOCK_ACTIVITIES
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -523,9 +524,7 @@ class TravelAgent:
             yield f"Re-planning attempt {attempts}/{max_retries}..."
 
             itinerary = self.refine_plan(
-                itinerary,
-                itinerary.validation_error or "Unknown Validation Error",
-                preferences,
+                itinerary, itinerary.validation_error or "Unknown Validation Error", preferences
             )
             itinerary.calculate_total_cost()
 
@@ -549,6 +548,6 @@ class TravelAgent:
             elif isinstance(item, str):
                 print(f"DEBUG: {item}")
         if result is None:
-            # Should practically never happen given the stream logic always yields status then result
-            raise RuntimeError("Planning failed to produce an itinerary result.")
+             # Should practically never happen given the stream logic always yields status then result
+             raise RuntimeError("Planning failed to produce an itinerary result.")
         return result

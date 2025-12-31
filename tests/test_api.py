@@ -1,11 +1,11 @@
+import pytest
 import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 from fastapi.testclient import TestClient
-from app.api.routers.plan import agent
-from app.main import app
+from fast_api_server import app, agent
 from unittest.mock import MagicMock, patch
 
 client = TestClient(app)
@@ -36,7 +36,7 @@ def test_plan_endpoint_success():
         mock_obj.model_dump.return_value = mock_itinerary
         # Fastapi will try to serialise the object, so having it behave like the Pydantic model is key
         # Simplest is to just return a real (empty) Itinerary object
-        from app.models.domain import Itinerary
+        from models import Itinerary
 
         real_itinerary = Itinerary(city="Test City", days=[])
         real_itinerary.total_cost = 100.0
@@ -64,7 +64,7 @@ def test_plan_stream_structure():
     # Mock the streaming generator
     def mock_generator(prefs):
         yield "Status Update 1"
-        from app.models.domain import Itinerary
+        from models import Itinerary
 
         yield Itinerary(city="Stream City", days=[])
 
@@ -98,7 +98,7 @@ def test_plan_stream_structure():
 def test_api_error_handling():
     """Verifies that exceptions are sanitized."""
 
-    from app.core.agent import TravelAgent
+    from agent import TravelAgent
 
     with patch.object(
         TravelAgent, "plan_trip_stream", side_effect=Exception("Wait 429 Error")

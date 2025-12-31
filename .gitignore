@@ -19,3 +19,5 @@ wheels/
 
 # Logs
 *.log
+
+travel_agent.db

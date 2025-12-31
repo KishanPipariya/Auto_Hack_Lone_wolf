@@ -9,4 +9,4 @@
 echo "Starting Travel Agent in PRODUCTION mode..."
 echo "Workers: 1 (t2 optimized)"
 
-uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1
+uv run uvicorn fast_api_server:app --host 0.0.0.0 --port 8000 --workers 1

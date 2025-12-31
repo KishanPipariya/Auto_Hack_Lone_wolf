@@ -58,11 +58,11 @@ def api_request(method, endpoint, data=None, token=None):
         if method == "POST":
             # Handle form-encoded for token, json for others
             if endpoint == "/auth/token":
-                response = requests.post(url, data=data, timeout=10)
+                response = requests.post(url, data=data)
             else:
-                response = requests.post(url, json=data, headers=headers, timeout=10)
+                response = requests.post(url, json=data, headers=headers)
         elif method == "GET":
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, headers=headers)
 
         return response
     except requests.exceptions.ConnectionError:
@@ -75,7 +75,7 @@ def api_request(method, endpoint, data=None, token=None):
 def stream_planner(payload):
     url = f"{API_URL}/plan_stream"
     try:
-        with requests.post(url, json=payload, stream=True, timeout=30) as r:
+        with requests.post(url, json=payload, stream=True) as r:
             if r.status_code != 200:
                 yield f"Error: {r.status_code} {r.text}"
                 return
@@ -205,6 +205,10 @@ def render_planner():
 
             st.write("---")
             st.subheader("Generating Itinerary...")
+
+            # Simple streaming simulation via container
+            result_container = st.empty()
+            full_text = ""
 
             # Streaming Logic using generator
             # Streamlit's write_stream is new, let's use a robust loop

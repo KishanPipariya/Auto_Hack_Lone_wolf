@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from app.core.database import get_db
-from app.models.sql import ItineraryHistory, User
-from app.api.routers.auth import get_current_user
+from database import get_db
+from sql_models import ItineraryHistory, User
+from auth_routes import get_current_user
+from models import Itinerary
 import json
 
 router = APIRouter(prefix="/history", tags=["History"])

@@ -191,9 +191,8 @@
         /* Toast Notification */
         .toast {
             position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
+            bottom: 20px;
+            right: 20px;
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
             padding: 1rem 1.5rem;
@@ -202,19 +201,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            transform: translateY(100px);
+
             opacity: 0;
             transition: all 0.3s ease-out;
             z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        opacity: 0;
-        transition: all 0.3s ease-out;
-        z-index: 1000;
         }
 
         .toast.show {
@@ -699,7 +690,7 @@
                 document.body.removeChild(a);
             } catch (error) {
                 console.error('Download failed:', error);
-                showToast('Could not download PDF. Please try again.', 'error');
+                alert('Could not download PDF. Please try again.');
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -742,7 +733,7 @@
                 document.body.removeChild(a);
             } catch (error) {
                 console.error('Download failed:', error);
-                showToast('Could not download Calendar: ' + error.message, 'error');
+                alert('Could not download Calendar: ' + error.message);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -809,17 +800,6 @@
         document.getElementById('auth-action-btn').addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-            if (!email || !password) {
-                showToast("Please enter both email and password.", "error");
-                return;
-            }
-
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showToast("Please enter a valid email address.", "error");
-                return;
-            }
-
             const endpoint = authMode === 'login' ? '/auth/token' : '/auth/register';
 
             // Password flow requires form data for token endpoint
@@ -838,28 +818,16 @@
 
             try {
                 const res = await fetch(endpoint, { method: 'POST', headers, body });
-                if (!res.ok) {
-                    if (res.status === 422) {
-                        throw new Error("Please enter both email and password.");
-                    }
-                    // Handle 401 specifically for clearer message
-                    if (res.status === 401) {
-                        const errData = await res.json().catch(() => ({ detail: "Invalid credentials" }));
-                        throw new Error(errData.detail || "Invalid email or password.");
-                    }
-                    // Fallback for other errors
-                    throw new Error(await res.text());
-                }
+                if (!res.ok) throw new Error(await res.text());
 
                 const data = await res.json();
                 localStorage.setItem('token', data.access_token);
                 currentToken = data.access_token;
 
-                showToast("Login successful! Welcome back.", "success");
                 showView('dashboard-view');
                 loadHistory();
             } catch (e) {
-                showToast(e.message.replace('Auth Failed: ', ''), "error");
+                alert('Auth Failed: ' + e.message);
             }
         });
 
@@ -922,7 +890,7 @@
                 showView('planner-view');
             } catch (e) {
                 console.error("loadHistoryItem Error:", e);
-                showToast("Error loading trip: " + e.message, "error");
+                alert("Error loading trip: " + e.message);
             }
         }
 

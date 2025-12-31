@@ -1,0 +1,1328 @@
+[
+  {
+    "city": "Negril",
+    "country": "Jamaica",
+    "description": "Unwind on Negril's famous Seven Mile Beach, where turquoise waters meet laid-back vibes.",
+    "estimated_cost": 1800.0,
+    "rationale": "Negril offers beautiful beaches, a relaxed atmosphere, and all-inclusive resorts that can fit within the budget.  The focus is on relaxation and enjoying the ocean.",
+    "image_key": "Negril Seven Mile Beach sunset",
+    "image_urls": [
+      "https://www.shutterstock.com/shutterstock/photos/1330362068/display_1500/stock-photo-sunset-at-the-mile-beach-in-jamaica-negril-1330362068.jpg",
+      "https://c8.alamy.com/comp/ABJ9J5/sunset-seven-mile-beach-negril-jamaica-ABJ9J5.jpg",
+      "https://media-cdn.tripadvisor.com/media/photo-s/1b/45/61/c2/sunset-on-the-beach.jpg"
+    ]
+  },
+  {
+    "city": "Playa del Carmen",
+    "country": "Mexico",
+    "description": "Discover the Riviera Maya's gem, where ancient Mayan history meets stunning beaches and vibrant nightlife.",
+    "estimated_cost": 1700.0,
+    "rationale": "Playa del Carmen provides a balance of beautiful beaches, relaxation, and cultural experiences at a reasonable cost.  It's easy to find affordable accommodations and enjoy the ocean.",
+    "image_key": "Playa del Carmen beach turquoise water",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/b/tropical-mexican-beach-landscape-panorama-clear-blue-turquoise-water-waves-playa-del-carmen-mexico-255618290.jpg",
+      "https://thumbs.dreamstime.com/b/tropical-caribbean-beach-clear-turquoise-water-playa-del-carmen-mexico-tropical-caribbean-beach-landscape-panorama-clear-267232467.jpg",
+      "https://thumbs.dreamstime.com/b/tropical-mexican-beach-landscape-panorama-clear-blue-turquoise-water-waves-playa-del-carmen-mexico-255618303.jpg"
+    ]
+  },
+  {
+    "city": "Puerto Viejo",
+    "country": "Costa Rica",
+    "description": "Experience the Caribbean side of Costa Rica with its unique blend of rainforest, beaches, and Afro-Caribbean culture.",
+    "estimated_cost": 1600.0,
+    "rationale": "Puerto Viejo offers a more budget-friendly option with beautiful beaches, surfing, and a relaxed Caribbean vibe.  It\u2019s perfect for relaxation and enjoying the ocean and nature.",
+    "image_key": "Puerto Viejo beach palm trees",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/z/palm-trees-punta-uva-beach-puerto-viejo-costa-rica-197382335.jpg",
+      "https://thumbs.dreamstime.com/z/puerto-viejo-costa-rica-palm-tree-caribbean-beach-sunset-outside-de-talamanca-163906047.jpg",
+      "https://c8.alamy.com/comp/M211DG/panorama-view-of-a-beach-with-palm-trees-south-of-puerto-viejo-de-M211DG.jpg"
+    ]
+  },
+  {
+    "city": "South Padre Island",
+    "country": "USA",
+    "description": "Escape to Texas's best-kept secret, with miles of pristine beaches and warm Gulf waters.",
+    "estimated_cost": 1500.0,
+    "rationale": "South Padre Island is an affordable beach destination within the USA. You can relax on the beach, enjoy water activities, and experience the Gulf Coast.",
+    "image_key": "South Padre Island aerial beach view",
+    "image_urls": [
+      "https://i.pinimg.com/originals/91/e6/7e/91e67e904b124f7128b983000594ac77.jpg",
+      "https://c8.alamy.com/comp/AJ1W90/aerial-view-of-south-padre-island-beach-frontage-with-large-hotels-AJ1W90.jpg",
+      "https://i.pinimg.com/originals/d7/24/ca/d724ca244978836357c1497e99b63cf1.jpg"
+    ]
+  },
+  {
+    "city": "Pattaya",
+    "country": "Thailand",
+    "description": "Experience the vibrant city of Pattaya with stunning beaches, cultural richness, and lively nightlife.",
+    "estimated_cost": 1900.0,
+    "rationale": "Pattaya offers a mix of beautiful beaches, cultural experiences, and relaxation opportunities that align with your preferences, along with the potential to remain within your budget.",
+    "image_key": "Pattaya beach cityscape sunset",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/b/cityscape-pattaya-beach-city-hotel-rooftop-cityscape-pattaya-beach-city-hotel-rooftop-sunset-sky-297600085.jpg",
+      "https://d2rdhxfof4qmbb.cloudfront.net/wp-content/uploads/20200825135800/iStock-1058889054-1024x768.jpg",
+      "https://thumbs.dreamstime.com/b/cityscape-pattaya-beach-city-hotel-rooftop-cityscape-pattaya-beach-city-hotel-rooftop-sunset-sky-297600012.jpg"
+    ]
+  },
+  {
+    "city": "Hoi An",
+    "country": "Vietnam",
+    "description": "Wander through the enchanting ancient town of Hoi An, where tailor shops meet tranquil beaches and delicious street food.",
+    "estimated_cost": 1400.0,
+    "rationale": "Hoi An is a budget-friendly destination with beautiful beaches nearby, a charming old town, and delicious, affordable food.  It allows for relaxation and cultural exploration.",
+    "image_key": "Hoi An beach An Bang Beach",
+    "image_urls": [
+      "https://statics.vinpearl.com/an-bang-beach-0_1645973502.jpg",
+      "https://ahoyvietnam.com/wp-content/uploads/2025/07/An-Bang-Beach-Hoi-An-AhoyVietnam-scaled.webp",
+      "https://static.vinwonders.com/2022/10/an-bang-beach.jpg"
+    ]
+  },
+  {
+    "city": "Dahab",
+    "country": "Egypt",
+    "description": "Dive into the Red Sea's underwater paradise in Dahab, a tranquil escape with stunning coral reefs and Bedouin culture.",
+    "estimated_cost": 1300.0,
+    "rationale": "Dahab offers a budget-friendly Red Sea experience with excellent diving, snorkeling, and a relaxed atmosphere.  It's ideal for relaxation and exploring the underwater world.",
+    "image_key": "Dahab Blue Hole diving",
+    "image_urls": [
+      "https://c8.alamy.com/comp/2H1FJDX/collage-about-famous-diving-site-blue-hole-in-dahab-egypt-with-underwater-world-corals-and-fishes-of-red-sea-map-of-a-diving-route-2H1FJDX.jpg",
+      "https://thumbs.dreamstime.com/z/blue-hole-dive-spot-dahab-egypt-blue-hole-dive-spot-dahab-egypt-357661361.jpg",
+      "https://www.weseektravel.com/wp-content/uploads/2022/05/diving-dahab-blue-hole-1-3-1024x768.jpg"
+    ]
+  },
+  {
+    "city": "Goa",
+    "country": "India",
+    "description": "Discover the sun-kissed beaches of Goa, where Indian culture meets Portuguese heritage and a laid-back vibe.",
+    "estimated_cost": 1200.0,
+    "rationale": "Goa is a very affordable beach destination with a mix of Indian and Portuguese cultures. You can relax on the beaches, enjoy water sports, and explore the local markets.",
+    "image_key": "Goa beaches palm trees",
+    "image_urls": [
+      "https://c8.alamy.com/comp/DEKN8P/palm-trees-on-the-coast-candolim-beach-candolim-north-goa-goa-india-DEKN8P.jpg",
+      "https://img.freepik.com/premium-photo/aerial-top-view-tropical-beach-with-green-palm-trees-sunlight-drone-view-goa_175356-13803.jpg",
+      "https://thumbs.dreamstime.com/b/aerial-top-view-tropical-beach-green-palm-trees-under-sunlight-drone-view-goa-aerial-top-view-tropical-beach-279869557.jpg"
+    ]
+  },
+  {
+    "city": "Varna",
+    "country": "Bulgaria",
+    "description": "Discover the Black Sea's coastal charm in Varna, where ancient history meets golden sands and vibrant nightlife.",
+    "estimated_cost": 1100.0,
+    "rationale": "Varna provides an affordable European beach experience with beautiful beaches, historical sites, and a lively atmosphere. It\u2019s perfect for relaxation and exploring the Black Sea coast.",
+    "image_key": "Varna beach golden sands",
+    "image_urls": [
+      "https://as1.ftcdn.net/v2/jpg/03/82/90/66/1000_F_382906645_HJQ5p25a9YqG7QWDWrX9AsruV0zfmitt.jpg",
+      "http://static.bulgaria-guide.com/0seaside_Golden-Sands.jpg",
+      "https://i.pinimg.com/originals/e3/7b/dd/e37bddb54084e1e1f0e42b20eeb3f4c2.jpg"
+    ]
+  },
+  {
+    "city": "Taghazout",
+    "country": "Morocco",
+    "description": "Surf the waves and soak up the sun in Taghazout, a Moroccan surfing paradise with stunning beaches and a relaxed Berber culture.",
+    "estimated_cost": 1000.0,
+    "rationale": "Taghazout is a budget-friendly surfing destination with beautiful beaches, a relaxed atmosphere, and unique Moroccan culture. It is good for relaxation on the beach.",
+    "image_key": "Taghazout beach surfing",
+    "image_urls": [
+      "https://uniquedeserttour.com/wp-content/uploads/2023/05/Surfing-in-Taghazout2-1024x538.jpeg",
+      "https://www.stokedfortravel.com/wp-content/uploads/2020/07/taghazout-surf-guide-morocco-surfing-anchor-point-learn-to-surf-camp-1920x960.jpg",
+      "https://www.bestsurfdestinations.com/wp-content/uploads/2020/02/Surfing-Taghazout-Panoramas-min-scaled.jpg"
+    ]
+  },
+  {
+    "city": "Kathmandu",
+    "country": "Nepal",
+    "description": "Hike to breathtaking Himalayan viewpoints and immerse yourself in vibrant culture.",
+    "estimated_cost": 1200.0,
+    "rationale": "Nepal offers incredible trekking opportunities in the Himalayas at a reasonable cost, with budget-friendly accommodation and food options.",
+    "image_key": "Kathmandu valley panoramic view",
+    "image_urls": [
+      "https://media.istockphoto.com/id/2213457658/photo/aerial-view-shows-the-panoramic-scenery-of-the-kathmandu-valley.jpg?s=1024x1024&w=is&k=20&c=INygB-P-7z6Vtkf7wFNgZuUmFwZC4GckQXURKKtmf-M=",
+      "https://photo.ntb.gov.np/public/uploads/preview/rolwaling-himal-range-with-kathmandu-valley-8251589165361wkubepvlbq.jpg",
+      "https://c8.alamy.com/comp/2AHEWT7/the-kathmandu-valley-panorama-with-himalaya-mountains-in-the-evening-light-with-beautiful-colors-2AHEWT7.jpg"
+    ]
+  },
+  {
+    "city": "Cusco",
+    "country": "Peru",
+    "description": "Explore the gateway to Machu Picchu and discover stunning mountain landscapes.",
+    "estimated_cost": 1300.0,
+    "rationale": "Cusco provides access to world-class hiking trails, including the Inca Trail (if booked far in advance and with a splurge) or alternative treks, with affordable lodging and dining.",
+    "image_key": "Cusco cityscape Andes mountains",
+    "image_urls": [
+      "https://media.istockphoto.com/id/872178908/photo/cusco-cityscape-at-sunset.jpg?s=1024x1024&w=is&k=20&c=JQpsdvDIpcATY7H_GtqVld6VF0vwW7B42bcjlmdL43Q=",
+      "https://thumbs.dreamstime.com/z/cusco-cityscape-andes-mountains-panoramic-view-cusco-peru-showcasing-city-s-urban-sprawl-against-backdrop-341708038.jpg?w=992",
+      "https://thumbs.dreamstime.com/z/ancient-inca-capital-cusco-sunset-its-plaza-de-armas-main-square-cathedral-compania-jesus-jesuit-church-andes-142347345.jpg"
+    ]
+  },
+  {
+    "city": "Bovec",
+    "country": "Slovenia",
+    "description": "Experience adrenaline-pumping activities in the Julian Alps.",
+    "estimated_cost": 1400.0,
+    "rationale": "Bovec is an adventure hub with opportunities for hiking, rafting, and canyoning in a stunning alpine setting; Slovenia is generally more affordable than other Western European countries.",
+    "image_key": "Bovec Julian Alps Soca River",
+    "image_urls": [
+      "https://c8.alamy.com/comp/KX2H3K/kayak-soca-river-soca-valley-julian-alps-municipality-of-bovec-slovenia-KX2H3K.jpg",
+      "https://c8.alamy.com/comp/R5X291/vivid-blue-soca-river-valley-near-bovec-in-triglav-national-park-julian-alps-slovenia-europe-R5X291.jpg",
+      "https://c8.alamy.com/comp/DGY1RM/soca-river-in-the-soca-valley-in-triglav-national-park-julian-alps-DGY1RM.jpg"
+    ]
+  },
+  {
+    "city": "Medellin",
+    "country": "Colombia",
+    "description": "Hike through lush coffee regions and ascend into the Andes Mountains.",
+    "estimated_cost": 1000.0,
+    "rationale": "Medellin and its surroundings offer diverse hiking experiences, from coffee plantation tours to challenging mountain trails, all at a budget-friendly price point.",
+    "image_key": "Medellin cityscape Andes mountains Colombia",
+    "image_urls": [
+      "https://www.shutterstock.com/image-photo/cityscape-medellin-colombia-andes-mountains-260nw-2077054834.jpg",
+      "https://c8.alamy.com/comp/T1NWYT/panoramic-cityscape-of-medellin-city-at-night-blue-hour-located-in-a-valley-of-the-andes-mountain-range-colombia-T1NWYT.jpg",
+      "https://thumbs.dreamstime.com/z/cityscape-panorama-view-medellin-colombia-second-largest-city-aburr-valley-one-most-northerly-andes-south-127726842.jpg"
+    ]
+  },
+  {
+    "city": "Queenstown",
+    "country": "New Zealand",
+    "description": "Embrace adventure in the adventure capital of the world, surrounded by majestic mountains and pristine lakes.",
+    "estimated_cost": 1500.0,
+    "rationale": "Queenstown is renowned for its adventure activities and stunning scenery. While New Zealand can be expensive, focusing on hiking and budget accommodation can make it feasible.",
+    "image_key": "Queenstown New Zealand Lake Wakatipu mountains",
+    "image_urls": [
+      "https://www.campervannewzealand.co.nz/assets/img/blog/559.png",
+      "https://img.freepik.com/premium-photo/beautiful-view-lake-wakatipu-queenstown-south-island-new-zealand_698447-1188.jpg?w=996",
+      "https://c8.alamy.com/comp/D1GW7D/aerial-view-of-queenstown-lake-wakatipu-and-the-remarkable-mountains-D1GW7D.jpg"
+    ]
+  },
+  {
+    "city": "Canmore",
+    "country": "Canada",
+    "description": "Discover the Canadian Rockies with world-class hiking trails.",
+    "estimated_cost": 1400.0,
+    "rationale": "Canmore offers access to Banff National Park and Kananaskis Country, both filled with incredible hiking. Accommodations outside of Banff are generally cheaper.",
+    "image_key": "Canmore Canadian Rockies mountain vista",
+    "image_urls": [
+      "https://www.wallpapers13.com/wp-content/uploads/2019/06/Canmore-Peaks-Reflection-Canmore-is-the-city-in-the-Rocky-Mountains-of-Alberta-west-from-the-Calgary-Banff-Canada-National-Park-840x525.jpg",
+      "https://c8.alamy.com/comp/PYGN7X/golden-sunset-over-the-famous-three-sisters-mountain-peaks-of-faith-charity-and-hope-in-the-canadian-rockies-of-canmore-with-moving-clouds-and-heavy-PYGN7X.jpg",
+      "https://c8.alamy.com/comp/W1P0AK/canmores-famous-three-sisters-mountain-peaks-beside-the-bow-river-in-the-southern-banff-range-of-the-canadian-rockies-on-a-cloudy-spring-morning-the-W1P0AK.jpg"
+    ]
+  },
+  {
+    "city": "Huaraz",
+    "country": "Peru",
+    "description": "Trek through the Cordillera Blanca, home to some of the most stunning high-altitude scenery in the world.",
+    "estimated_cost": 900.0,
+    "rationale": "Huaraz is a mecca for hikers seeking challenging treks amidst snow-capped peaks. It's significantly cheaper than other popular trekking destinations.",
+    "image_key": "Huaraz Cordillera Blanca mountains panorama",
+    "image_urls": [
+      "https://c8.alamy.com/comp/2HK6086/panorama-of-snowy-mountains-and-valley-in-the-cordillera-blanca-mountain-range-along-the-popular-santa-cruz-trek-near-huaraz-in-peru-2HK6086.jpg",
+      "https://thumbs.dreamstime.com/b/panorama-mountains-valley-cordillera-blanca-mountain-range-along-popular-santa-cruz-trek-near-huaraz-peru-240457641.jpg",
+      "https://c8.alamy.com/comp/2HK605P/panorama-of-mountains-and-glacial-lake-in-the-cordillera-blanca-mountain-range-along-the-santa-cruz-trek-near-huaraz-in-peru-2HK605P.jpg"
+    ]
+  },
+  {
+    "city": "Pokhara",
+    "country": "Nepal",
+    "description": "Experience the beauty of the Annapurna range with stunning lakeside views and accessible trekking routes.",
+    "estimated_cost": 800.0,
+    "rationale": "Pokhara is a gateway to the Annapurna region, offering a variety of treks suitable for different fitness levels and budgets. It's incredibly affordable.",
+    "image_key": "Pokhara Nepal Annapurna range lakeside",
+    "image_urls": [
+      "https://as1.ftcdn.net/jpg/01/63/64/08/1000_F_163640842_2swAyqQis8sDTPRCBGB5RSkkyhbDqv4j.jpg",
+      "https://thumbs.dreamstime.com/b/annapurna-mountain-range-reflection-view-lake-sunset-pokhara-city-phewa-lake-central-nepal-annapurna-mountain-range-386638296.jpg",
+      "https://c8.alamy.com/comp/2GMXJDH/panoramic-view-of-mount-annapurna-himalayan-range-pokhara-and-phewa-lake-pokhara-valley-nepal-himalayas-mountains-2GMXJDH.jpg"
+    ]
+  },
+  {
+    "city": "Tbilisi",
+    "country": "Georgia",
+    "description": "Hike in the Caucasus Mountains, explore ancient monasteries, and enjoy delicious Georgian cuisine.",
+    "estimated_cost": 1100.0,
+    "rationale": "Georgia is an emerging travel destination with stunning mountain scenery, affordable prices, and a rich cultural heritage, making it perfect for adventure and hiking.",
+    "image_key": "Tbilisi Georgia Caucasus Mountains view",
+    "image_urls": [
+      "https://cdn.kimkim.com/files/a/images/1b86b5feeb97dcbb7e571f1e0c51dc4571cbc647/big-dcf001c01969057122c2bb4b1e574034.jpg",
+      "https://cdn.kimkim.com/files/a/content_articles/featured_photos/efb23a4647801b643e5e25fd94823975366748c4/big-60b4cfe6c800968518ebfac2a14a141a.jpg",
+      "https://thumbs.dreamstime.com/b/stunning-tbilisi-panorama-kura-river-caucasus-mountains-main-landmarks-georgian-capital-most-famous-tbilisi-city-258707641.jpg"
+    ]
+  },
+  {
+    "city": "Cape Town",
+    "country": "South Africa",
+    "description": "Hike Table Mountain, explore the stunning coastline, and discover diverse landscapes.",
+    "estimated_cost": 1500.0,
+    "rationale": "Cape Town offers various hiking options, from the iconic Table Mountain to coastal trails, combined with affordable accommodations and diverse cultural experiences.",
+    "image_key": "Cape Town Table Mountain sweeping vista",
+    "image_urls": [
+      "https://www.vacationpass.com/wp-content/uploads/Cape-Town-Table-Mountain-Depositphotos_128313588_original.jpg",
+      "https://www.worldatlas.com/upload/a4/92/e1/shutterstock-433978108.jpg",
+      "https://www.fodors.com/wp-content/uploads/2019/11/02_TableMountain101__HowCrowdedIsIt_dreamstime_xxl_130310773.jpg"
+    ]
+  },
+  {
+    "city": "Florence",
+    "country": "Italy",
+    "description": "Immerse yourself in the Renaissance heart of Italy, where art and history come alive around every corner!",
+    "estimated_cost": 2300.0,
+    "rationale": "Florence is renowned for its Uffizi Gallery, Accademia Gallery (housing David), and stunning architecture, offering a rich cultural and artistic experience within budget.",
+    "image_key": "Florence Duomo at sunset",
+    "image_urls": [
+      "https://di262mgurvkjm.cloudfront.net/cd1b6944-70bb-4dcd-882a-306eb6e3b5d3/R02671-FR-01_uxga.jpg",
+      "https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/florence-duomo-at-sunset-mcdonald-p-mirabile.jpg",
+      "https://thumbs.dreamstime.com/z/colorful-florence-rooftops-duomo-view-sunset-tuscany-region-italy-170683241.jpg"
+    ]
+  },
+  {
+    "city": "Kyoto",
+    "country": "Japan",
+    "description": "Discover ancient temples, serene gardens, and traditional arts in Japan's cultural capital!",
+    "estimated_cost": 2400.0,
+    "rationale": "Kyoto offers a unique blend of traditional culture, with numerous temples, gardens, and museums, and can be experienced within the specified budget, particularly when considering accommodation and food choices.",
+    "image_key": "Kyoto golden pavilion reflection",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/b/golden-pavilion-kinkakuji-temple-kyoto-japan-reflection-sunny-day-golden-pavilion-kinkakuji-temple-kyoto-japan-290723113.jpg",
+      "https://thumbs.dreamstime.com/z/kinkakuji-temple-golden-pavilion-reflection-kyoto-ja-famous-tourist-spot-japan-63353026.jpg",
+      "https://c8.alamy.com/comp/2WK86FH/water-reflection-garden-kinkaku-ji-golden-pavilion-temple-kyoto-2WK86FH.jpg"
+    ]
+  },
+  {
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "description": "Explore world-class museums, charming canals, and a vibrant arts scene in this captivating European city!",
+    "estimated_cost": 2000.0,
+    "rationale": "Amsterdam boasts the Rijksmuseum, Van Gogh Museum, and Anne Frank House, along with a thriving arts and culture scene, making it a great fit for the specified interests and budget.",
+    "image_key": "Amsterdam canals during twilight",
+    "image_urls": [
+      "https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/1-canals-of-amsterdam-during-twilight-prasit-rodphan.jpg",
+      "https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/canals-of-amsterdam-during-twilight-prasit-rodphan.jpg",
+      "https://c8.alamy.com/comp/H39RKT/view-of-a-canal-in-amsterdam-at-twilight-during-winter-H39RKT.jpg"
+    ]
+  },
+  {
+    "city": "Madrid",
+    "country": "Spain",
+    "description": "Experience the passion of Spain through its stunning art, delicious cuisine, and lively city life!",
+    "estimated_cost": 1800.0,
+    "rationale": "Madrid is home to the Prado Museum, Reina Sofia Museum, and Thyssen-Bornemisza Museum, offering an extensive collection of art and cultural artifacts, and is relatively affordable.",
+    "image_key": "Madrid Royal Palace view",
+    "image_urls": [
+      "https://staticsgrupojulia.blob.core.windows.net/statics/EXCURSION/2021/Espa\u00f1a/Fotograf\u00edas+-+Pictures/TOURS+DE+MADRID/MADHIGRP-+HIGHLIGHTS+PALACIO+REAL/Royal+Palace+of+Madrid+Aerial+View.jpg",
+      "https://bestcityscape.com/wp-content/uploads/2019/04/Madrid-Royal-Palace-aerial-view-95071.jpg",
+      "https://bestcityscape.com/wp-content/uploads/2019/04/Madrid-Royal-Palace-aerial-view-95161.jpg"
+    ]
+  },
+  {
+    "city": "Mexico City",
+    "country": "Mexico",
+    "description": "Uncover ancient Aztec history, vibrant murals, and delicious street food in this sprawling metropolis!",
+    "estimated_cost": 1500.0,
+    "rationale": "Mexico City features the National Museum of Anthropology, Frida Kahlo Museum, and numerous historical sites, providing a rich cultural experience at a lower cost compared to other destinations.",
+    "image_key": "Mexico City Metropolitan Cathedral at night",
+    "image_urls": [
+      "https://static.vecteezy.com/system/resources/previews/016/102/877/large_2x/mexico-city-metropolitan-cathedral-at-night-it-is-the-largest-and-oldest-cathedral-in-the-americas-built-in-1573-1813-photo.jpg",
+      "https://c8.alamy.com/comp/2A5NT2C/mexico-city-metropolitan-cathedral-at-night-2A5NT2C.jpg",
+      "https://thumbs.dreamstime.com/b/metropolitan-cathedral-zocalo-mexico-city-mexico-night-president-s-palace-center-49148485.jpg"
+    ]
+  },
+  {
+    "city": "Berlin",
+    "country": "Germany",
+    "description": "Delve into history and cutting-edge art in a city that seamlessly blends the past and the present!",
+    "estimated_cost": 2100.0,
+    "rationale": "Berlin offers a wealth of museums, including the Pergamon Museum and the Neues Museum, along with a vibrant contemporary art scene and historical landmarks, fitting the interests within the budget.",
+    "image_key": "Berlin Brandenburg Gate panorama",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/z/brandenburg-gate-brandenburger-tor-as-landmark-berlin-germany-panorama-blue-sky-many-people-259178646.jpg",
+      "https://image.shutterstock.com/shutterstock/photos/557192983/display_1500/stock-photo-berlin-brandenburger-gate-panorama-557192983.jpg",
+      "https://c8.alamy.com/comp/2B77RJN/panorama-of-the-illuminated-brandenburg-gate-in-berlin-at-dawn-2B77RJN.jpg"
+    ]
+  },
+  {
+    "city": "Vienna",
+    "country": "Austria",
+    "description": "Indulge in classical music, imperial palaces, and world-class art in the City of Music!",
+    "estimated_cost": 2200.0,
+    "rationale": "Vienna is known for its numerous museums, including the Kunsthistorisches Museum and the Belvedere Palace, as well as its rich musical heritage, providing a culturally immersive experience within the budget.",
+    "image_key": "Vienna State Opera House illuminated",
+    "image_urls": [
+      "https://c8.alamy.com/comp/2J4A20P/front-view-of-the-main-entrance-of-famous-vienna-state-opera-house-austria-in-the-historic-downtown-with-illuminated-stone-facade-blurred-motion-2J4A20P.jpg",
+      "https://thumbs.dreamstime.com/z/night-view-famous-vienna-state-opera-house-center-capital-austria-illuminated-windows-th-century-historic-246355867.jpg",
+      "https://c8.alamy.com/comp/TCCYT7/illuminated-vienna-state-opera-house-during-summer-time-touristic-landmark-and-famous-for-the-vienna-opera-ball-TCCYT7.jpg"
+    ]
+  },
+  {
+    "city": "Prague",
+    "country": "Czech Republic",
+    "description": "Wander through a fairytale city of stunning architecture, medieval castles, and captivating art!",
+    "estimated_cost": 1700.0,
+    "rationale": "Prague boasts numerous museums, art galleries, and historical sites, including Prague Castle and the Charles Bridge, making it an affordable and culturally rich destination.",
+    "image_key": "Prague Charles Bridge sunrise",
+    "image_urls": [
+      "https://img.freepik.com/free-photo/prague-charles-bridge-sunrise_63253-2605.jpg?w=2000",
+      "https://thumbs.dreamstime.com/b/prague-sunrise-over-charles-bridge-tourist-walking-sunrise-over-prague-view-charles-bridge-old-town-154069430.jpg",
+      "https://thumbs.dreamstime.com/b/charles-bridge-prague-sunrise-czech-republic-173257688.jpg"
+    ]
+  },
+  {
+    "city": "Buenos Aires",
+    "country": "Argentina",
+    "description": "Experience the passion of tango, vibrant street art, and European-style architecture in this South American gem!",
+    "estimated_cost": 1900.0,
+    "rationale": "Buenos Aires offers a rich cultural experience with its numerous museums, art galleries, and historical sites, and is relatively affordable for a 5-day trip.",
+    "image_key": "Buenos Aires colorful La Boca neighborhood",
+    "image_urls": [
+      "https://www.fodors.com/wp-content/uploads/2018/08/BA-Instagrammable-Neighborhood-La-Boca-16.jpg",
+      "https://c8.alamy.com/comp/AK2N4G/colorful-houses-at-la-boca-neighborhood-corner-la-boca-town-buenos-AK2N4G.jpg",
+      "https://c8.alamy.com/comp/MK7C2J/colorful-area-in-la-boca-neighborhoods-in-buenos-aires-street-is-a-major-tourist-attraction-the-area-is-filled-with-colorfully-painted-buildings-MK7C2J.jpg"
+    ]
+  },
+  {
+    "city": "Montreal",
+    "country": "Canada",
+    "description": "Discover a unique blend of European charm and North American energy in this vibrant bilingual city!",
+    "estimated_cost": 2000.0,
+    "rationale": "Montreal features the Montreal Museum of Fine Arts, the Mus\u00e9e d'art contemporain de Montr\u00e9al, and a vibrant cultural scene, offering a diverse and engaging experience within the specified budget.",
+    "image_key": "Montreal Old Port cityscape",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/b/montreal-skyline-old-port-ca-october-102360633.jpg",
+      "https://w0.peakpx.com/wallpaper/360/721/HD-wallpaper-old-port-montreal-graphy-canada-wide-screen-beautiful.jpg",
+      "https://c8.alamy.com/comp/G3K0WB/the-night-view-of-old-port-of-montreal-with-downtown-skyline-of-montreal-G3K0WB.jpg"
+    ]
+  },
+  {
+    "city": "Bangkok",
+    "country": "Thailand",
+    "description": "Experience the vibrant flavors of Thailand with its world-renowned street food scene and bustling culinary markets.",
+    "estimated_cost": 1500.0,
+    "rationale": "Bangkok offers incredible food experiences at affordable prices, allowing you to sample a wide variety of dishes without breaking the bank; it is known for its vibrant street food culture and delicious cuisine.",
+    "image_key": "Bangkok street food vibrant scene",
+    "image_urls": [
+      "https://img.freepik.com/premium-photo/exploring-vibrant-street-food-scene-thailands-colorful-markets_1000124-269049.jpg",
+      "https://thumbs.dreamstime.com/z/bustling-bangkok-street-hidden-temple-vibrant-food-experience-energy-filled-colors-flavors-amidst-chaos-discover-289433437.jpg",
+      "https://cdn.foodism.co.uk/gallery/57a9abd58be61.jpeg"
+    ]
+  },
+  {
+    "city": "Hanoi",
+    "country": "Vietnam",
+    "description": "Savor the fresh and flavorful dishes of Vietnam in Hanoi, a city celebrated for its street food culture and unique culinary traditions.",
+    "estimated_cost": 1200.0,
+    "rationale": "Hanoi is known for its delicious and affordable street food, including pho, banh mi, and bun cha, making it an ideal destination for food enthusiasts on a budget.",
+    "image_key": "Hanoi street food pho vendors",
+    "image_urls": [
+      "https://i.ytimg.com/vi/Feu-DN-UleE/maxresdefault.jpg",
+      "https://www.authenticfoodquest.com/wp-content/uploads/2017/03/StreetStallPhoGaHanoi_PhoinVietnam_Authenticfoodquest.jpg",
+      "https://forsomethingmore.com/wp-content/uploads/2019/08/Hanoi-Street-Food-Tour-21-1.jpg"
+    ]
+  },
+  {
+    "city": "Istanbul",
+    "country": "Turkey",
+    "description": "Explore the diverse and delicious cuisine of Istanbul, where you can indulge in flavorful kebabs, savory pastries, and aromatic spices.",
+    "estimated_cost": 2000.0,
+    "rationale": "Istanbul boasts a rich culinary scene with influences from both Europe and Asia, offering a wide range of affordable food options, from street food to traditional restaurants.",
+    "image_key": "Istanbul bustling spice market",
+    "image_urls": [
+      "https://visitturkey.in/wp-content/uploads/2024/07/the-egyptian-bazaar-turkey.webp",
+      "https://img.freepik.com/premium-photo/bustling-traditional-spice-market-historic-istanbul_994764-207624.jpg?w=1060",
+      "https://thumbs.dreamstime.com/z/bustling-spice-market-istanbul-showcases-vibrant-piles-spices-historic-mosques-tower-over-lively-streets-filled-338320099.jpg"
+    ]
+  },
+  {
+    "city": "Palermo",
+    "country": "Italy",
+    "description": "Taste the authentic flavors of Sicily in Palermo, a city known for its vibrant street food scene and delicious seafood.",
+    "estimated_cost": 2200.0,
+    "rationale": "Palermo offers a unique culinary experience with its mix of Italian and Arab influences, and its street food scene is both affordable and delicious.",
+    "image_key": "Palermo Sicilian street food arancini",
+    "image_urls": [
+      "https://www.streaty.com/wp-content/uploads/2023/12/arancina-dainotti.jpg",
+      "https://www.sicilyactive.com/sites/default/files/blog/Arancine-aperte_1.jpg",
+      "https://twoyeartrip.com/blog/wp-content/uploads/2015/01/image32-714x476.jpg"
+    ]
+  },
+  {
+    "city": "Marrakech",
+    "country": "Morocco",
+    "description": "Immerse yourself in the exotic flavors of Marrakech, where you can explore bustling souks and sample traditional Moroccan dishes.",
+    "estimated_cost": 1700.0,
+    "rationale": "Marrakech offers a sensory feast with its vibrant markets, fragrant spices, and delicious street food, all at a reasonable price.",
+    "image_key": "Marrakech vibrant souk food stalls",
+    "image_urls": [
+      "https://img.freepik.com/premium-photo/vibrant-bustling-moroccan-souk-marketplace-with-colorful-stalls-selling-variety-goods-from-spices-textiles-clothing-souven_14117-545957.jpg?w=1380",
+      "https://thumbs.dreamstime.com/b/bustling-market-scene-marrakesh-s-traditional-souks-experience-vibrant-essence-marrakesh-s-streets-289561272.jpg",
+      "https://www.top-sightseeing.com/wp-content/uploads/2024/12/The-Souks-of-Marrakech.jpg"
+    ]
+  },
+  {
+    "city": "Mumbai",
+    "country": "India",
+    "description": "Delight in the explosion of flavors in Mumbai, a city renowned for its diverse street food and vibrant culinary culture.",
+    "estimated_cost": 1300.0,
+    "rationale": "Mumbai is a street food paradise with a wide variety of affordable and delicious options, from vada pav to pani puri.",
+    "image_key": "Mumbai street food vada pav stand",
+    "image_urls": [
+      "https://altomerge.com/wp-content/uploads/2024/06/Vada-Pav-4.jpg",
+      "https://www.realshepower.in/wp-content/uploads/2024/10/Mumbais-Vada-Pav.jpeg",
+      "https://c8.alamy.com/comp/RP05JX/a-stall-in-a-fish-market-in-mumbai-india-selling-the-citys-iconic-and-inexpensive-snack-vada-pav-mostly-to-porters-in-the-market-RP05JX.jpg"
+    ]
+  },
+  {
+    "city": "Penang",
+    "country": "Malaysia",
+    "description": "Discover the culinary delights of Penang, a food lover's haven with its blend of Malay, Chinese, and Indian flavors.",
+    "estimated_cost": 1400.0,
+    "rationale": "Penang is known for its diverse and delicious street food, offering a unique blend of flavors at affordable prices.",
+    "image_key": "Penang street food char kway teow",
+    "image_urls": [
+      "https://www.wokandskillet.com/wp-content/uploads/2016/07/Char-Kway-Teow-753x1024.jpg",
+      "https://sweecooks.com/wp-content/uploads/2021/04/Penang-char-kuey-teow-768x1024.jpg",
+      "https://rasamalaysia.com/wp-content/uploads/2009/11/char-koay-teow1.jpg"
+    ]
+  },
+  {
+    "city": "New Orleans",
+    "country": "USA",
+    "description": "Indulge in the unique flavors of New Orleans, a city known for its Creole and Cajun cuisine, lively food scene, and iconic dishes.",
+    "estimated_cost": 3000.0,
+    "rationale": "New Orleans has a distinctive culinary heritage and offers a variety of food experiences, from beignets and gumbo to po'boys and crawfish, although it is at the higher end of the budget.",
+    "image_key": "New Orleans beignets at cafe du monde",
+    "image_urls": [
+      "https://sweetsavant.com/wp-content/uploads/2015/12/Cafe-Du-Monde-beignets.jpg",
+      "https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_3840,ar_4:3,g_center,f_auto/images/Beignet_CoryFontenot_NewOrleans_Cafe_Du_Monde__CF11384_gzt79q",
+      "https://www.insidethetravellab.com/wp-content/uploads/2017/06/New-Orleans-5.jpg"
+    ]
+  },
+  {
+    "city": "Rome",
+    "country": "Italy",
+    "description": "Explore the heart of the Roman Empire, from the Colosseum to the Forum, and wander through ancient streets teeming with history.",
+    "estimated_cost": 1600.0,
+    "rationale": "Rome offers an unparalleled concentration of ancient Roman ruins and historical sites, making it perfect for archaeology and history enthusiasts. With careful budgeting on accommodation and food, an 8-day trip can be managed within $1800.",
+    "image_key": "Colosseum Rome sunny day aerial view",
+    "image_urls": [
+      "https://c8.alamy.com/comp/2JKYJPC/an-aerial-view-of-the-colosseum-and-the-cityscape-on-a-beautiful-sunny-day-in-rome-italy-2JKYJPC.jpg",
+      "https://thumbs.dreamstime.com/z/aerial-view-famous-colosseum-beautiful-sunny-day-rome-italy-aerial-view-famous-colosseum-beautiful-262453423.jpg",
+      "https://img.freepik.com/premium-photo/aerial-view-colosseum-sunny-day-rome-italy_249973-498.jpg"
+    ]
+  },
+  {
+    "city": "Athens",
+    "country": "Greece",
+    "description": "Discover the birthplace of democracy and philosophy, where ancient temples and archaeological wonders await on every corner.",
+    "estimated_cost": 1500.0,
+    "rationale": "Athens is rich in ancient Greek history and archaeological sites like the Acropolis. It provides affordable accommodation and food options, allowing for an immersive historical experience within the budget.",
+    "image_key": "Acropolis Athens panoramic view",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/z/athens-panoramic-view-sunset-parthenon-acropolis-seen-filopappou-hill-greece-attica-europe-ruins-ancient-greek-257588918.jpg",
+      "https://c8.alamy.com/comp/2XP73M7/panoramic-view-of-the-acropolis-of-athens-from-the-philopappos-hill-in-greece-2XP73M7.jpg",
+      "https://c8.alamy.com/comp/BG8JKK/athens-panoramic-view-of-the-acropolis-from-philapoppos-hill-sunset-BG8JKK.jpg"
+    ]
+  },
+  {
+    "city": "Cairo",
+    "country": "Egypt",
+    "description": "Uncover the mysteries of the pharaohs and explore magnificent pyramids, ancient temples, and the treasures of the Egyptian Museum.",
+    "estimated_cost": 1400.0,
+    "rationale": "Cairo offers access to incredible ancient Egyptian sites, including the Giza pyramids and Sphinx. Travel and accommodation are relatively affordable, making it a compelling destination for the budget.",
+    "image_key": "Giza Pyramids sunrise view",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/z/aerial-view-great-pyramid-giza-sunrise-photograph-captures-all-its-glory-bathed-golden-light-ancient-monument-323952974.jpg",
+      "https://thumbs.dreamstime.com/b/sunrise-illuminates-giza-plateau-great-pyramid-giza-prominently-view-pyramid-monumental-structure-374622795.jpg",
+      "https://pics.craiyon.com/2023-09-22/fa31aea0e5924417bbcede62a6864b96.webp"
+    ]
+  },
+  {
+    "city": "Jerusalem",
+    "country": "Israel",
+    "description": "Walk through thousands of years of history in this holy city, exploring ancient walls, religious landmarks, and archaeological sites sacred to multiple faiths.",
+    "estimated_cost": 1800.0,
+    "rationale": "Jerusalem is a city steeped in history and archaeology, with sites significant to Judaism, Christianity, and Islam. While potentially more expensive, careful budgeting can make it accessible within the given budget, especially during the off-season.",
+    "image_key": "Jerusalem old city panoramic view",
+    "image_urls": [
+      "https://static.vecteezy.com/system/resources/previews/003/690/494/large_2x/panoramic-view-of-jerusalem-old-city-and-the-temple-mount-during-a-dramatic-colorful-sunset-photo.jpg",
+      "https://media.gettyimages.com/id/866962236/photo/jerusalem-old-city-panoramic-aerial-view.jpg?s=1024x1024&w=gi&k=20&c=FP9p63J1mGZZTyMweaxC1U2DXeqj_C9SziFYUgSaggE=",
+      "https://static.vecteezy.com/system/resources/previews/044/036/087/large_2x/panoramic-view-to-jerusalem-old-city-from-the-mount-of-olives-israel-high-quality-photo.jpg"
+    ]
+  },
+  {
+    "city": "Siem Reap",
+    "country": "Cambodia",
+    "description": "Venture into the heart of the ancient Khmer empire and witness the awe-inspiring temples of Angkor, a testament to architectural grandeur and historical significance.",
+    "estimated_cost": 1000.0,
+    "rationale": "Siem Reap is home to the magnificent Angkor Wat and other Khmer temples. The cost of travel, accommodation, and food in Cambodia is relatively low, making it an ideal destination for budget-conscious travelers interested in archaeology and history.",
+    "image_key": "Angkor Wat temple sunrise view",
+    "image_urls": [
+      "http://reubenteo.com/wp-content/uploads/2014/05/Sunrise-Angkor-Wat.jpg",
+      "https://media.gettyimages.com/id/1139762789/photo/beautiful-sunrise-at-angkor-wat-temple.jpg?s=1024x1024&w=gi&k=20&c=aDBeCGxOcK5sPP19rRWHg-0exPc_20uMYVOaFiW_0Ew=",
+      "https://admin.freetour.com/images/tours/32742/angkor-wat-temple-sunrise-private-tour-guide-and-driver-05.jpg"
+    ]
+  },
+  {
+    "city": "Beirut",
+    "country": "Lebanon",
+    "description": "Unearth layers of history in this vibrant city, from Roman ruins to Ottoman architecture, and experience a culture shaped by millennia of civilizations.",
+    "estimated_cost": 1700.0,
+    "rationale": "Beirut has a long and complex history, with ruins and historical sites dating back to the Phoenicians, Romans, and Ottomans. The city is recovering, and tourism is increasing, with costs that can be managed within the budget with careful planning.",
+    "image_key": "Beirut Roman Baths ruins aerial view",
+    "image_urls": [
+      "https://c8.alamy.com/comp/2JT8J49/beautiful-view-of-the-roman-baths-next-to-the-grand-palace-in-beirut-lebanon-2JT8J49.jpg",
+      "https://c8.alamy.com/comp/2JT8G75/beautiful-view-of-the-roman-baths-next-to-the-grand-palace-in-beirut-lebanon-2JT8G75.jpg",
+      "https://c8.alamy.com/comp/2JT8J9G/beautiful-view-of-the-roman-baths-next-to-the-grand-palace-in-beirut-lebanon-2JT8J9G.jpg"
+    ]
+  },
+  {
+    "city": "Amman",
+    "country": "Jordan",
+    "description": "Step back in time in the capital of Jordan, exploring ancient Roman ruins, Islamic architecture, and the gateway to the legendary city of Petra.",
+    "estimated_cost": 1600.0,
+    "rationale": "Amman provides access to historical sites such as the Amman Citadel and is a gateway to Petra. Jordan offers varied historical experiences, and Amman can be a base for exploring them within a reasonable budget.",
+    "image_key": "Petra Jordan treasury facade",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/z/side-view-photograph-facade-treasury-building-petra-jordan-sandstone-facades-unesco-world-heritage-site-middle-east-167824722.jpg",
+      "https://c8.alamy.com/comp/AYTE75/front-carved-facade-of-the-treasury-petra-jordan-petra-treasury-al-AYTE75.jpg",
+      "https://thumbs.dreamstime.com/z/breathtaking-view-treasury-al-khazneh-facade-petra-jordan-petra-treasury-facade-tourists-jordan-351539816.jpg"
+    ]
+  },
+  {
+    "city": "Maasai Mara",
+    "country": "Kenya",
+    "description": "Witness the Great Migration in the heart of Africa's most famous wildlife reserve!",
+    "estimated_cost": 3800.0,
+    "rationale": "The Maasai Mara offers incredible wildlife viewing opportunities, including safaris and cultural experiences, fitting the nature, wildlife, and safari interests within the budget.",
+    "image_key": "Maasai Mara wildebeest migration sunset",
+    "image_urls": [
+      "https://c8.alamy.com/comp/FXGNDR/backlit-blue-wildebeest-herds-at-sunset-in-masai-mara-during-the-great-FXGNDR.jpg",
+      "https://c8.alamy.com/comp/KFK482/wildebeest-migration-at-sunset-masai-mara-kenya-KFK482.jpg",
+      "https://c8.alamy.com/comp/KBFKY4/wildebeest-meander-into-the-sunset-after-successfully-crossing-the-KBFKY4.jpg"
+    ]
+  },
+  {
+    "city": "Kruger National Park",
+    "country": "South Africa",
+    "description": "Experience thrilling Big Five safaris in one of Africa's largest and most accessible game reserves!",
+    "estimated_cost": 3500.0,
+    "rationale": "Kruger provides excellent safari experiences with diverse wildlife and accommodation options, making it a great fit for the specified interests and budget.",
+    "image_key": "Kruger National Park elephants watering hole",
+    "image_urls": [
+      "https://c8.alamy.com/comp/CC4BH9/african-elephants-cooling-off-at-a-watering-hole-in-the-kruger-national-CC4BH9.jpg",
+      "https://c8.alamy.com/comp/CR8EY2/african-elephants-loxodonta-africana-herd-drinking-at-a-watering-hole-CR8EY2.jpg",
+      "https://c8.alamy.com/comp/W8NFAC/a-parade-of-elephants-glistening-near-a-watering-hole-in-the-kruger-national-park-playfulstrong-and-in-water-too-W8NFAC.jpg"
+    ]
+  },
+  {
+    "city": "Monteverde",
+    "country": "Costa Rica",
+    "description": "Explore lush cloud forests teeming with exotic birds and wildlife on thrilling zip lines and hanging bridges!",
+    "estimated_cost": 3200.0,
+    "rationale": "Monteverde offers a rich natural environment with opportunities for wildlife observation and adventure activities, suiting the nature and wildlife interests at a reasonable cost.",
+    "image_key": "Monteverde cloud forest canopy tour",
+    "image_urls": [
+      "https://media.tacdn.com/media/attractions-splice-spp-674x446/09/26/18/52.jpg",
+      "https://i.ytimg.com/vi/JNHzjTCIjYA/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgZChLMA8=&rs=AOn4CLBVNEpTnRduDL6ZjdHMiEwL7BLj_Q",
+      "https://www.touristinmonteverde.com/storage/media/el-establo-treetop-canopy-man-ziplinepng.jpg"
+    ]
+  },
+  {
+    "city": "Banff",
+    "country": "Canada",
+    "description": "Immerse yourself in the stunning beauty of the Canadian Rockies with turquoise lakes, majestic mountains, and abundant wildlife!",
+    "estimated_cost": 4000.0,
+    "rationale": "Banff National Park provides breathtaking scenery and opportunities for hiking, wildlife viewing, and experiencing the great outdoors, aligning with the nature interest within the set budget.",
+    "image_key": "Banff National Park Lake Louise aerial view",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/b/lake-louise-banff-np-canada-national-park-alberta-unesco-world-heritage-site-57226917.jpg",
+      "https://d3e1m60ptf1oym.cloudfront.net/7e6920e6-17f7-4081-9dfd-df31f1c2b4af/0F7A2866_uxga.jpg",
+      "https://travellingmoods.com/wp-content/uploads/2015/02/LakeLouise.jpg"
+    ]
+  },
+  {
+    "city": "Yellowstone National Park",
+    "country": "USA",
+    "description": "Discover geysers, hot springs, and incredible wildlife in America's first national park!",
+    "estimated_cost": 3600.0,
+    "rationale": "Yellowstone offers a unique natural landscape with diverse wildlife viewing opportunities, fitting the nature and wildlife interests within the budget.",
+    "image_key": "Yellowstone National Park Grand Prismatic Spring aerial",
+    "image_urls": [
+      "https://cdn.newsapi.com.au/image/v1/6f45485f1d3d634cb7980faafe377ad1?width=1440",
+      "https://i.redd.it/ayxj5pxzmon11.jpg",
+      "https://www.tmurphywild.com/wp-content/uploads/2022/04/GrandPrismaticSpringAerial_85561.jpg"
+    ]
+  },
+  {
+    "city": "Amazon Rainforest",
+    "country": "Brazil",
+    "description": "Embark on an unforgettable journey into the heart of the Amazon, the world's largest rainforest, teeming with biodiversity!",
+    "estimated_cost": 3900.0,
+    "rationale": "The Amazon provides unparalleled opportunities for experiencing nature and wildlife, with guided tours and eco-lodges catering to various budgets.",
+    "image_key": "Amazon Rainforest river boat tour",
+    "image_urls": [
+      "https://www.amazonclipper.com.br/wp-content/uploads/2017/03/4-amazon-clipper-anavilhanas-2.jpg",
+      "https://travelingboy.com/travel/wp-content/uploads/2020/07/Amazon-River-Cruise.jpg",
+      "https://www.nationalgeographic.com/content/dam/expeditions/transports/Delfin-II/hero-wild-peru-escape.jpg"
+    ]
+  },
+  {
+    "city": "Galapagos Islands",
+    "country": "Ecuador",
+    "description": "Encounter unique and fearless wildlife in the enchanted Galapagos Islands, a living laboratory of evolution!",
+    "estimated_cost": 4000.0,
+    "rationale": "The Galapagos Islands offer incredible wildlife encounters and unique natural landscapes, perfectly aligning with the specified interests, although it requires careful budgeting.",
+    "image_key": "Galapagos Islands marine iguana volcanic rock",
+    "image_urls": [
+      "https://c8.alamy.com/comp/P7CK1A/marine-iguana-amblyrhynchus-cristatus-sunbathing-on-volcanic-rocks-after-feeding-underwater-san-cristobal-galapagos-islands-P7CK1A.jpg",
+      "https://c8.alamy.com/comp/W3WNJ3/galapagos-marine-iguana-iguanas-warming-in-the-sun-on-volcanic-rocks-on-fernandina-island-espinoza-point-amazing-wildlife-animals-on-galapagos-islands-ecuador-W3WNJ3.jpg",
+      "https://c8.alamy.com/comp/2BNDTAM/marine-iguanas-amblyrhynchus-cristatus-basking-on-volcanic-rock-punta-espinosa-fernandina-island-galapagos-islands-east-pacific-ocean-2BNDTAM.jpg"
+    ]
+  },
+  {
+    "city": "Ranthambore National Park",
+    "country": "India",
+    "description": "Track tigers in the wild in Ranthambore, a former royal hunting ground turned tiger reserve!",
+    "estimated_cost": 3300.0,
+    "rationale": "Ranthambore National Park is known for its tiger population and offers jeep safaris, fitting the wildlife and safari interests within the budget.",
+    "image_key": "Ranthambore National Park tiger safari jeep",
+    "image_urls": [
+      "https://www.rajasthantourplanner.com/images/Jeep-Safari-Ranthambore.jpg",
+      "https://www.vacationindia.com/wp-content/gallery/golden-triangle-tiger-national-park/tiger-safari-in-jeep-ranthambhore-tiger-reserve.jpg",
+      "https://3.bp.blogspot.com/-99KEzz9AbNA/U5aOBXc46wI/AAAAAAAAAGo/pcO5G2C_5q4/s1600/Ranthambore+tiger+safari+booking.jpg"
+    ]
+  },
+  {
+    "city": "Bwindi Impenetrable National Park",
+    "country": "Uganda",
+    "description": "Trek through the dense forests of Bwindi to encounter endangered mountain gorillas in their natural habitat!",
+    "estimated_cost": 3700.0,
+    "rationale": "Bwindi offers a unique and intimate wildlife experience with gorilla trekking, aligning perfectly with the nature and wildlife interests, although permits need to be booked in advance.",
+    "image_key": "Bwindi Impenetrable National Park gorilla trekking",
+    "image_urls": [
+      "https://www.nyungweforestnationalpark.org/wp-content/uploads/2020/02/Gorilla-Trekking-in-Bwindi-Impenetrable-National-Parks.jpg",
+      "https://www.asiliaafrica.com/wp-content/smush-webp/2024/11/gorilla-bwindi-impenatreble-forest-uganda-1920x1080.jpg.webp",
+      "https://www.mgahinganationalpark.org/wp-content/uploads/2021/02/Gorilla-Trekking-in-Bwindi-Impenetrable-National-Park.jpg"
+    ]
+  },
+  {
+    "city": "Okavango Delta",
+    "country": "Botswana",
+    "description": "Glide through the waterways of the Okavango Delta in a mokoro canoe, experiencing a unique and pristine wetland ecosystem!",
+    "estimated_cost": 4000.0,
+    "rationale": "The Okavango Delta provides a unique safari experience with its waterways and diverse wildlife, fitting the nature, wildlife, and safari interests within the budget.",
+    "image_key": "Okavango Delta mokoro canoe safari",
+    "image_urls": [
+      "https://www.andbeyond.com/wp-content/uploads/sites/5/Canoe-Trip-with-traditional-mokoro-boat-on-the-river-through-Okavango-Delta.jpg",
+      "https://yellowzebrasafaris.com/media/24051/mokoroguests-xak-10392.jpg?anchor=center&mode=crop&width=2048&height=1024&format=jpg&rnd=131565339560000000",
+      "https://www.tripsavvy.com/thmb/v-Zst-4FWFXSRNbEHGIlomgKg0A=/960x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-586891188-5c19c205c9e77c000140fef4.jpg"
+    ]
+  },
+  {
+    "city": "Las Vegas",
+    "country": "USA",
+    "description": "Experience the dazzling nightlife and world-class music scene of the Entertainment Capital of the World!",
+    "estimated_cost": 1100.0,
+    "rationale": "Las Vegas offers numerous nightclubs, pool parties, and concerts, fitting the nightlife, party, and music interests, and can be done within budget by finding affordable accommodation and taking advantage of free activities and happy hour deals.",
+    "image_key": "Las Vegas strip at night aerial view",
+    "image_urls": [
+      "https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/2-las-vegas-strip-at-night-aerial-view-david-oppenheimer.jpg",
+      "https://c8.alamy.com/comp/KDWAAN/aerial-view-of-las-vegas-strip-at-night-KDWAAN.jpg",
+      "https://media.istockphoto.com/id/1167947815/photo/aerial-view-of-las-vegas-strip-at-night-in-nevada.jpg?s=1024x1024&w=is&k=20&c=bKYmH4vk4991wdQQArQIMwct-5JruMYDnV3IODKNEwc="
+    ]
+  },
+  {
+    "city": "Miami",
+    "country": "USA",
+    "description": "Dance the night away in Miami's vibrant clubs and soak up the sun on its iconic beaches.",
+    "estimated_cost": 1150.0,
+    "rationale": "Miami is known for its lively nightlife, especially in South Beach, and offers a mix of Latin and electronic music, aligning with the user's interests, with opportunities to save on costs by utilizing public transport and eating at local eateries.",
+    "image_key": "South Beach Miami vibrant nightlife",
+    "image_urls": [
+      "https://bestfloridabeaches.com/wp-content/uploads/2024/05/Miami-Beach-Nightlife.jpg",
+      "https://i.ytimg.com/vi/Fobb71auks0/maxresdefault.jpg",
+      "https://www.vipsouthbeach.com/wp-content/uploads/2015/04/ocean-dr.jpg"
+    ]
+  },
+  {
+    "city": "Barcelona",
+    "country": "Spain",
+    "description": "Explore Barcelona's stunning architecture by day and dance to the rhythm of its vibrant nightlife by night!",
+    "estimated_cost": 1050.0,
+    "rationale": "Barcelona offers a mix of clubs and bars, especially in the Gothic Quarter and along the beach, and hosts music festivals, appealing to the user's interests, and provides cost-effective choices through budget accommodations and tapas bars.",
+    "image_key": "Barcelona Gothic Quarter nightlife",
+    "image_urls": [
+      "https://www.thetrainline.com/cms/media/5671/spain-barcelona-gothic-quarter.jpg?mode=crop&width=1080&height=1080&quality=70",
+      "https://i.ytimg.com/vi/VjPOY0BEJ2c/maxresdefault.jpg",
+      "https://thegreenvoyage.com/wp-content/uploads/2024/01/shutterstock_118618135-1.jpg.webp"
+    ]
+  },
+  {
+    "city": "Budapest",
+    "country": "Hungary",
+    "description": "Discover Budapest's ruin bars, thermal baths, and vibrant music scene along the Danube River!",
+    "estimated_cost": 800.0,
+    "rationale": "Budapest is known for its unique ruin bars, which offer a blend of nightlife and culture, and hosts various music events, fitting the user's interests, while being a relatively affordable destination in Europe.",
+    "image_key": "Budapest ruin bar interior",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/z/szimpla-kert-ruin-bar-surreal-interior-budapest-budapest-hungary-september-szimpla-kert-ruin-bar-surreal-interior-176715042.jpg",
+      "https://thumbs.dreamstime.com/z/szimpla-kert-ruin-bar-interior-budapest-budapest-hungary-september-szimpla-kert-ruin-bar-interior-budapest-176383472.jpg",
+      "https://www.surfingtheplanet.com/wp-content/uploads/2018/03/interior-szimpla-kert-budapest.jpg"
+    ]
+  },
+  {
+    "city": "Belgrade",
+    "country": "Serbia",
+    "description": "Experience the non-stop nightlife of Belgrade, with its river clubs and vibrant street parties!",
+    "estimated_cost": 700.0,
+    "rationale": "Belgrade is famous for its vibrant nightlife scene, especially along the Sava and Danube rivers, with numerous clubs and bars, making it a great fit for the user's interests, and being a very affordable destination.",
+    "image_key": "Belgrade river clubs at night",
+    "image_urls": [
+      "http://www.feelbelgrade.com/en/wp-content/uploads/2016/06/club-river-belgrade-nightlife.jpg",
+      "http://www.feelbelgrade.com/en/wp-content/uploads/2016/06/club-river-belgrade-nightlife-belgarde-at-night.jpg",
+      "https://www.gdeizaci.com/assets/FREE/splav_freestyler_34.jpg"
+    ]
+  },
+  {
+    "city": "Paris",
+    "country": "France",
+    "description": "Experience haute couture and gourmet dining in the city of lights, where luxury is a way of life.",
+    "estimated_cost": 7500.0,
+    "rationale": "Paris offers high-end shopping, Michelin-starred restaurants, and luxury hotels, making it ideal for a luxury travel experience within budget.",
+    "image_key": "Eiffel Tower luxury suite view",
+    "image_urls": [
+      "https://imgcdn.stablediffusionweb.com/2024/12/28/8ae421b6-da27-42dd-9ad7-29256ebc2e46.jpg",
+      "https://media.architecturaldigest.com/photos/5783da093cba0f2e2ca06bab/master/w_1600,c_limit/Shangri-La%202.jpg",
+      "https://damhyul3s75yv.cloudfront.net/photos/17425/original_Maximize_Shangri-La_Luxury_Circle_Upgrades_and_Benefits.jpg"
+    ]
+  },
+  {
+    "city": "Milan",
+    "country": "Italy",
+    "description": "Immerse yourself in the world of Italian fashion and design in Milan, a sophisticated metropolis of style and elegance.",
+    "estimated_cost": 6800.0,
+    "rationale": "As a global fashion capital, Milan provides numerous opportunities for luxury shopping and high-end dining, fitting the specified interests and budget.",
+    "image_key": "Milan Galleria Vittorio Emanuele II luxury shops",
+    "image_urls": [
+      "https://c8.alamy.com/comp/E0509T/galleria-vittorio-emanuele-ii-famous-luxury-shopping-mall-in-milan-E0509T.jpg",
+      "https://c8.alamy.com/comp/DEFH5B/luxury-shopping-arcade-galleria-vittorio-emanuele-ii-milan-lombardy-DEFH5B.jpg",
+      "https://thumbs.dreamstime.com/z/panorama-inside-galleria-vittorio-emanuele-ii-milan-gallery-famous-shopping-mall-landmark-italy-may-beautiful-166081401.jpg"
+    ]
+  },
+  {
+    "city": "New York City",
+    "country": "USA",
+    "description": "Indulge in Broadway shows, designer boutiques, and rooftop bars in the city that never sleeps, a hub of luxury and excitement.",
+    "estimated_cost": 7200.0,
+    "rationale": "New York offers a wide array of luxury experiences, from high-end shopping on Fifth Avenue to fine dining and upscale accommodations, aligning with the user's preferences.",
+    "image_key": "Manhattan skyline luxury penthouse view",
+    "image_urls": [
+      "https://static1.mansionglobal.com/production/media/article-images/9e9a623a6d3c7b7f19b267097bd16105/large_Hero_438-East-12th-Street_Penthouse-G.jpg?width=620&height=413",
+      "https://thumbs.cityrealty.com/assets/smart/1004x/webp/9/9d/9d073ffb40541d31b85893c50769b11773dfcfd6/manhattan-view-mima.jpg",
+      "https://images.squarespace-cdn.com/content/v1/50eb66f0e4b0033596299a41/1604747498512-FXZ09UBUIE5KHW2SPQAM/main1-4-950x628.jpg"
+    ]
+  },
+  {
+    "city": "Tokyo",
+    "country": "Japan",
+    "description": "Discover a unique blend of modern luxury and traditional culture in Tokyo, where cutting-edge technology meets ancient artistry.",
+    "estimated_cost": 8000.0,
+    "rationale": "Tokyo provides a blend of high-end shopping districts like Ginza, luxury hotels, and unique cultural experiences, making it a great fit for the request.",
+    "image_key": "Tokyo Ginza district luxury shopping",
+    "image_urls": [
+      "https://www.japan-experience.com/sites/default/files/images/content_images/night_ginza.jpg",
+      "https://japandeluxetours.com/uploads/2020/05/20200512120955_5ebaf4838224a.jpg",
+      "https://www.kanpai-japan.com/sites/default/files/uploads/2014/01/ginza-11.jpg"
+    ]
+  },
+  {
+    "city": "Dubai",
+    "country": "UAE",
+    "description": "Experience opulent hotels, extravagant shopping malls, and thrilling desert adventures in this dazzling city of superlatives.",
+    "estimated_cost": 7800.0,
+    "rationale": "Dubai is known for its luxury hotels, high-end shopping, and extravagant experiences, aligning perfectly with the user's interests and fitting within the budget.",
+    "image_key": "Dubai Burj Khalifa luxury hotel view",
+    "image_urls": [
+      "https://glitterrebel.com/wp-content/uploads/2020/06/Hotel-view-Burj-Khalifa-address-downtown.jpeg",
+      "https://ew77mymd4fj.exactdn.com/wp-content/uploads/2022/11/Address-Fountain-Views.jpeg",
+      "https://www.cuddlynest.com/blog/wp-content/uploads/2024/01/hotels_with_burj_khalifa_view.jpg"
+    ]
+  },
+  {
+    "city": "Beverly Hills",
+    "country": "USA",
+    "description": "Live the celebrity lifestyle in Beverly Hills, where you can shop on Rodeo Drive and dine in exclusive restaurants.",
+    "estimated_cost": 7000.0,
+    "rationale": "Beverly Hills is synonymous with luxury, offering high-end shopping on Rodeo Drive, exclusive restaurants, and luxury accommodations, meeting the user's criteria.",
+    "image_key": "Rodeo Drive Beverly Hills luxury cars",
+    "image_urls": [
+      "https://c8.alamy.com/comp/H6H591/luxury-car-parked-on-rodeo-drive-beverly-hills-los-angeles-H6H591.jpg",
+      "https://c8.alamy.com/comp/2khyxx1/rolls-royce-luxury-cars-driving-on-rodeo-drive-in-beverly-hills-los-angeles-4k-2khyxx1.jpg",
+      "https://c8.alamy.com/comp/2kyk11t/luxury-sports-cars-on-rodeo-drive-in-beverly-hills-los-angeles-california-4k-2kyk11t.jpg"
+    ]
+  },
+  {
+    "city": "Hong Kong",
+    "country": "China",
+    "description": "Explore a vibrant metropolis where luxury shopping, fine dining, and stunning skyline views create an unforgettable experience.",
+    "estimated_cost": 7600.0,
+    "rationale": "Hong Kong offers a blend of luxury shopping, high-end dining, and upscale accommodations, aligning with the user's preferences.",
+    "image_key": "Hong Kong luxury hotel harbor view",
+    "image_urls": [
+      "https://digital.ihg.com/is/image/ihg/intercontinental-hong-kong-10113923589-2x1",
+      "https://renaissance-harbour-view.hongkonghotelsandrates.com/data/Photos/OriginalPhoto/16431/1643149/1643149824.JPEG",
+      "https://edge.media.datahc.com/HI358101846.jpg"
+    ]
+  },
+  {
+    "city": "Singapore",
+    "country": "Singapore",
+    "description": "Indulge in world-class shopping, innovative cuisine, and stunning architecture in this garden city of luxury.",
+    "estimated_cost": 7400.0,
+    "rationale": "Singapore provides high-end shopping on Orchard Road, luxury hotels, and fine dining experiences, fitting the specified interests and budget.",
+    "image_key": "Singapore Marina Bay Sands luxury view",
+    "image_urls": [
+      "https://img.freepik.com/premium-photo/singapore-marina-bay-sands-luxury-hotel-aerial-view_183314-863.jpg?w=2000",
+      "https://wallpapercrafter.com/desktop1/532947-Hotel-Marina-Bay-Sands-Singapore-pool-roof-view.jpg",
+      "https://www.major.travel/portal/media/images/uploads/tours/istock617882378.jpg"
+    ]
+  },
+  {
+    "city": "Monaco",
+    "country": "Monaco",
+    "description": "Experience the glamour of Monaco, where luxury yachts, casinos, and high-end boutiques await you.",
+    "estimated_cost": 8000.0,
+    "rationale": "Monaco is known for its luxury lifestyle, casinos, high-end boutiques, and glamorous events, aligning perfectly with the user's interests.",
+    "image_key": "Monaco Monte Carlo luxury yachts",
+    "image_urls": [
+      "https://i.pinimg.com/originals/78/cc/64/78cc64a454a14b1233936075d8c21634.jpg",
+      "https://thumbs.dreamstime.com/z/monte-carlo-monaco-port-hercule-luxury-yachts-boats-scenery-skyline-august-304103094.jpg",
+      "https://www.alamy.com/aggregator-api/download?url=https://c8.alamy.com/comp/C5FGYM/luxury-yachts-in-the-main-harbour-at-dusk-monte-carlo-monaco-C5FGYM.jpg"
+    ]
+  },
+  {
+    "city": "London",
+    "country": "UK",
+    "description": "Discover iconic landmarks, high-end department stores, and world-class theater in this sophisticated and historic city.",
+    "estimated_cost": 7900.0,
+    "rationale": "London offers a wide range of luxury experiences, from high-end shopping at Harrods to fine dining and upscale accommodations, aligning with the user's preferences.",
+    "image_key": "London luxury hotel afternoon tea",
+    "image_urls": [
+      "https://observer.com/wp-content/uploads/sites/2/2019/02/hotel-cafe-royal-festive-afternoon-tea-1.jpg",
+      "https://luxuryhotelsandspalife.com/wp-content/uploads/2022/03/royal-afternoon-tea-at-covent-garden-hotel-2-768x524.jpg",
+      "http://a3a80601ed9c61c5137a-e7c5344b3b84eec5da7b51276407b19c.r92.cf1.rackcdn.com/responsive/1536/a3a80601ed9c61c5137a-e7c5344b3b84eec5da7b51276407b19c.r92.cf1.rackcdn.com/responsive/4:3/a3a80601ed9c61c5137a-e7c5344b3b84eec5da7b51276407b19c.r92.cf1.rackcdn.com/u/hotel-cafe-royal/christmas/Hotel-Caf---Royal---Festive-Afternoon-Tea-1.jpg"
+    ]
+  },
+  {
+    "city": "Chiang Mai",
+    "country": "Thailand",
+    "description": "Discover ancient temples, lush jungles, and vibrant night markets in northern Thailand on a shoestring budget.",
+    "estimated_cost": 630.0,
+    "rationale": "Chiang Mai offers a great balance of cultural experiences and affordability, with numerous budget-friendly hostels and delicious, cheap eats.",
+    "image_key": "Chiang Mai temple overlooking mountains",
+    "image_urls": [
+      "https://www.traveloffpath.com/wp-content/uploads/2023/03/Temple-and-gardens-on-a-mountain-in-Chiang-Mai-Thailand.jpg",
+      "https://www.agoda.com/wp-content/uploads/2024/06/chiang-mai-wat-doi-suthep-featured.jpg",
+      "https://img.freepik.com/premium-photo/buddhist-temple-mountains-sunset-chiang-mai-thailand_151355-21654.jpg?w=2000"
+    ]
+  },
+  {
+    "city": "Krakow",
+    "country": "Poland",
+    "description": "Wander through Krakow's medieval streets, explore its historical sites, and enjoy its vibrant cultural scene on a budget.",
+    "estimated_cost": 630.0,
+    "rationale": "Krakow is a charming and affordable city with a rich history and lively atmosphere, offering a wide range of budget-friendly hostels and restaurants.",
+    "image_key": "Krakow main square with horse carriages",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/z/krakow-poland-march-horse-carriages-main-square-travel-252970697.jpg",
+      "https://st2.depositphotos.com/1000633/7324/i/950/depositphotos_73248565-stock-photo-horse-carriage-at-main-square.jpg",
+      "https://thumbs.dreamstime.com/z/horse-carriages-st-mary-s-basilica-background-krakow-main-square-krakow-poland-horse-carriages-st-mary-s-173772518.jpg"
+    ]
+  },
+  {
+    "city": "Lisbon",
+    "country": "Portugal",
+    "description": "Get lost in Lisbon's colorful streets, ride its iconic trams, and enjoy stunning views of the Tagus River without breaking the bank.",
+    "estimated_cost": 770.0,
+    "rationale": "Lisbon is a vibrant and relatively affordable European capital with a thriving hostel scene, delicious food, and plenty of free activities.",
+    "image_key": "Lisbon cityscape from Sao Jorge Castle",
+    "image_urls": [
+      "https://c8.alamy.com/comp/HGGRE7/portugal-lisbon-cityscape-viewed-from-the-sao-jorge-castle-HGGRE7.jpg",
+      "https://c8.alamy.com/comp/H96WKE/cityscape-of-lisbon-portugal-with-the-sao-jorge-castle-seen-from-miradouro-H96WKE.jpg",
+      "https://c8.alamy.com/comp/HRHWFH/cityscape-viewed-from-the-sao-jorge-castle-lisbon-portugal-HRHWFH.jpg"
+    ]
+  },
+  {
+    "city": "Lake Atitlan",
+    "country": "Guatemala",
+    "description": "Experience the stunning beauty of Lake Atitlan, surrounded by volcanoes and traditional Mayan villages, on a budget-friendly adventure.",
+    "estimated_cost": 630.0,
+    "rationale": "Lake Atitlan offers breathtaking scenery and a rich indigenous culture at a very affordable price, with numerous budget-friendly hostels and guesthouses.",
+    "image_key": "Lake Atitlan sunrise from San Marcos",
+    "image_urls": [
+      "https://www.goworldtravel.com/wp-content/uploads/2019/12/The-divine-sunrise-over-Lake-Atitlan.jpg",
+      "https://media.istockphoto.com/id/908478148/photo/sunrise-lake-atitl\u00e1n.jpg?s=612x612&w=0&k=20&c=cexqEAb9YZZ11rdFNkihMN4eQmZ6WiKlgxvJ8t9nuac=",
+      "https://www.neverendingvoyage.com/wp-content/uploads/2015/01/running-sunrise-san-marcos-atitlan.jpg"
+    ]
+  },
+  {
+    "city": "Park City",
+    "country": "USA",
+    "description": "Discover Utah's famous powder and charming town atmosphere in Park City, a premier ski destination.",
+    "estimated_cost": 4800.0,
+    "rationale": "Park City provides access to multiple ski resorts, a vibrant apr\u00e8s-ski scene, and various winter sports, making it a great choice for a ski trip.",
+    "image_key": "Park City ski resort panoramic view",
+    "image_urls": [
+      "https://assets.simpleviewinc.com/simpleview/image/upload/c_fill,h_797,q_75,w_775/v1/clients/utahddm/1767789607_cacdd3d4-6d85-4487-ab57-5aae30b4cb0b.jpg",
+      "https://peakvisor.com/photo/SD/Park-City-Mountain-Resort-Utah-Canyons-ski2.jpg",
+      "https://static1.thetravelimages.com/wordpress/wp-content/uploads/2023/11/aerial-view-of-park-city-utah-including-snow-covered-mountains.jpg"
+    ]
+  },
+  {
+    "city": "Niseko",
+    "country": "Japan",
+    "description": "Enjoy incredible powder snow and Japanese culture in Niseko, a world-renowned ski resort on Hokkaido Island.",
+    "estimated_cost": 5000.0,
+    "rationale": "Niseko is famous for its consistent, high-quality powder snow, onsen (hot springs), and unique cultural experiences.",
+    "image_key": "Niseko Mount Yotei snow view",
+    "image_urls": [
+      "https://media.istockphoto.com/id/2197043943/photo/mountain-yotei-view-from-ropeway-of-niseko-view-point.jpg?s=1024x1024&w=is&k=20&c=90dCFJrOKfbY9MJYLFmILFyaVVHPkhvRH1EDF0XyfJ8=",
+      "https://cdn2.hubspot.net/hubfs/2766250/Mt+Yotei+-+Niseko+PhotographyMatt+Wiseman.jpg",
+      "https://c8.alamy.com/comp/2JKX400/a-scenic-view-of-mount-yotei-niseko-japan-in-winter-2JKX400.jpg"
+    ]
+  },
+  {
+    "city": "Zermatt",
+    "country": "Switzerland",
+    "description": "Ski beneath the iconic Matterhorn in Zermatt, a car-free village offering exceptional skiing and mountaineering.",
+    "estimated_cost": 4900.0,
+    "rationale": "Zermatt's high-altitude slopes guarantee excellent snow conditions, and the village provides a charming and luxurious atmosphere.",
+    "image_key": "Zermatt Matterhorn winter view",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/b/view-matterhorn-day-winter-zermatt-switzerland-mountain-landscape-snowy-swiss-alps-257706901.jpg",
+      "https://c8.alamy.com/comp/2XY70XM/zermatt-switzerland-dramatic-view-of-the-zermatt-ski-resort-slope-and-chairlift-below-the-famous-matterhorn-peak-in-winter-in-canton-valais-in-the-s-2XY70XM.jpg",
+      "https://static.vecteezy.com/system/resources/thumbnails/008/603/847/original/beautiful-footage-of-the-famous-zermatt-ski-resort-with-the-iconic-matterhorn-peak-in-the-alps-in-winter-in-switzerland-people-enjoying-magical-ski-resort-video.jpg"
+    ]
+  },
+  {
+    "city": "Aspen",
+    "country": "USA",
+    "description": "Experience the glitz and glamour of Aspen, Colorado, with its four world-class ski mountains and upscale amenities.",
+    "estimated_cost": 5000.0,
+    "rationale": "Aspen boasts a variety of ski terrain, high-end shopping, and dining, as well as cultural attractions, making it a popular destination for a luxurious ski vacation.",
+    "image_key": "Aspen Highlands ski slopes view",
+    "image_urls": [
+      "https://www.uncovercolorado.com/wp-content/uploads/2013/12/Aspen-Highlands-Chairlift.jpg",
+      "https://c8.alamy.com/comp/BA58NT/skiers-ascend-highland-peak-from-top-of-loge-peak-aspen-highlands-BA58NT.jpg",
+      "https://imagewerx.us/wp-content/uploads/2016/04/Aspen-Highlands-Buttermilk-sm.jpg"
+    ]
+  },
+  {
+    "city": "Whistler",
+    "country": "Canada",
+    "description": "Explore the vast terrain of Whistler Blackcomb, one of North America's largest and most popular ski resorts.",
+    "estimated_cost": 4700.0,
+    "rationale": "Whistler offers a wide range of ski runs, terrain parks, and off-slope activities, catering to all skill levels and interests.",
+    "image_key": "Whistler Blackcomb peak view",
+    "image_urls": [
+      "https://c8.alamy.com/comp/F0F43P/summer-view-of-whistler-mountain-seen-from-blackcomb-mountain-alpine-F0F43P.jpg",
+      "https://c8.alamy.com/comp/2A3JYWA/whistler-canada-august-25-2019-peak-2-peak-gondola-building-on-top-of-whistler-blackcomb-mountain-2A3JYWA.jpg",
+      "https://www.alamy.com/aggregator-api/download?url=https://c8.alamy.com/comp/AJAMKY/aerial-view-of-whistler-from-blackcomb-mountain-whistler-british-columbia-AJAMKY.jpg"
+    ]
+  },
+  {
+    "city": "Chamonix",
+    "country": "France",
+    "description": "Challenge yourself with extreme skiing and mountaineering in Chamonix, the birthplace of alpinism, set beneath Mont Blanc.",
+    "estimated_cost": 4600.0,
+    "rationale": "Chamonix is renowned for its steep slopes, challenging off-piste terrain, and stunning views of the French Alps.",
+    "image_key": "Chamonix Mont Blanc winter panorama",
+    "image_urls": [
+      "https://media.gettyimages.com/id/834710824/photo/chamonix-mont-blanc-panorama.jpg?s=1024x1024&w=gi&k=20&c=EwmG2BBbMo3DvLgH0zW33cdiYntQvEUFwVqEVIbf9HI=",
+      "https://thumbs.dreamstime.com/z/beatiful-mountain-panorama-french-alps-chamonix-mont-blanc-winter-time-best-place-holiday-skiing-snowboarding-140530022.jpg?w=992",
+      "https://thumbs.dreamstime.com/z/mountains-landscape-french-chamonix-mont-blanc-winter-amazing-view-aiguille-du-midi-best-place-skiing-140524104.jpg"
+    ]
+  },
+  {
+    "city": "Cortina d'Ampezzo",
+    "country": "Italy",
+    "description": "Enjoy stylish skiing and breathtaking Dolomite views in Cortina d'Ampezzo, a chic Italian resort town.",
+    "estimated_cost": 4800.0,
+    "rationale": "Cortina d'Ampezzo is known for its well-groomed slopes, fashionable boutiques, and delicious Italian cuisine.",
+    "image_key": "Cortina d'Ampezzo Dolomites winter view",
+    "image_urls": [
+      "https://c8.alamy.com/comp/AWDCFJ/view-on-cortina-dampezzo-dolomites-italy-AWDCFJ.jpg",
+      "https://thumbs.dreamstime.com/z/cortina-d-ampezzo-italy-december-winter-view-center-cortina-d-ampezzo-veneto-dolomites-backg-cortina-d-266013997.jpg",
+      "https://thumbs.dreamstime.com/b/aerial-view-cortina-d-ampezzo-dolomite-peaks-winter-snow-covered-rooftops-winding-roads-evergreen-trees-partially-374493787.jpg"
+    ]
+  },
+  {
+    "city": "Lake Tahoe",
+    "country": "USA",
+    "description": "Ski with stunning lake views and enjoy a variety of winter activities at Lake Tahoe, straddling California and Nevada.",
+    "estimated_cost": 4500.0,
+    "rationale": "Lake Tahoe offers a selection of ski resorts, cross-country skiing trails, and snowshoeing opportunities, all with the backdrop of the beautiful lake.",
+    "image_key": "Lake Tahoe Emerald Bay winter view",
+    "image_urls": [
+      "https://as2.ftcdn.net/v2/jpg/03/19/51/01/1000_F_319510133_SmsKeq6FuWvWVDZmtUZq25xKGfw5IKLa.jpg",
+      "https://external-preview.redd.it/9gHiJBOKxqZsMf4NuunG-jJhlO3SXNWuQlJWIg-bbTg.jpg?auto=webp&s=a4689aa9232938d8b866fe9f6c14fc65ad359131",
+      "https://i.pinimg.com/originals/c1/c7/a3/c1c7a31da7b0db47455afc1364fa5d4d.jpg"
+    ]
+  },
+  {
+    "city": "Merzouga",
+    "country": "Morocco",
+    "description": "Experience the majestic Sahara Desert with camel trekking and stunning sunsets over the Erg Chebbi dunes.",
+    "estimated_cost": 1200.0,
+    "rationale": "Merzouga offers a classic desert experience with camel treks readily available, opportunities to stay in desert camps, and breathtaking views of the Sahara. Morocco is relatively affordable, making it feasible within the budget.",
+    "image_key": "Merzouga Erg Chebbi sunset camel trekking",
+    "image_urls": [
+      "https://media.tacdn.com/media/attractions-splice-spp-674x446/06/f7/ee/95.jpg",
+      "https://veronikasadventure.com/wp-content/uploads/2024/02/1_sunset-in-merzouga-sahara-desert-camel-ride-erg-chebbi-dunes.jpg",
+      "https://xabbitours.com/wp-content/uploads/2020/11/Marakech-to-merzouga-TOUR.webp"
+    ]
+  },
+  {
+    "city": "Siwa Oasis",
+    "country": "Egypt",
+    "description": "Discover a hidden paradise in the Egyptian desert with ancient ruins, natural springs, and serene palm groves.",
+    "estimated_cost": 1500.0,
+    "rationale": "Siwa Oasis provides a unique desert oasis experience with its rich history, traditional culture, and stunning landscapes. While getting there may involve some travel, the costs within Siwa can be managed to fit the budget.",
+    "image_key": "Siwa Oasis palm trees desert spring",
+    "image_urls": [
+      "https://c8.alamy.com/comp/C23KXR/palm-tree-gardens-in-the-siwa-oasis-western-desert-egypt-C23KXR.jpg",
+      "https://c8.alamy.com/comp/C23MYD/palm-tree-gardens-in-the-siwa-oasis-western-desert-egypt-C23MYD.jpg",
+      "https://img.freepik.com/premium-photo/tranquil-desert-oasis-painting-with-palm-trees-siwa-oasis_706399-35462.jpg"
+    ]
+  },
+  {
+    "city": "Jaisalmer",
+    "country": "India",
+    "description": "Embark on a camel safari through the golden sands of the Thar Desert and explore the magnificent Jaisalmer Fort.",
+    "estimated_cost": 900.0,
+    "rationale": "Jaisalmer, known as the 'Golden City,' offers camel safaris into the Thar Desert, allowing travelers to experience the desert landscape and culture. India is generally a budget-friendly destination.",
+    "image_key": "Jaisalmer Fort Thar Desert camel safari",
+    "image_urls": [
+      "https://www.campinginjaisalmer.com/assets/img/exclusive/014.jpg",
+      "https://img.freepik.com/premium-photo/camel-safari-thar-desert-jaisalmer_78361-18891.jpg?w=2000",
+      "https://www.hacra.org/img/jaisalmer.jpg"
+    ]
+  },
+  {
+    "city": "Wadi Rum",
+    "country": "Jordan",
+    "description": "Venture into the dramatic desert wilderness of Wadi Rum, where you can ride camels, hike through towering sandstone mountains, and sleep under the stars.",
+    "estimated_cost": 1800.0,
+    "rationale": "Wadi Rum presents a stunning desert landscape with opportunities for camel rides, desert camping, and exploring the unique rock formations. Jordan's costs are moderate, making it attainable with careful planning.",
+    "image_key": "Wadi Rum landscape camel ride sunset",
+    "image_urls": [
+      "https://media.istockphoto.com/id/1418989616/photo/wadi-rum-sunset-camel-ride.jpg?s=1024x1024&w=is&k=20&c=PUtWHK0gTi3E17-CRSHQb2dXU1YT6UkT92zI5gh-FsU=",
+      "https://jampackedjourneys.com/wp-content/uploads/2023/03/IMG_9042-1.jpeg",
+      "https://images.squarespace-cdn.com/content/v1/5c4b2a4cb40b9dd2533816f4/1672061180560-RLQ59FD58ZI6ZW67JH7O/DSC04271.jpg"
+    ]
+  },
+  {
+    "city": "Huacachina",
+    "country": "Peru",
+    "description": "Experience the thrill of dune buggy rides and sandboarding in the oasis village of Huacachina, surrounded by towering sand dunes.",
+    "estimated_cost": 1100.0,
+    "rationale": "Huacachina offers a unique desert oasis experience with the added adventure of dune buggy rides and sandboarding. Peru is relatively affordable, especially when focusing on specific regions.",
+    "image_key": "Huacachina oasis dune buggy sandboarding",
+    "image_urls": [
+      "https://www.anywhere.com/img-a/peru/destinations/ica/tours/dune-buggie-in-huacachina/Huacachina+2.jpeg",
+      "https://veronikasadventure.com/wp-content/uploads/2024/03/1_ica-dune-buggy-and-sandboard-at-huacachina-oasis.jpg",
+      "https://media-cdn.tripadvisor.com/media/attractions-splice-spp-720x480/10/7a/e7/18.jpg"
+    ]
+  },
+  {
+    "city": "Dubai",
+    "country": "United Arab Emirates",
+    "description": "Experience luxury and adventure in Dubai, where you can ride camels in the desert, explore modern marvels, and enjoy vibrant city life.",
+    "estimated_cost": 2200.0,
+    "rationale": "Dubai offers a blend of modern city experiences and desert adventures, including camel riding. By being selective with activities and dining, it's possible to experience Dubai within the budget.",
+    "image_key": "Dubai desert camel skyline view",
+    "image_urls": [
+      "https://static.vecteezy.com/system/resources/previews/027/596/984/non_2x/camel-crossing-desert-with-dubai-skyline-blending-modern-and-traditional-uae-silhouette-concept-free-photo.jpg",
+      "https://static.vecteezy.com/system/resources/previews/027/447/367/non_2x/camel-crossing-desert-with-dubai-skyline-blending-modern-and-traditional-uae-silhouette-concept-free-photo.jpg",
+      "https://thumbs.dreamstime.com/z/camel-traverses-desert-dubai-skyline-blends-tradition-modernity-camel-traverses-desert-dubai-skyline-blends-tradition-301638082.jpg"
+    ]
+  },
+  {
+    "city": "Alice Springs",
+    "country": "Australia",
+    "description": "Discover the rugged beauty of the Australian Outback in Alice Springs, where you can ride camels, explore Aboriginal culture, and marvel at iconic landmarks like Uluru.",
+    "estimated_cost": 2000.0,
+    "rationale": "Alice Springs provides access to the Australian Outback, offering camel tours and cultural experiences. Accommodation and domestic travel within Australia can be expensive, but careful planning can make it feasible.",
+    "image_key": "Alice Springs Uluru camel tour outback",
+    "image_urls": [
+      "https://www.onlymelbourne.com.au/image/oas-cameltour.jpg",
+      "https://cdn.getyourguide.com/img/tour/644773592c38f.jpeg/100.jpg",
+      "https://bookmestatic.net.nz/bookme-product-images/products/5920/5920_image2_ETBW_2785735_orig.jpeg"
+    ]
+  },
+  {
+    "city": "Swakopmund",
+    "country": "Namibia",
+    "description": "Adventure awaits in Swakopmund, where you can ride camels along the Namib Desert coast, sandboard down massive dunes, and explore the unique desert landscape.",
+    "estimated_cost": 1600.0,
+    "rationale": "Swakopmund provides access to the Namib Desert, offering camel riding and other desert activities. Namibia is generally more affordable than other African safari destinations.",
+    "image_key": "Swakopmund Namib Desert camel riding coast",
+    "image_urls": [
+      "https://media.istockphoto.com/id/1461554452/photo/camel-rides-in-the-namib-desert-in-namibia-popular-tourist-attraction-in-swakopmund-namibia.jpg?s=170667a&w=0&k=20&c=LTmBtDI64dY_Vm2tPZnYuccMOFBK_rrAuFeVtblmwnk=",
+      "https://c8.alamy.com/comp/2M3ND8T/camel-rides-in-the-namib-desert-in-namibia-popular-tourist-attraction-in-swakopmund-namibia-africa-2M3ND8T.jpg",
+      "https://l450v.alamy.com/450v/2m3nd91/camel-rides-in-the-namib-desert-in-namibia-popular-tourist-attraction-in-swakopmund-namibia-africa-2m3nd91.jpg"
+    ]
+  },
+  {
+    "city": "Dunhuang",
+    "country": "China",
+    "description": "Explore the ancient Silk Road city of Dunhuang, where you can ride camels across the Singing Sand Dunes and discover the breathtaking Mogao Caves.",
+    "estimated_cost": 1300.0,
+    "rationale": "Dunhuang offers a unique desert experience with the Singing Sand Dunes and historical sites. China is relatively affordable, especially when traveling outside major cities.",
+    "image_key": "Dunhuang Singing Sand Dunes Mogao Caves camel",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/b/dunhuang-gansu-china-september-panorama-tourists-camel-rides-singing-sand-mountain-dunes-taklamakan-desert-dunhuang-128243401.jpg",
+      "https://c8.alamy.com/comp/3BB7W3J/mogao-caves-of-dunhuang-buddhist-art-amidst-the-gobi-desert-and-singing-sand-dunes-3BB7W3J.jpg",
+      "https://media-cdn.tripadvisor.com/media/attractions-splice-spp-720x480/06/74/9a/50.jpg"
+    ]
+  },
+  {
+    "city": "Al Ain",
+    "country": "United Arab Emirates",
+    "description": "Escape to the garden city of Al Ain, where you can visit traditional camel markets, explore lush oases, and discover ancient forts.",
+    "estimated_cost": 1700.0,
+    "rationale": "Al Ain provides a cultural experience with camel markets and oasis landscapes, offering a more traditional experience of the UAE compared to Dubai. It can be a slightly more budget-friendly option than Dubai while still offering desert experiences.",
+    "image_key": "Al Ain camel market oasis fort",
+    "image_urls": [
+      "https://thumbs.dreamstime.com/z/traditional-camel-market-al-ain-uae-december-december-35992075.jpg",
+      "https://www.touristsecrets.com/wp-content/uploads/2023/11/the-camel-market-in-al-ain-1699235696.jpg",
+      "https://www.citytourindubai.com/wp-content/uploads/2024/04/al-ain-camel-market.jpg"
+    ]
+  },
+  {
+    "city": "Ko Tao",
+    "country": "Thailand",
+    "description": "Discover world-class diving and vibrant coral reefs in this laid-back tropical paradise!",
+    "estimated_cost": 1200.0,
+    "rationale": "Ko Tao is renowned for its affordable diving courses and stunning underwater scenery, fitting both the diving and budget requirements. The island's tropical climate and beautiful beaches enhance its appeal as an ideal destination.",
+    "image_key": "Ko Tao vibrant coral reef",
+    "image_urls": [
+      "https://as1.ftcdn.net/jpg/07/93/40/86/1000_F_793408642_dONiSDEE9sbkgDBzwQwPafrO1fcChVmb.jpg",
+      "https://c8.alamy.com/comp/H8F14F/tanote-bay-with-beautiffull-coral-reef-koh-tao-thailand-H8F14F.jpg",
+      "https://as2.ftcdn.net/v2/jpg/07/46/31/51/1000_F_746315122_KtZu2Kd6OCGgbscSgbMfsI6Wl7ko1SFJ.jpg"
+    ]
+  },
+  {
+    "city": "Ambergris Caye",
+    "country": "Belize",
+    "description": "Experience the wonders of the Belize Barrier Reef, a diver's dream with abundant marine life and crystal-clear waters!",
+    "estimated_cost": 2800.0,
+    "rationale": "Ambergris Caye offers access to the Belize Barrier Reef, a world-renowned diving location with diverse marine ecosystems. Although slightly more expensive, it's manageable within the budget, especially with careful planning and some trade offs.",
+    "image_key": "Ambergris Caye Belize Barrier Reef aerial view",
+    "image_urls": [
+      "https://www.belize.com/wp-content/uploads/2012/05/belize-barrier-reef.jpg",
+      "https://c8.alamy.com/comp/2KADWYT/aerial-photos-of-the-belize-barrier-reef-off-the-coast-of-northern-ambergris-caye-2KADWYT.jpg",
+      "https://c8.alamy.com/comp/2KADWYY/aerial-photo-of-the-belize-barrier-reef-and-northern-ambergris-caye-in-belize-2KADWYY.jpg"
+    ]
+  },
+  {
+    "city": "Roatan",
+    "country": "Honduras",
+    "description": "Dive into the Mesoamerican Reef and explore breathtaking underwater caves and colorful coral gardens!",
+    "estimated_cost": 1000.0,
+    "rationale": "Roatan is a budget-friendly Caribbean island known for its excellent diving opportunities and access to the Mesoamerican Reef. Its tropical setting and diverse marine life make it a perfect fit.",
+    "image_key": "Roatan underwater caves coral gardens",
+    "image_urls": [
+      "https://media.istockphoto.com/id/2156110008/photo/caribbean-coral-garden-roatan.jpg?s=612x612&w=0&k=20&c=Pm6UKVoG6-tjVY0alkhIdNxtKaz9dHBZ_nBUEqP70YU=",
+      "https://c8.alamy.com/comp/BPWXF6/underwater-coral-gardens-off-the-coast-of-roatan-honduras-BPWXF6.jpg",
+      "https://c8.alamy.com/comp/CWDPX2/coral-gardens-underwater-off-the-coast-roatan-honduras-CWDPX2.jpg"
+    ]
+  },
+  {
+    "city": "Bonaire",
+    "country": "Caribbean Netherlands",
+    "description": "Enjoy shore diving at its finest in this tranquil island, famous for its pristine reefs and calm turquoise waters!",
+    "estimated_cost": 3000.0,
+    "rationale": "Bonaire is a diver's paradise, boasting easily accessible shore diving sites and well-preserved coral reefs. The island's focus on marine conservation ensures a vibrant underwater experience.",
+    "image_key": "Bonaire shore diving turquoise waters",
+    "image_urls": [
+      "https://buddydive.com/wp-content/uploads/2019/08/Shore-4-e1568230980192.jpg",
+      "https://www.royalcaribbean.com/media-assets/pmc/content/dam/shore-x/kralendijk-bon/bo22-samur-sail-beach-and-snorkel/people-snorkeling-in-turquoise-water-near-coral-reefs.jpg?w=1440",
+      "https://bucketlistbri.com/wp-content/uploads/2022/11/shore-diving-bonaire-750x1030.jpg"
+    ]
+  },
+  {
+    "city": "Sipadan",
+    "country": "Malaysia",
+    "description": "Encounter swirling barracudas and abundant sea turtles in this world-renowned diving haven!",
+    "estimated_cost": 3200.0,
+    "rationale": "Sipadan is celebrated for its exceptional marine biodiversity and unique diving experiences, including encounters with large pelagic species. While permits are required to dive here which can add to the cost, it is possible to stay in nearby Mabul or Semporna to make it more affordable.",
+    "image_key": "Sipadan swirling barracudas sea turtles",
+    "image_urls": [
+      "https://www.blueoceanart.com/cdn/shop/products/EHSipadan100127_8be818a4-179f-4a96-8396-2dfb82951cd5_1024x1024.jpg?v=1606496426",
+      "https://i.pinimg.com/736x/b1/d2/79/b1d279ec8ea0b9770480068b91e69175.jpg",
+      "https://lh7-us.googleusercontent.com/9OQfI76HxexMdQOXFFIpqJwcnR-Q-L2RKeghmEwIqtusjAUO5690P98KFOenrWfg35nFYoP477nA6js5A1X4fT5G9zMkOz2xypY_u3boGbJ4UUjDYbynPEdsipDygoTHfu4vtae9JrAU1M50YxfXU-0"
+    ]
+  },
+  {
+    "city": "Fiji",
+    "country": "Fiji",
+    "description": "Immerse yourself in the soft coral capital of the world, where vibrant colors and diverse marine life await!",
+    "estimated_cost": 3300.0,
+    "rationale": "Fiji is famous for its soft coral reefs and diverse underwater ecosystems, making it a top diving destination. Its tropical climate and island setting provide the perfect backdrop for an unforgettable diving vacation.",
+    "image_key": "Fiji soft coral reefs diverse marine life",
+    "image_urls": [
+      "https://www.oceanlight.com/stock-photo/brilliant-fiji-coral-reef-with-soft-corals-and-schools-anthias-fishes-photo-34708-56811.jpg",
+      "https://www.oceanlight.com/stock-photo/brilliant-fiji-coral-reef-with-soft-corals-and-schools-anthias-fishes-picture-34717-5547.jpg",
+      "https://www.oceanlight.com/stock-photo/brilliant-fiji-coral-reef-with-soft-corals-and-schools-anthias-fishes-picture-34833-55915.jpg"
+    ]
+  },
+  {
+    "city": "Palawan",
+    "country": "Philippines",
+    "description": "Explore hidden lagoons, stunning limestone cliffs, and vibrant coral reefs in this tropical paradise!",
+    "estimated_cost": 1500.0,
+    "rationale": "Palawan offers a mix of stunning landscapes, pristine beaches, and excellent diving spots, all at an affordable price. The island's tropical beauty and diverse attractions make it a great value destination.",
+    "image_key": "Palawan hidden lagoons limestone cliffs",
+    "image_urls": [
+      "https://taasnoopilipino.com/wp-content/uploads/2025/02/TaasNooPilipino-Palawans-Secret-Lagoons-Where-Emerald-Waters-Meet-Limestone-Cliffs-2048x1148.jpg",
+      "https://c8.alamy.com/comp/2CNN255/el-nido-palawan-island-hidden-lagoon-coastline-limestone-rock-formations-on-famous-tropical-beach-in-philippines-2CNN255.jpg",
+      "https://live.staticflickr.com/5059/5397974137_e01fec0dcb_b.jpg"
+    ]
+  },
+  {
+    "city": "Grand Cayman",
+    "country": "Cayman Islands",
+    "description": "Swim with stingrays and explore dramatic wall dives in this upscale Caribbean destination!",
+    "estimated_cost": 3400.0,
+    "rationale": "Grand Cayman is known for its clear waters, diverse dive sites, and the famous Stingray City. The island's well-developed tourism infrastructure ensures a comfortable and enjoyable stay.",
+    "image_key": "Grand Cayman stingrays dramatic wall dives",
+    "image_urls": [
+      "https://www.shaggysdiving.com/wp-content/uploads/2019/04/shaggys-personalised-diving-stingray-city.jpg",
+      "https://offthewalldiverscayman.com/wp-content/uploads/2013/09/DSC_0644.jpg",
+      "https://www.oceanfrontiers.com/cache/albumgallery/images/1920_1080/wall-diving-on-the-east-end-of-grand-cayman-image50.jpg"
+    ]
+  },
+  {
+    "city": "Maui",
+    "country": "United States",
+    "description": "Discover unique underwater lava formations and playful sea turtles in this Hawaiian paradise!",
+    "estimated_cost": 3500.0,
+    "rationale": "Maui combines stunning natural beauty with unique diving experiences, including opportunities to see sea turtles and explore underwater lava formations. Its accessibility and range of activities make it a popular choice.",
+    "image_key": "Maui underwater lava formations sea turtles",
+    "image_urls": [
+      "https://c8.alamy.com/comp/2RA7MK2/a-green-sea-turtle-chelonia-mydas-an-endangered-species-glides-over-coral-encrusted-lava-formations-off-maui-hawaii-2RA7MK2.jpg",
+      "https://wheninyourstate.com/wp-content/uploads/2025/05/1420Turtle20Town20Maui.jpg",
+      "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1E8wcH.img?w=800&h=415&q=60&m=2&f=jpg"
+    ]
+  },
+  {
+    "city": "Bali",
+    "country": "Indonesia",
+    "description": "Experience vibrant coral gardens and unique marine life in this Indonesian island paradise, blending culture and diving!",
+    "estimated_cost": 1800.0,
+    "rationale": "Bali provides a rich cultural experience combined with world-class diving, especially in areas like Nusa Lembongan and Tulamben. The island's affordability and diverse attractions make it a compelling destination.",
+    "image_key": "Bali vibrant coral gardens marine life",
+    "image_urls": [
+      "https://blog.mybalibuddy.com/wp-content/uploads/2023/07/snorkeling-paradise-exploring-balis-colorful-coral-reefs-and-vibrant-marine-life.jpg",
+      "https://finnsbeachclub.com/wp-content/uploads/2024/05/underwater-view-of-the-coral-reef-2023-11-27-05-09-51-utc-1024x683.jpg",
+      "https://img.freepik.com/premium-photo/recife-vibrant-corals-marine-life-nusa-rememongan-bali-generative-ia_209190-35476.jpg"
+    ]
+  }
+]

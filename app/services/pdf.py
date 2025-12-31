@@ -3,7 +3,7 @@ from fastapi import Response
 import io
 import aiohttp
 import asyncio
-from app.models.domain import Itinerary
+from models import Itinerary
 import logging
 
 logger = logging.getLogger("travel_agent_server")
@@ -181,7 +181,7 @@ async def generate_pdf(itinerary: Itinerary):
                         img_data = io.BytesIO(image_map[activity.image_url])
                         # Fixed size 60x45 (Smaller)
                         pdf.image(img_data, x=10, y=start_y, w=60, h=45)
-                    except Exception:
+                    except Exception as e:
                         # logger.warning(f"Image rendering failed: {e}")
                         pdf.set_font("helvetica", "I", 8)
                         pdf.cell(60, 45, "(Image Error)", border=1, align="C")

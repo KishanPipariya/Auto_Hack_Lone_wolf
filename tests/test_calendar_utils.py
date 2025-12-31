@@ -4,9 +4,9 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from datetime import datetime, timedelta
-from app.models.domain import Itinerary, DayPlan, Activity
-from app.services.calendar import generate_ics
+from datetime import datetime, timedelta, date
+from models import Itinerary, DayPlan, Activity
+from calendar_utils import generate_ics
 
 
 # Mock Data

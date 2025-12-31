@@ -6,7 +6,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 import urllib.request
 import urllib.error
-from app.core.agent import TravelAgent
+from agent import TravelAgent
+from models import Itinerary
 
 from unittest.mock import patch
 
