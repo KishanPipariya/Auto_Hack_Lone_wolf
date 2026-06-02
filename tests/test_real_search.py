@@ -1,12 +1,10 @@
 import pytest
-import sys
-import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from agent import TravelAgent
 
 
 class TestRealImageSearch:
+    @pytest.mark.integration
     def test_search_real_image_integration(self):
         """
         Integration test to verify DuckDuckGo search returns a real URL.
@@ -22,7 +20,4 @@ class TestRealImageSearch:
         assert url is not None
         assert isinstance(url, str)
         assert url.startswith("http")
-        # Ensure it's NOT a pollinations.ai generated URL (unless DDG returns it, which is unlikely for this query)
-        assert "pollinations.ai" not in url, (
-            "Should find a real image, not a generated one"
-        )
+        assert "pollinations.ai" not in url, "Should find a real image, not a generated one"

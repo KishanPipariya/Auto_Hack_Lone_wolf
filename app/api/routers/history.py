@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from database import get_db
 from sql_models import ItineraryHistory, User
 from auth_routes import get_current_user
-from models import Itinerary
 import json
 
 router = APIRouter(prefix="/history", tags=["History"])

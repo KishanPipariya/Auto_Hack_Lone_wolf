@@ -206,10 +206,6 @@ def render_planner():
             st.write("---")
             st.subheader("Generating Itinerary...")
 
-            # Simple streaming simulation via container
-            result_container = st.empty()
-            full_text = ""
-
             # Streaming Logic using generator
             # Streamlit's write_stream is new, let's use a robust loop
             for chunk in stream_planner(payload):

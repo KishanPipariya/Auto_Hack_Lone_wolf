@@ -267,16 +267,16 @@
         <div id="planner-view" class="view-section active">
             <form id="planForm" aria-label="Trip planning form">
                 <div class="form-group">
-                    <label for="destinationInput">Destinations</label>
+                    <label for="destinationInput">Optional Destinations</label>
 
                     <div class="destination-control"
                         style="background: var(--color-bg-body); padding: 5px; border-radius: 8px; border: 1px solid var(--color-border); display: flex; flex-wrap: wrap; gap: 5px; min-height: 48px; align-items: center;">
                         <div id="destinationChips" style="display: contents;" aria-live="polite"></div>
-                        <input type="text" id="destinationInput" placeholder="Add a city (Press Enter)"
+                        <input type="text" id="destinationInput" placeholder="Add a city or leave blank for vibe discovery"
                             style="border: none; background: transparent; flex: 1; min-width: 120px; outline: none; padding: 8px;"
                             autocomplete="address-level2">
                     </div>
-                    <input type="hidden" id="city" required>
+                    <input type="hidden" id="city">
                 </div>
 
                 <div class="form-group">
@@ -306,6 +306,22 @@
                             <button type="button" class="control-btn minus" aria-label="Decrease days">▼</button>
                         </div>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="vibe">Vibe / Aesthetic</label>
+                    <input type="text" id="vibe" placeholder="e.g. coastal cafes, quiet art streets, budget nightlife">
+                </div>
+
+                <div class="form-group toggle-row">
+                    <div>
+                        <label for="workFriendly">Work-Friendly</label>
+                        <span class="field-hint">Prioritize strong Wi-Fi, coworking access, and productive stays.</span>
+                    </div>
+                    <label class="work-toggle" for="workFriendly">
+                        <input type="checkbox" id="workFriendly">
+                        <span class="work-toggle-track"></span>
+                    </label>
                 </div>
 
                 <div class="form-group">
@@ -495,11 +511,13 @@
                 .filter(s => s);
 
             const data = {
-                city: document.getElementById('city').value,
+                city: document.getElementById('city').value.trim() || null,
                 start_date: document.getElementById('start_date').value || null,
                 budget: parseFloat(document.getElementById('budget').value),
                 days: parseInt(document.getElementById('days').value),
-                interests: finalInterests
+                interests: finalInterests,
+                vibe: document.getElementById('vibe').value.trim() || null,
+                work_friendly: document.getElementById('workFriendly').checked
             };
 
             try {
@@ -591,7 +609,8 @@
             window.itineraryData = data;
 
             let html = `
-                <h2 style="text-align:center; margin-bottom: 2rem;">Itinerary for ${data.city}</h2>
+                <h2 style="text-align:center; margin-bottom: 1rem;">Itinerary for ${data.recommended_destination || data.city}</h2>
+                ${renderTripSummary(data)}
                 
                 <div class="trip-days">
                     ${data.days.map(day => `
@@ -637,10 +656,10 @@
             `;
 
             // Add total cost at the bottom
-            const total = data.days.reduce((sum, day) =>
+            const total = data.cost_breakdown?.total ?? data.total_cost ?? data.days.reduce((sum, day) =>
                 sum + day.activities.reduce((dSum, act) => dSum + (act.cost || 0), 0), 0
             );
-            html += `<div class="total-trip-cost" style="text-align:center; margin-top:2rem; font-size:1.2rem; font-weight:bold;">Total Trip Cost: $${total}</div>`;
+            html += `<div class="total-trip-cost" style="text-align:center; margin-top:2rem; font-size:1.2rem; font-weight:bold;">Total Trip Cost: $${formatMoney(total)}</div>`;
 
             // Add Download Button at the bottom
             html += `
@@ -658,6 +677,50 @@
             `;
 
             resultDiv.innerHTML = html;
+        }
+
+        function formatMoney(value) {
+            const numeric = Number(value || 0);
+            return numeric.toLocaleString(undefined, { maximumFractionDigits: 0 });
+        }
+
+        function renderTripSummary(data) {
+            const breakdown = data.cost_breakdown || {};
+            const remaining = Number(breakdown.remaining_budget || 0);
+            const warning = remaining < 0
+                ? `<div class="budget-warning">Budget warning: this plan is over budget by $${formatMoney(Math.abs(remaining))}.</div>`
+                : '';
+
+            return `
+                <section class="trip-summary" aria-label="Trip summary">
+                    <div class="summary-main">
+                        <div>
+                            <span class="summary-label">Recommended destination</span>
+                            <strong>${data.recommended_destination || data.city}</strong>
+                        </div>
+                        <div>
+                            <span class="summary-label">Estimated total</span>
+                            <strong>$${formatMoney(breakdown.total ?? data.total_cost)}</strong>
+                        </div>
+                        <div>
+                            <span class="summary-label">Remaining budget</span>
+                            <strong class="${remaining < 0 ? 'negative-budget' : ''}">$${formatMoney(remaining)}</strong>
+                        </div>
+                    </div>
+                    ${data.vibe_rationale ? `<p class="summary-note">${data.vibe_rationale}</p>` : ''}
+                    ${data.work_friendly_notes ? `<p class="summary-note">${data.work_friendly_notes}</p>` : ''}
+                    ${data.budget_notes ? `<p class="summary-note">${data.budget_notes}</p>` : ''}
+                    <div class="cost-grid">
+                        ${['transport', 'stay', 'food', 'activities'].map(key => `
+                            <div class="cost-cell">
+                                <span>${key}</span>
+                                <strong>$${formatMoney(breakdown[key])}</strong>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${warning}
+                </section>
+            `;
         }
 
         async function downloadPdf() {

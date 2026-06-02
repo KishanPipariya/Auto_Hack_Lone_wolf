@@ -114,6 +114,71 @@ input:focus {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
+.field-hint {
+    display: block;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.toggle-row label {
+    margin-bottom: 0.2rem;
+}
+
+.work-toggle {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 30px;
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.work-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.work-toggle-track {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background-color: #CBD5E1;
+    border-radius: 999px;
+    transition: background-color var(--transition-base);
+}
+
+.work-toggle-track:before {
+    position: absolute;
+    content: "";
+    width: 22px;
+    height: 22px;
+    left: 4px;
+    top: 4px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-base);
+}
+
+.work-toggle input:checked + .work-toggle-track {
+    background-color: var(--color-success);
+}
+
+.work-toggle input:checked + .work-toggle-track:before {
+    transform: translateX(24px);
+}
+
 /* Hide default spinners */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
@@ -274,6 +339,76 @@ button:focus-visible,
 #result {
     margin-top: 2.5rem;
     animation: fadeIn 0.4s ease-out;
+}
+
+.trip-summary {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    background-color: var(--color-bg-body);
+}
+
+.summary-main {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.summary-label {
+    display: block;
+    color: var(--color-text-secondary);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    margin-bottom: 0.2rem;
+}
+
+.summary-main strong {
+    display: block;
+    color: var(--color-text-primary);
+    font-size: 1.05rem;
+    overflow-wrap: anywhere;
+}
+
+.summary-note {
+    color: var(--color-text-secondary);
+    margin: 1rem 0 0;
+}
+
+.cost-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.cost-cell {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+.cost-cell span {
+    display: block;
+    color: var(--color-text-secondary);
+    font-size: 0.86rem;
+    text-transform: capitalize;
+}
+
+.cost-cell strong {
+    color: var(--color-primary);
+}
+
+.negative-budget,
+.budget-warning {
+    color: var(--color-error-text);
+}
+
+.budget-warning {
+    margin-top: 1rem;
+    font-weight: 700;
 }
 
 /* Itinerary Cards */
@@ -574,6 +709,16 @@ input:checked+.slider:before {
     .theme-switch-wrapper {
         top: 1rem;
         right: 1rem;
+    }
+
+    .toggle-row,
+    .summary-main,
+    .cost-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .toggle-row {
+        align-items: flex-start;
     }
 
     /* Prevent iOS zoom on focus */

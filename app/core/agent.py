@@ -1,11 +1,10 @@
 import os
 import json
 import urllib.request
-from typing import List
 from google import genai
 from google.genai import types
 from ddgs import DDGS
-from app.models.domain import Preferences, Itinerary, DestinationSuggestion
+from app.models.domain import Preferences, Itinerary
 from app.core.data import MOCK_ACTIVITIES
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -188,19 +187,46 @@ class TravelAgent:
         Validates the itinerary against preferences constraints.
         Updates the itinerary.valid and itinerary.validation_error fields.
         """
-        # 1. Check Budget
-        total_cost = itinerary.calculate_total_cost()
-        if total_cost > preferences.budget:
+        # 1. Check destination
+        if not itinerary.city or itinerary.city == "Unknown":
             itinerary.valid = False
-            itinerary.validation_error = (
-                f"Total cost ${total_cost} exceeds budget ${preferences.budget}."
-            )
+            itinerary.validation_error = "Itinerary must include a recommended destination."
             return False
+
+        if preferences.city and itinerary.city.lower() != preferences.city.lower():
+            itinerary.city = preferences.city
 
         # 2. Check Days
         if len(itinerary.days) != preferences.days:
             itinerary.valid = False
             itinerary.validation_error = f"Itinerary has {len(itinerary.days)} days, expected {preferences.days}."
+            return False
+
+        if any(not day.activities for day in itinerary.days):
+            itinerary.valid = False
+            itinerary.validation_error = "Each itinerary day must include at least one curated activity."
+            return False
+
+        # 3. Check Budget
+        total_cost = itinerary.calculate_total_cost()
+        itinerary.cost_breakdown.remaining_budget = preferences.budget - itinerary.cost_breakdown.total
+
+        category_total = (
+            itinerary.cost_breakdown.transport
+            + itinerary.cost_breakdown.stay
+            + itinerary.cost_breakdown.food
+            + itinerary.cost_breakdown.activities
+        )
+        if abs(category_total - itinerary.cost_breakdown.total) > 0.01:
+            itinerary.valid = False
+            itinerary.validation_error = "Cost breakdown categories do not add up to the total."
+            return False
+
+        if total_cost > preferences.budget:
+            itinerary.valid = False
+            itinerary.validation_error = (
+                f"Total cost ${total_cost} exceeds budget ${preferences.budget}."
+            )
             return False
 
         itinerary.valid = True
@@ -254,14 +280,15 @@ class TravelAgent:
                             if res:
                                 return res
                     return None
-
                 found_data = find_days_dict(data)
                 if found_data:
                     data = found_data
 
-            # 2. Fix City if missing
-            if "city" not in data:
-                data["city"] = "Unknown"
+            # 2. Fix destination fields if missing
+            if "recommended_destination" not in data:
+                data["recommended_destination"] = data.get("destination") or data.get("city")
+            if "city" not in data or not data["city"]:
+                data["city"] = data.get("recommended_destination") or "Unknown"
 
             # 3. Normalize Days and Activities
             if "days" in data and isinstance(data["days"], list):
@@ -309,14 +336,18 @@ class TravelAgent:
                                 nums = re.findall(r"[-+]?\d*\.\d+|\d+", dur_val)
                                 if nums:
                                     activity["duration_hours"] = float(nums[0])
+                                    activity["duration"] = float(nums[0])
                                 else:
                                     activity["duration_hours"] = 1.0  # Default
+                                    activity["duration"] = 1.0
                             elif isinstance(dur_val, (int, float)):
                                 activity["duration_hours"] = float(dur_val)
-
+                                activity["duration"] = float(dur_val)
                             # Ensure required fields exist
                             if "duration_hours" not in activity:
                                 activity["duration_hours"] = 1.0
+                            if "duration" not in activity or isinstance(activity["duration"], str):
+                                activity["duration"] = activity["duration_hours"]
                             if "duration_str" not in activity:
                                 # Fallback if no string provided
                                 activity["duration_str"] = (
@@ -352,6 +383,56 @@ class TravelAgent:
                                         f"https://image.pollinations.ai/prompt/{safe_query}?width=800&height=600&nologo=true"
                                     )
 
+            activity_total = 0.0
+            for day in data.get("days", []):
+                if isinstance(day, dict):
+                    day_activity_total = sum(
+                        float(activity.get("cost", 0) or 0)
+                        for activity in day.get("activities", [])
+                        if isinstance(activity, dict)
+                    )
+                    day["total_cost"] = day.get("total_cost") or day_activity_total
+                    activity_total += day_activity_total
+
+            cost_breakdown = data.get("cost_breakdown") or data.get("budget_breakdown") or {}
+            if not isinstance(cost_breakdown, dict):
+                cost_breakdown = {}
+
+            def normalize_money(value):
+                if isinstance(value, (int, float)):
+                    return float(value)
+                if isinstance(value, str):
+                    import re
+                    nums = re.findall(r"[-+]?\d*\.\d+|\d+", value.replace(",", ""))
+                    return float(nums[0]) if nums else 0.0
+                return 0.0
+
+            normalized_breakdown = {
+                "transport": normalize_money(cost_breakdown.get("transport", cost_breakdown.get("transportation", 0))),
+                "stay": normalize_money(cost_breakdown.get("stay", cost_breakdown.get("accommodation", 0))),
+                "food": normalize_money(cost_breakdown.get("food", cost_breakdown.get("meals", 0))),
+                "activities": normalize_money(cost_breakdown.get("activities", activity_total)),
+                "total": normalize_money(cost_breakdown.get("total", data.get("total_cost", 0))),
+                "remaining_budget": normalize_money(cost_breakdown.get("remaining_budget", 0)),
+            }
+            if not normalized_breakdown["activities"]:
+                normalized_breakdown["activities"] = activity_total
+            computed_total = (
+                normalized_breakdown["transport"]
+                + normalized_breakdown["stay"]
+                + normalized_breakdown["food"]
+                + normalized_breakdown["activities"]
+            )
+            if not normalized_breakdown["total"]:
+                normalized_breakdown["total"] = computed_total
+            data["cost_breakdown"] = normalized_breakdown
+            data["total_cost"] = normalized_breakdown["total"]
+
+            if "vibe_rationale" not in data:
+                data["vibe_rationale"] = data.get("rationale")
+            if "budget_notes" not in data:
+                data["budget_notes"] = data.get("budget_note") or data.get("budget_summary")
+
             # --- Fuzzy Normalization End ---
 
             # Lowercase keys if needed (some models return capitalized keys)
@@ -372,7 +453,20 @@ class TravelAgent:
         """
         Uses Google Gen AI to generate the initial plan based on available activities.
         """
-        if preferences.city.lower() == "paris":
+        destination = (preferences.city or "").strip()
+        destination_instruction = (
+            f"Create the itinerary for {destination}."
+            if destination
+            else "Choose exactly one best-fit destination for this trip based on the vibe, budget, duration, and interests. Do not return a list of destination options."
+        )
+        vibe_instruction = preferences.vibe or "balanced, locally distinctive, budget-conscious"
+        work_instruction = (
+            "Include work-friendly stay/environment notes with strong Wi-Fi, cafe or coworking access, and quiet planning windows."
+            if preferences.work_friendly
+            else "No special remote-work filtering is required."
+        )
+
+        if destination.lower() == "paris":
             activities_context = f"""
              AVAILABLE ACTIVITIES (You must ONLY use these, do not invent new ones):
              {json.dumps([a.model_dump() for a in self.activities], indent=2)}
@@ -397,30 +491,50 @@ class TravelAgent:
              """
 
         prompt = f"""
-        You are an expert travel agent. Create a detailed, day-by-day itinerary for {preferences.city}.
-        User Budget: ${preferences.budget}
-        Trip Duration: {preferences.days} days
-        Interests: {", ".join(preferences.interests)}
+        You are an expert travel agent. {destination_instruction}
+        Create a {preferences.days}-day itinerary with a hard all-inclusive budget cap of ${preferences.budget}.
+        Vibe/aesthetic: {vibe_instruction}
+        Work-friendly requirement: {work_instruction}
+        User Interests: {", ".join(preferences.interests)}
 
         CRITICAL INSTRUCTIONS:
-        1. You are a expert travel agent. Create a detailed, day-by-day itinerary.
-        2. MULTI-CITY LOGIC: If the user requests multiple destinations (e.g. 'Paris and London'), split the days logically between them. 
+        1. Return one curated destination and a compact, detailed day-wise itinerary only.
+        2. MULTI-CITY LOGIC: If the user explicitly requests multiple destinations, split the days logically between them.
            - You MUST specify the 'city' field for EACH DayPlan object so we know where the user is.
-           - Account for travel time between cities as an activity (e.g. 'Train to London').
-        3. REALISM: Account for opening hours (closed on Mondays?) and logical travel times between venues.
-        4. IMAGES: For every activity, generate a specific, search-friendly 'image_url' query (e.g. 'Eiffel Tower sunset').
-        5. COSTS: Estimate costs realistically. '0' for free activities. Ensure total stays under budget.
-        6. VALID VALID JSON: You must return PURE JSON matching the 'Itinerary' pydantic schema. No markdown, no pre-amble.
+           - Account for travel time between cities as an activity.
+        3. REALISM: Account for opening hours and logical travel times between venues.
+        4. IMAGES: For every activity, generate a specific, search-friendly image_url query or real image URL.
+        5. COSTS: Include transport, stay, food, and activities estimates in USD and keep the total under budget.
+        6. VALID JSON: Return pure JSON matching the Itinerary pydantic schema. No markdown, no preamble.
 
         TRIP DATES & OPENING HOURS:
         {self._get_calendar_context(preferences)}
 
         {activities_context}
 
+        REQUIREMENTS:
+        - Return one curated destination and a compact day-wise itinerary only.
+        - Include transport, stay, food, and activities estimates in USD.
+        - cost_breakdown.total MUST be less than or equal to ${preferences.budget}.
+        - Activity costs must match cost_breakdown.activities.
+        - Explain briefly why the destination matches the vibe.
+
         OUTPUT FORMAT:
         Return ONLY a JSON object matching this structure:
         {{
-            "city": "{preferences.city}",
+            "city": "Selected destination city",
+            "recommended_destination": "Selected destination city",
+            "vibe_rationale": "Why this destination matches the vibe and interests",
+            "budget_notes": "How the budget is allocated and kept under cap",
+            "work_friendly_notes": "Wi-Fi/coworking/stay notes or null",
+            "cost_breakdown": {{
+                "transport": 100,
+                "stay": 180,
+                "food": 90,
+                "activities": 80,
+                "total": 450,
+                "remaining_budget": 50
+            }},
             "days": [
                 {{
                     "day_number": 1,
@@ -449,7 +563,8 @@ class TravelAgent:
         """
         Asks Google Gen AI to check the error and generate a new plan.
         """
-        if preferences.city.lower() == "paris":
+        destination = (preferences.city or previous_plan.city or "").strip()
+        if destination.lower() == "paris":
             activities_context = f"""
              AVAILABLE ACTIVITIES:
              {json.dumps([a.model_dump() for a in self.activities], indent=2)}
@@ -471,7 +586,7 @@ class TravelAgent:
             """
 
         prompt = f"""
-        The previous itinerary for {preferences.city} was INVALID.
+        The previous itinerary for {destination or "the selected destination"} was INVALID.
         Error: {error}
         
         Previous Plan Total Cost: ${previous_plan.total_cost}
@@ -480,7 +595,9 @@ class TravelAgent:
         DATES:
         {self._get_calendar_context(preferences)}
 
-        Please fix the plan by removing or swapping activities to meet the constraints.
+        Please fix the plan by reducing category estimates and swapping activities to meet the constraints.
+        Keep exactly one destination, exactly {preferences.days} days, and total cost <= ${preferences.budget}.
+        Include a full cost_breakdown with transport, stay, food, activities, total, and remaining_budget.
         
         {extra_instruction}
         
@@ -551,3 +668,6 @@ class TravelAgent:
              # Should practically never happen given the stream logic always yields status then result
              raise RuntimeError("Planning failed to produce an itinerary result.")
         return result
+
+
+TravelPlanner = TravelAgent

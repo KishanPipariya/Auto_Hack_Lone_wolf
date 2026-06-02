@@ -1,7 +1,6 @@
 from ics import Calendar, Event
 from models import Itinerary
 from datetime import datetime, timedelta
-import pytz
 
 
 def generate_ics(itinerary: Itinerary, start_date_str: str | None = None) -> bytes:

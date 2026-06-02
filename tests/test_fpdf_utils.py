@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 from models import Itinerary, DayPlan, Activity
 from fpdf_utils import generate_pdf
 import sys

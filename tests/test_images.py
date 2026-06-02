@@ -1,15 +1,11 @@
-import pytest
-import sys
-import os
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
-import urllib.request
 import urllib.error
-from agent import TravelAgent
-from models import Itinerary
-
+import urllib.request
 from unittest.mock import patch
+
+import pytest
+
+from agent import TravelAgent
 
 
 class TestImageSystem:
@@ -17,7 +13,6 @@ class TestImageSystem:
         """Test that the parser injects a fallback URL when image_url is missing."""
         agent = TravelAgent()
 
-        # Simulating an LLM response with no image_url
         raw_response = json.dumps(
             {
                 "city": "Test City",
@@ -30,7 +25,6 @@ class TestImageSystem:
                                 "description": "A test activity",
                                 "cost": 10,
                                 "duration": "1 hour",
-                                # image_url intentionally missing
                             }
                         ],
                     }
@@ -38,7 +32,6 @@ class TestImageSystem:
             }
         )
 
-        # Mock _search_real_image to return None, forcing the pollinations.ai fallback
         with patch.object(agent, "_search_real_image", return_value=None):
             itinerary = agent._parse_llm_response(raw_response)
 
@@ -66,7 +59,7 @@ class TestImageSystem:
                                 "name": "Test Activity",
                                 "cost": 10,
                                 "duration": "1 hour",
-                                "image_url": "",  # Empty string
+                                "image_url": "",
                             }
                         ],
                     }
@@ -74,7 +67,6 @@ class TestImageSystem:
             }
         )
 
-        # Mock _search_real_image to return None, forcing the pollinations.ai fallback
         with patch.object(agent, "_search_real_image", return_value=None):
             itinerary = agent._parse_llm_response(raw_response)
 
@@ -83,9 +75,9 @@ class TestImageSystem:
         assert activity.image_url is not None
         assert "pollinations.ai" in activity.image_url
 
+    @pytest.mark.integration
     def test_pollinations_availability(self):
-        """Integration test: Verify that pollinations.ai returns 200 OK for a generated URL."""
-        # Construct a real URL that the app would use
+        """Integration test: Verify that pollinations.ai returns 200 OK."""
         url = "https://image.pollinations.ai/prompt/Eiffel%20Tower%20Paris%20aesthetic?width=800&height=600&nologo=true"
 
         try:
