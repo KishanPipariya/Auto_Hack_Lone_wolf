@@ -6,6 +6,8 @@ import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.core.agent import TravelAgent
+from app.core.destinations import recommend_destinations
+from app.core.parser import parse_llm_response
 from app.models.domain import Activity, CostBreakdown, DayPlan, Itinerary, Preferences
 
 
@@ -51,7 +53,7 @@ def test_json_parsing_resilience(planner):
     """Verifies parsing logic handles Markdown wrapping."""
     markdown_response = f"Here is your plan:\n```json\n{VALID_JSON_RESPONSE}\n```"
 
-    itinerary = planner._parse_llm_response(markdown_response)
+    itinerary = parse_llm_response(markdown_response)
     assert itinerary.city == "London"
     assert len(itinerary.days) == 1
 
@@ -122,40 +124,80 @@ def test_cost_breakdown_model_calculates_remaining_budget():
     assert breakdown.remaining_budget == 50
 
 
-def test_parser_normalizes_destination_and_budget_breakdown(planner):
+def test_parser_normalizes_current_schema(planner):
     raw_response = """
     {
-        "recommended_destination": "Lisbon",
+        "city": "Lisbon",
         "vibe_rationale": "Sunny tiles, cafes, and coastal viewpoints.",
-        "budget_breakdown": {
-            "transportation": "$120",
-            "accommodation": "$240",
-            "meals": "$90",
+        "cost_breakdown": {
+            "transport": "$120",
+            "stay": "$240",
+            "food": "$90",
             "activities": "$50",
             "total": "$500",
             "remaining_budget": "$100"
         },
         "days": [
             {
-                "day": 1,
+                "day_number": 1,
                 "activities": [
-                    {"name": "Miradouro walk", "description": "Viewpoint route", "cost": "$50", "duration": "2 hours"}
+                    {"name": "Miradouro walk", "description": "Viewpoint route", "cost": "$50", "duration_hours": "2 hours"}
                 ]
             }
         ]
     }
     """
 
-    with patch.object(planner, "_search_real_image", return_value=None):
-        itinerary = planner._parse_llm_response(raw_response)
+    itinerary = parse_llm_response(raw_response, image_search=lambda _: None)
 
     assert itinerary.city == "Lisbon"
-    assert itinerary.recommended_destination == "Lisbon"
     assert itinerary.cost_breakdown.transport == 120
     assert itinerary.cost_breakdown.stay == 240
     assert itinerary.cost_breakdown.food == 90
     assert itinerary.cost_breakdown.activities == 50
     assert itinerary.cost_breakdown.total == 500
+
+
+def test_parser_handles_wrapped_current_payload_and_generated_image(planner):
+    raw_response = """
+    ```json
+    {
+        "city": "Amsterdam",
+        "budget_notes": "Lean on transit and free walking routes.",
+        "cost_breakdown": {
+            "transport": "$40",
+            "stay": "$220",
+            "food": "$90",
+            "activities": "$20",
+            "total": "$370"
+        },
+        "days": [
+            {
+                "day_number": 1,
+                "activities": [
+                    {
+                        "name": "Canal walk",
+                        "cost": "Free",
+                        "duration_hours": "2.5 hours"
+                    }
+                ]
+            }
+        ]
+    }
+    ```
+    """
+
+    itinerary = parse_llm_response(raw_response, image_search=lambda _: None)
+
+    activity = itinerary.days[0].activities[0]
+    assert itinerary.city == "Amsterdam"
+    assert itinerary.budget_notes == "Lean on transit and free walking routes."
+    assert activity.cost == 0
+    assert activity.duration_hours == 2.5
+    assert activity.tags == ["General"]
+    assert activity.description == "Canal walk"
+    assert activity.image_url is not None
+    assert "pollinations.ai" in activity.image_url
 
 
 def test_constraint_checking_uses_category_total(planner):
@@ -184,3 +226,120 @@ def test_constraint_checking_uses_category_total(planner):
     assert is_valid is False
     assert itinerary.validation_error is not None
     assert "exceeds budget" in itinerary.validation_error
+
+
+def test_plan_trip_stream_yields_status_events_then_itinerary(planner):
+    itinerary = Itinerary(
+        city="Porto",
+        cost_breakdown=CostBreakdown(
+            transport=50,
+            stay=100,
+            food=40,
+            activities=20,
+            total=210,
+            remaining_budget=90,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                activities=[
+                    Activity(
+                        name="Riverside walk",
+                        description="Douro viewpoint route",
+                        tags=["Views"],
+                        duration_hours=2.0,
+                        cost=0.0,
+                    )
+                ],
+            )
+        ],
+    )
+
+    with patch.object(planner, "generate_initial_plan", return_value=itinerary):
+        events = list(
+            planner.plan_trip_stream(
+                Preferences(city="Porto", budget=300, days=1, interests=["Views"])
+            )
+        )
+
+    assert all(isinstance(event, str) for event in events[:-1])
+    assert isinstance(events[-1], Itinerary)
+    assert events[-1].city == "Porto"
+
+
+def test_no_city_vibe_request_receives_destination_suggestions(planner):
+    prefs = Preferences(
+        budget=1500,
+        days=1,
+        interests=["Food"],
+        vibe="ancient town cafes beach",
+    )
+    expected_city = recommend_destinations(prefs)[0].city
+    captured = {}
+
+    def fake_initial(preferences, destination_suggestions):
+        captured["preferences"] = preferences
+        captured["suggestions"] = destination_suggestions
+        return Itinerary(
+            city=preferences.city,
+            cost_breakdown=CostBreakdown(
+                transport=100,
+                stay=200,
+                food=80,
+                activities=20,
+            ),
+            days=[
+                DayPlan(
+                    day_number=1,
+                    activities=[
+                        Activity(
+                            name="Old town cafe walk",
+                            description="Compact food route",
+                            cost=20,
+                        )
+                    ],
+                )
+            ],
+        )
+
+    with patch.object(planner, "generate_initial_plan", side_effect=fake_initial):
+        events = list(planner.plan_trip_stream(prefs))
+
+    result = events[-1]
+    assert isinstance(result, Itinerary)
+    assert captured["preferences"].city == expected_city
+    assert result.city == expected_city
+    assert result.recommended_destination == expected_city
+    assert len(result.destination_suggestions) == 3
+
+
+def test_over_budget_final_plan_remains_invalid(planner):
+    itinerary = Itinerary(
+        city="Lisbon",
+        cost_breakdown=CostBreakdown(
+            transport=300,
+            stay=300,
+            food=100,
+            activities=50,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                activities=[Activity(name="Dinner", description="Meal", cost=50)],
+            )
+        ],
+    )
+
+    prefs = Preferences(city="Lisbon", budget=500, days=1, interests=["Food"])
+
+    with (
+        patch.object(planner, "generate_initial_plan", return_value=itinerary),
+        patch.object(planner, "refine_plan", return_value=itinerary),
+    ):
+        events = list(planner.plan_trip_stream(prefs))
+
+    result = events[-1]
+    assert isinstance(result, Itinerary)
+    assert result.valid is False
+    assert result.validation_error is not None
+    assert "exceeds budget" in result.validation_error

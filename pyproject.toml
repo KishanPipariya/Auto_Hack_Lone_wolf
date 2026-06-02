@@ -1,7 +1,7 @@
 [project]
 name = "autonomous-hacks"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI-powered travel planner with FastAPI, Streamlit, itinerary validation, and PDF export"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

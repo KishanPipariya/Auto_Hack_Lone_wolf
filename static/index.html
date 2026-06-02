@@ -687,6 +687,7 @@
         function renderTripSummary(data) {
             const breakdown = data.cost_breakdown || {};
             const remaining = Number(breakdown.remaining_budget || 0);
+            const suggestions = Array.isArray(data.destination_suggestions) ? data.destination_suggestions : [];
             const warning = remaining < 0
                 ? `<div class="budget-warning">Budget warning: this plan is over budget by $${formatMoney(Math.abs(remaining))}.</div>`
                 : '';
@@ -710,6 +711,17 @@
                     ${data.vibe_rationale ? `<p class="summary-note">${data.vibe_rationale}</p>` : ''}
                     ${data.work_friendly_notes ? `<p class="summary-note">${data.work_friendly_notes}</p>` : ''}
                     ${data.budget_notes ? `<p class="summary-note">${data.budget_notes}</p>` : ''}
+                    ${suggestions.length ? `
+                        <div class="suggestions-list" aria-label="Curated destination suggestions">
+                            ${suggestions.map(suggestion => `
+                                <div class="suggestion-item">
+                                    <strong>${suggestion.city}${suggestion.country ? `, ${suggestion.country}` : ''}</strong>
+                                    <span>$${formatMoney(suggestion.estimated_total_cost)} estimated</span>
+                                    ${suggestion.rationale ? `<p>${suggestion.rationale}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                     <div class="cost-grid">
                         ${['transport', 'stay', 'food', 'activities'].map(key => `
                             <div class="cost-cell">

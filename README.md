@@ -4,7 +4,7 @@ A smart AI-powered travel agent that creates personalized itineraries using Gemi
 
 ## Prerequisites
 
-- **Python 3.12+**
+- **Python 3.13+**
 - **[uv](https://github.com/astral-sh/uv)** (Fast Python package installer and resolver)
   ```bash
   # Install uv if you haven't already
@@ -64,5 +64,11 @@ Once running, open your browser and go to:
 
 - **Run Tests**:
   ```bash
-  uv run pytest
+  uv run pytest -q
+  ```
+
+- **Run Checks**:
+  ```bash
+  uv run ruff check .
+  uv run ty check .
   ```

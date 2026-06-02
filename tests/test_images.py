@@ -1,18 +1,15 @@
 import json
 import urllib.error
 import urllib.request
-from unittest.mock import patch
 
 import pytest
 
-from app.core.agent import TravelAgent
+from app.core.parser import parse_llm_response
 
 
 class TestImageSystem:
     def test_fallback_injection(self):
         """Test that the parser injects a fallback URL when image_url is missing."""
-        agent = TravelAgent()
-
         raw_response = json.dumps(
             {
                 "city": "Test City",
@@ -24,7 +21,7 @@ class TestImageSystem:
                                 "name": "Test Activity",
                                 "description": "A test activity",
                                 "cost": 10,
-                                "duration": "1 hour",
+                                "duration_hours": "1 hour",
                             }
                         ],
                     }
@@ -32,8 +29,7 @@ class TestImageSystem:
             }
         )
 
-        with patch.object(agent, "_search_real_image", return_value=None):
-            itinerary = agent._parse_llm_response(raw_response)
+        itinerary = parse_llm_response(raw_response, image_search=lambda _: None)
 
         activity = itinerary.days[0].activities[0]
 
@@ -46,8 +42,6 @@ class TestImageSystem:
 
     def test_fallback_injection_empty_string(self):
         """Test that the parser injects a fallback URL when image_url is empty string."""
-        agent = TravelAgent()
-
         raw_response = json.dumps(
             {
                 "city": "Test City",
@@ -58,7 +52,7 @@ class TestImageSystem:
                             {
                                 "name": "Test Activity",
                                 "cost": 10,
-                                "duration": "1 hour",
+                                "duration_hours": "1 hour",
                                 "image_url": "",
                             }
                         ],
@@ -67,8 +61,7 @@ class TestImageSystem:
             }
         )
 
-        with patch.object(agent, "_search_real_image", return_value=None):
-            itinerary = agent._parse_llm_response(raw_response)
+        itinerary = parse_llm_response(raw_response, image_search=lambda _: None)
 
         activity = itinerary.days[0].activities[0]
 

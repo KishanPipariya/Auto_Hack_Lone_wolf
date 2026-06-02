@@ -134,6 +134,7 @@ def test_plan_stream_structure():
         assert evt2["type"] == "result"
         assert evt2["data"]["city"] == "Stream City"
         assert "cost_breakdown" in evt2["data"]
+        assert "destination_suggestions" in evt2["data"]
 
 
 def test_plan_stream_accepts_work_friendly_request():
@@ -203,3 +204,35 @@ def test_api_error_handling():
 
         assert err_evt["type"] == "error"
         assert "High traffic volume" in err_evt["message"]
+
+
+def test_calendar_endpoint_returns_downloadable_ics():
+    response = client.post(
+        "/calendar?start_date=2026-01-15",
+        json={
+            "city": "Paris",
+            "recommended_destination": "Paris",
+            "cost_breakdown": {"total": 42, "remaining_budget": 58},
+            "days": [
+                {
+                    "day_number": 1,
+                    "activities": [
+                        {
+                            "name": "Eiffel Tower",
+                            "description": "Iron lady",
+                            "cost": 25,
+                            "duration_hours": 2,
+                            "tags": ["Sightseeing"],
+                        }
+                    ],
+                }
+            ],
+            "valid": True,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/calendar")
+    assert response.headers["content-disposition"] == 'attachment; filename="Trip_to_Paris.ics"'
+    assert "BEGIN:VCALENDAR" in response.text
+    assert "SUMMARY:Eiffel Tower (Paris)" in response.text

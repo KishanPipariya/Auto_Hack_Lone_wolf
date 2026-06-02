@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.agent import TravelAgent
+from app.core.images import search_real_image
 
 
 class TestRealImageSearch:
@@ -9,11 +9,10 @@ class TestRealImageSearch:
         """
         Integration test to verify DuckDuckGo search returns a real URL.
         """
-        agent = TravelAgent()
         query = "Eiffel Tower Paris"
 
         print(f"\nSearching for: {query}...")
-        url = agent._search_real_image(query)
+        url = search_real_image(query)
 
         print(f"Result: {url}")
 

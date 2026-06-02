@@ -376,6 +376,32 @@ button:focus-visible,
     margin: 1rem 0 0;
 }
 
+.suggestions-list {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.suggestion-item {
+    border-left: 3px solid var(--color-primary);
+    padding-left: 0.85rem;
+}
+
+.suggestion-item strong,
+.suggestion-item span {
+    display: block;
+}
+
+.suggestion-item span,
+.suggestion-item p {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.suggestion-item p {
+    margin: 0.25rem 0 0;
+}
+
 .cost-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

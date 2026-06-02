@@ -167,13 +167,22 @@ def render_planner():
     with st.form("plan_form"):
         col1, col2 = st.columns(2)
         with col1:
-            dest = st.text_input("Destination", placeholder="Paris, Tokyo, New York...")
+            dest = st.text_input(
+                "Destination",
+                placeholder="Paris, Tokyo, New York, or leave blank for vibe discovery",
+            )
             days = st.number_input(
                 "Duration (Days)", min_value=1, max_value=14, value=3
             )
         with col2:
             budget = st.number_input("Budget ($)", min_value=100, step=100, value=1000)
             start_date = st.date_input("Start Date", value=None)
+
+        vibe = st.text_input(
+            "Vibe / Aesthetic",
+            placeholder="quiet coastal cafes, art streets, budget nightlife...",
+        )
+        work_friendly = st.checkbox("Work-friendly")
 
         interests = st.multiselect(
             "Interests",
@@ -185,10 +194,6 @@ def render_planner():
         submitted = st.form_submit_button("Generate Itinerary", type="primary")
 
         if submitted:
-            if not dest:
-                st.warning("Please enter a destination.")
-                return
-
             final_interests = interests.copy()
             if custom_interests:
                 final_interests.extend(
@@ -196,11 +201,13 @@ def render_planner():
                 )
 
             payload = {
-                "city": dest,
+                "city": dest.strip() or None,
                 "days": days,
                 "budget": budget,
                 "start_date": str(start_date) if start_date else None,
                 "interests": final_interests,
+                "vibe": vibe.strip() or None,
+                "work_friendly": work_friendly,
             }
 
             st.write("---")

@@ -1,6 +1,11 @@
-from typing import List, Optional, Union
+import re
+from typing import Any, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    BaseModel,
+    Field,
+    field_validator,
+)
 
 
 class Preferences(BaseModel):
@@ -14,15 +19,23 @@ class Preferences(BaseModel):
 
 
 class Activity(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-
     name: str
-    cost: Union[float, str]
-    duration_hours: Union[float, str] = Field(alias="duration")
-    tags: List[str]
-    description: str
+    cost: float
+    duration_hours: float = 1.0
+    tags: List[str] = Field(default_factory=list)
+    description: str = ""
     image_url: Optional[str] = None
     duration_str: Optional[str] = None
+
+    @field_validator("cost", "duration_hours", mode="before")
+    @classmethod
+    def parse_number(cls, value: Any) -> float:
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            numbers = re.findall(r"[-+]?\d*\.\d+|\d+", value.replace(",", ""))
+            return float(numbers[0]) if numbers else 0.0
+        return 0.0
 
 
 class CostBreakdown(BaseModel):
@@ -55,7 +68,7 @@ class DayPlan(BaseModel):
     total_cost: float = 0.0
 
     def calculate_cost(self):
-        self.total_cost = sum(a.cost for a in self.activities)
+        self.total_cost = sum(float(a.cost) for a in self.activities)
         return self.total_cost
 
 
@@ -65,6 +78,7 @@ class Itinerary(BaseModel):
     vibe_rationale: Optional[str] = None
     budget_notes: Optional[str] = None
     work_friendly_notes: Optional[str] = None
+    destination_suggestions: List[DestinationSuggestion] = Field(default_factory=list)
     cost_breakdown: CostBreakdown = Field(default_factory=CostBreakdown)
     total_cost: float = 0.0
     days: List[DayPlan]
