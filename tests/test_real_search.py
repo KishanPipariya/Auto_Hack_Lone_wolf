@@ -1,6 +1,6 @@
 import pytest
 
-from agent import TravelAgent
+from app.core.agent import TravelAgent
 
 
 class TestRealImageSearch:

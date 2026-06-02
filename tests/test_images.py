@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agent import TravelAgent
+from app.core.agent import TravelAgent
 
 
 class TestImageSystem:

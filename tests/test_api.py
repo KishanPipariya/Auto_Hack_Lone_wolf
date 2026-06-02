@@ -20,7 +20,7 @@ def test_health_check():
 def test_plan_endpoint_success():
     """Verifies POST /plan returns a valid itinerary."""
     with patch.object(agent, "plan_trip") as mock_plan:
-        from models import CostBreakdown, Itinerary
+        from app.models.domain import CostBreakdown, Itinerary
 
         real_itinerary = Itinerary(
             city="Test City",
@@ -60,7 +60,7 @@ def test_plan_endpoint_success():
 
 
 def test_plan_endpoint_allows_city_omitted_with_vibe():
-    from models import CostBreakdown, Itinerary
+    from app.models.domain import CostBreakdown, Itinerary
 
     with patch.object(agent, "plan_trip") as mock_plan:
         mock_plan.return_value = Itinerary(
@@ -102,7 +102,7 @@ def test_plan_stream_structure():
 
     def mock_generator(prefs):
         yield "Status Update 1"
-        from models import CostBreakdown, Itinerary
+        from app.models.domain import CostBreakdown, Itinerary
 
         yield Itinerary(
             city="Stream City",
@@ -142,7 +142,7 @@ def test_plan_stream_accepts_work_friendly_request():
     def mock_generator(prefs):
         captured["prefs"] = prefs
         yield "Status Update 1"
-        from models import CostBreakdown, Itinerary
+        from app.models.domain import CostBreakdown, Itinerary
 
         yield Itinerary(
             city="Chiang Mai",
@@ -182,7 +182,7 @@ def test_plan_stream_accepts_work_friendly_request():
 
 def test_api_error_handling():
     """Verifies that exceptions are sanitized."""
-    from agent import TravelAgent
+    from app.core.agent import TravelAgent
 
     with patch.object(
         TravelAgent, "plan_trip_stream", side_effect=Exception("Wait 429 Error")

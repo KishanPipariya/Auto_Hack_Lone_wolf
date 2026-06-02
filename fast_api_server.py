@@ -6,8 +6,8 @@ import json
 import asyncio
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from models import Preferences, Itinerary
-from agent import TravelAgent
+from app.models.domain import Preferences, Itinerary
+from app.core.agent import TravelAgent
 from dotenv import load_dotenv
 from app.api.routers.auth import router as auth_router
 from app.api.routers.history import router as history_router
@@ -116,8 +116,8 @@ async def stream_plan_endpoint(preferences: Preferences):
 
 @app.post("/pdf")
 async def generate_pdf(itinerary: Itinerary):
-    # Delegate to utils
-    from fpdf_utils import generate_pdf as generate_pdf_util
+    from app.services.pdf import generate_pdf as generate_pdf_util
+
     return await generate_pdf_util(itinerary)
 
 

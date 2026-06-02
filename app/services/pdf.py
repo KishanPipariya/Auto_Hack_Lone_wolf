@@ -3,7 +3,7 @@ from fastapi import Response
 import io
 import aiohttp
 import asyncio
-from models import Itinerary
+from app.models.domain import Itinerary
 import logging
 
 logger = logging.getLogger("travel_agent_server")

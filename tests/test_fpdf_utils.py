@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, patch
-from models import Itinerary, DayPlan, Activity
-from fpdf_utils import generate_pdf
+from app.models.domain import Itinerary, DayPlan, Activity
+from app.services.pdf import generate_pdf
 import sys
 import os
 

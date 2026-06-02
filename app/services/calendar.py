@@ -1,5 +1,5 @@
 from ics import Calendar, Event
-from models import Itinerary
+from app.models.domain import Itinerary
 from datetime import datetime, timedelta
 
 

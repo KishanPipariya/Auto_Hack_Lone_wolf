@@ -1,4 +1,4 @@
-from auth_utils import get_password_hash, verify_password
+from app.services.auth import get_password_hash, verify_password
 
 try:
     pwd = "testpassword"

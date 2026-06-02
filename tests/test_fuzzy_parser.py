@@ -1,6 +1,6 @@
 import unittest
 
-from agent import TravelAgent
+from app.core.agent import TravelAgent
 
 
 REAL_BROKEN_JSON = """

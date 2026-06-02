@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, StaticPool
 from sqlalchemy.orm import sessionmaker
-from database import Base, get_db
+from app.core.database import Base, get_db
 from fast_api_server import app
 import pytest
 

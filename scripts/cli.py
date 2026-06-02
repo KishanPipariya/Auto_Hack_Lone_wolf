@@ -1,6 +1,6 @@
 import argparse
-from models import Preferences
-from agent import TravelAgent
+from app.models.domain import Preferences
+from app.core.agent import TravelAgent
 
 
 def main():
