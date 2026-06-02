@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timedelta
+from typing import Mapping
 
 from app.core.destinations import destination_context
 from app.models.domain import Activity, DestinationSuggestion, Itinerary, Preferences
@@ -52,6 +53,7 @@ def initial_plan_prompt(
     preferences: Preferences,
     activities: list[Activity],
     destination_suggestions: list[DestinationSuggestion] | None = None,
+    category_targets: Mapping[str, float] | None = None,
 ) -> str:
     destination = (preferences.city or "").strip()
     destination_instruction = (
@@ -69,6 +71,7 @@ def initial_plan_prompt(
     )
     activities_context = activities_context_for_destination(destination, activities)
     curated_context = destination_context(destination_suggestions or [])
+    budget_context = budget_targets_context(preferences, category_targets)
 
     return f"""
         You are an expert travel agent. {destination_instruction}
@@ -78,6 +81,8 @@ def initial_plan_prompt(
         User Interests: {", ".join(preferences.interests)}
 
         {curated_context}
+
+        {budget_context}
 
         CRITICAL INSTRUCTIONS:
         1. Return one curated destination and a compact, detailed day-wise itinerary only.
@@ -99,7 +104,10 @@ def initial_plan_prompt(
         - Include transport, stay, food, and activities estimates in USD.
         - cost_breakdown.total MUST be less than or equal to ${preferences.budget}.
         - Activity costs must match cost_breakdown.activities.
+        - transport + stay + food + activities MUST equal cost_breakdown.total.
         - Explain briefly why the destination matches the vibe.
+        - Include budget_notes explaining the category allocation and remaining budget.
+        - Include work_friendly_notes when the work-friendly requirement is active; otherwise use null.
 
         OUTPUT FORMAT:
         Return ONLY a JSON object matching this structure:
@@ -144,12 +152,14 @@ def refinement_prompt(
     preferences: Preferences,
     activities: list[Activity],
     destination_suggestions: list[DestinationSuggestion] | None = None,
+    category_targets: Mapping[str, float] | None = None,
 ) -> str:
     destination = (preferences.city or previous_plan.city or "").strip()
     activities_context = activities_context_for_destination(
         destination, activities, refinement=True
     )
     curated_context = destination_context(destination_suggestions or [])
+    budget_context = budget_targets_context(preferences, category_targets)
     extra_instruction = ""
     if "0 days" in error or "valid JSON" in error:
         extra_instruction = """
@@ -166,12 +176,15 @@ def refinement_prompt(
         Previous Plan Total Cost: ${previous_plan.total_cost}
         Budget: ${preferences.budget}
 
+        {budget_context}
+
         DATES:
         {calendar_context(preferences)}
 
         Please fix the plan by reducing category estimates and swapping activities to meet the constraints.
         Keep exactly one destination, exactly {preferences.days} days, and total cost <= ${preferences.budget}.
         Include a full cost_breakdown with transport, stay, food, activities, total, and remaining_budget.
+        Ensure activity costs add up to cost_breakdown.activities and all cost categories add up to cost_breakdown.total.
         Preserve destination_suggestions from the previous plan.
 
         {extra_instruction}
@@ -183,6 +196,29 @@ def refinement_prompt(
         OUTPUT FORMAT:
         Return a valid JSON object matching the Itinerary structure.
         """
+
+
+def budget_targets_context(
+    preferences: Preferences,
+    category_targets: Mapping[str, float] | None,
+) -> str:
+    if not category_targets:
+        return (
+            "BUDGET TARGETS:\n"
+            f"- Hard cap: ${preferences.budget:g}. Keep every estimate all-inclusive and under this cap."
+        )
+
+    return "\n".join(
+        [
+            "BUDGET TARGETS:",
+            f"- Hard cap: ${category_targets.get('total', preferences.budget):g}",
+            f"- Transport target: ${category_targets.get('transport', 0):g}",
+            f"- Stay target: ${category_targets.get('stay', 0):g}",
+            f"- Food target: ${category_targets.get('food', 0):g}",
+            f"- Activities target: ${category_targets.get('activities', 0):g}",
+            "- You may move small amounts between categories, but the final total must remain under the hard cap.",
+        ]
+    )
 
 
 def activities_context_for_destination(

@@ -20,11 +20,27 @@ def test_health_check():
 def test_plan_endpoint_success():
     """Verifies POST /plan returns a valid itinerary."""
     with patch.object(agent, "plan_trip") as mock_plan:
-        from app.models.domain import CostBreakdown, Itinerary
+        from app.models.domain import (
+            CostBreakdown,
+            DestinationSuggestion,
+            Itinerary,
+        )
 
         real_itinerary = Itinerary(
             city="Test City",
             recommended_destination="Test City",
+            vibe_rationale="Matches the test vibe.",
+            budget_notes="All categories stay under the cap.",
+            work_friendly_notes="Use a hotel with reliable Wi-Fi.",
+            destination_suggestions=[
+                DestinationSuggestion(
+                    city="Test City",
+                    country="Testland",
+                    rationale="Best curated fit.",
+                    estimated_total_cost=100,
+                    tags=["Testing"],
+                )
+            ],
             cost_breakdown=CostBreakdown(
                 transport=20,
                 stay=30,
@@ -54,6 +70,10 @@ def test_plan_endpoint_success():
         data = response.json()
         assert data["city"] == "Test City"
         assert data["cost_breakdown"]["total"] == 100
+        assert data["total_cost"] == 100
+        assert data["budget_notes"]
+        assert data["work_friendly_notes"]
+        assert data["destination_suggestions"][0]["city"] == "Test City"
 
         prefs = mock_plan.call_args.args[0]
         assert prefs.city == "Test City"
@@ -177,6 +197,7 @@ def test_plan_stream_accepts_work_friendly_request():
         assert response.status_code == 200
         data = json.loads(response.text.strip().split("\n")[-1])["data"]
         assert data["recommended_destination"] == "Chiang Mai"
+        assert data["cost_breakdown"]["remaining_budget"] == 50
         assert data["work_friendly_notes"]
         assert captured["prefs"].work_friendly is True
 

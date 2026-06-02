@@ -26,6 +26,35 @@ load_dotenv()
 logger = logging.getLogger("travel_agent_server.agent")
 
 
+def budget_targets(preferences: Preferences) -> dict[str, float]:
+    """Allocate the hard budget into deterministic planning targets."""
+    if preferences.work_friendly:
+        ratios = {
+            "transport": 0.20,
+            "stay": 0.40,
+            "food": 0.20,
+            "activities": 0.20,
+        }
+    else:
+        ratios = {
+            "transport": 0.25,
+            "stay": 0.35,
+            "food": 0.20,
+            "activities": 0.20,
+        }
+
+    targets = {
+        category: round(preferences.budget * ratio, 2)
+        for category, ratio in ratios.items()
+    }
+    target_total = sum(targets.values())
+    targets["activities"] = round(
+        targets["activities"] + preferences.budget - target_total, 2
+    )
+    targets["total"] = round(preferences.budget, 2)
+    return targets
+
+
 class TravelAgent:
     def __init__(self):
         self.activities = MOCK_ACTIVITIES
@@ -129,6 +158,17 @@ class TravelAgent:
             )
             return False
 
+        activity_total = sum(
+            sum(activity.cost for activity in day.activities)
+            for day in itinerary.days
+        )
+        if abs(activity_total - itinerary.cost_breakdown.activities) > 0.01:
+            itinerary.valid = False
+            itinerary.validation_error = (
+                "Activity costs do not match cost_breakdown.activities."
+            )
+            return False
+
         total_cost = itinerary.cost_breakdown.total
 
         category_total = (
@@ -199,8 +239,9 @@ class TravelAgent:
         destination_suggestions: list[DestinationSuggestion] | None = None,
     ) -> Itinerary:
         logger.debug("Generating initial itinerary")
+        targets = budget_targets(preferences)
         prompt = initial_plan_prompt(
-            preferences, self.activities, destination_suggestions or []
+            preferences, self.activities, destination_suggestions or [], targets
         )
         response_text = self._call_model_with_fallback(prompt)
         return parse_llm_response(response_text, image_search=search_real_image)
@@ -213,12 +254,14 @@ class TravelAgent:
         destination_suggestions: list[DestinationSuggestion] | None = None,
     ) -> Itinerary:
         logger.debug("Refining itinerary after validation error: %s", error)
+        targets = budget_targets(preferences)
         prompt = refinement_prompt(
             previous_plan,
             error,
             preferences,
             self.activities,
             destination_suggestions or [],
+            targets,
         )
         response_text = self._call_model_with_fallback(prompt)
         return parse_llm_response(response_text, image_search=search_real_image)

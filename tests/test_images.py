@@ -1,4 +1,5 @@
 import json
+import os
 import urllib.error
 import urllib.request
 
@@ -69,6 +70,10 @@ class TestImageSystem:
         assert "pollinations.ai" in activity.image_url
 
     @pytest.mark.integration
+    @pytest.mark.skipif(
+        os.environ.get("RUN_REAL_IMAGE_SEARCH") != "1",
+        reason="External image availability check is opt-in.",
+    )
     def test_pollinations_availability(self):
         """Integration test: Verify that pollinations.ai returns 200 OK."""
         url = "https://image.pollinations.ai/prompt/Eiffel%20Tower%20Paris%20aesthetic?width=800&height=600&nologo=true"

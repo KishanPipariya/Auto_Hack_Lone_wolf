@@ -663,7 +663,7 @@
 
             // Add Download Button at the bottom
             html += `
-                <div class="summary-container" style="display: flex; gap: 15px; justify-content: center; margin: 30px 0;">
+                <div class="summary-container export-actions">
                     <button onclick="saveHistory(window.itineraryData)" class="plan-btn" style="background: var(--color-primary); color: white; border: none; font-weight: bold;">
                         <span class="icon">💾</span> Save Trip
                     </button>
@@ -672,6 +672,9 @@
                     </button>
                     <button onclick="downloadCalendar()" class="plan-btn" style="background: var(--color-bg-card); color: var(--color-text-primary); border: 1px solid var(--color-border);">
                         <span class="icon">📅</span> Add to Calendar
+                    </button>
+                    <button onclick="shareItinerary()" class="plan-btn" style="background: var(--color-bg-card); color: var(--color-text-primary); border: 1px solid var(--color-border);">
+                        <span class="icon">🔗</span> Share
                     </button>
                 </div>
             `;
@@ -812,6 +815,52 @@
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
+            }
+        }
+
+        function itineraryShareText(data) {
+            const breakdown = data.cost_breakdown || {};
+            const destination = data.recommended_destination || data.city;
+            const total = formatMoney(breakdown.total ?? data.total_cost);
+            const remaining = formatMoney(breakdown.remaining_budget || 0);
+            const lines = [
+                `Trip to ${destination}`,
+                `Estimated total: $${total}`,
+                `Remaining budget: $${remaining}`,
+            ];
+
+            if (data.vibe_rationale) lines.push(`Why it fits: ${data.vibe_rationale}`);
+            if (data.work_friendly_notes) lines.push(`Work-friendly notes: ${data.work_friendly_notes}`);
+
+            data.days.forEach(day => {
+                const activities = day.activities.map(activity => activity.name).join(', ');
+                lines.push(`Day ${day.day_number}: ${activities}`);
+            });
+
+            return lines.join('\n');
+        }
+
+        async function shareItinerary() {
+            if (!itineraryData) return;
+
+            const text = itineraryShareText(itineraryData);
+            const title = `Trip to ${itineraryData.recommended_destination || itineraryData.city}`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title, text });
+                    return;
+                } catch (error) {
+                    if (error.name === 'AbortError') return;
+                }
+            }
+
+            try {
+                await navigator.clipboard.writeText(text);
+                alert('Itinerary copied to clipboard.');
+            } catch (error) {
+                console.error('Share failed:', error);
+                alert(text);
             }
         }
 

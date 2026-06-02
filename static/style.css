@@ -437,6 +437,19 @@ button:focus-visible,
     font-weight: 700;
 }
 
+.export-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.export-actions .plan-btn {
+    flex: 1 1 150px;
+    max-width: 190px;
+}
+
 /* Itinerary Cards */
 .itinerary-day {
     background: var(--color-bg-card);
@@ -774,5 +787,9 @@ input:checked+.slider:before {
 
     .activity-image {
         height: 180px;
+    }
+
+    .export-actions .plan-btn {
+        max-width: none;
     }
 }

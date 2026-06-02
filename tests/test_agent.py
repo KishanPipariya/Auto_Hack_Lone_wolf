@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from app.core.agent import TravelAgent
+from app.core.agent import TravelAgent, budget_targets
 from app.core.destinations import recommend_destinations
 from app.core.parser import parse_llm_response
 from app.models.domain import Activity, CostBreakdown, DayPlan, Itinerary, Preferences
@@ -18,7 +18,7 @@ VALID_JSON_RESPONSE = """
         {
             "day_number": 1,
             "activities": [
-                {"name": "Big Ben", "description": "Iconic clock tower", "tags": ["Sightseeing"], "duration_hours": 1.0, "cost": 0.0}
+                {"name": "Big Ben", "description": "Iconic clock tower", "tags": ["Sightseeing"], "duration_hours": 1.0, "cost": 0.0, "image_url": "https://example.com/big-ben.jpg"}
             ]
         }
     ]
@@ -53,7 +53,7 @@ def test_json_parsing_resilience(planner):
     """Verifies parsing logic handles Markdown wrapping."""
     markdown_response = f"Here is your plan:\n```json\n{VALID_JSON_RESPONSE}\n```"
 
-    itinerary = parse_llm_response(markdown_response)
+    itinerary = parse_llm_response(markdown_response, image_search=lambda _: None)
     assert itinerary.city == "London"
     assert len(itinerary.days) == 1
 
@@ -122,6 +122,35 @@ def test_cost_breakdown_model_calculates_remaining_budget():
 
     assert breakdown.calculate_total(budget=500) == 450
     assert breakdown.remaining_budget == 50
+
+
+def test_budget_targets_allocate_full_hard_cap():
+    prefs = Preferences(city="Lisbon", budget=500, days=2, interests=["Food"])
+
+    targets = budget_targets(prefs)
+
+    assert targets == {
+        "transport": 125,
+        "stay": 175,
+        "food": 100,
+        "activities": 100,
+        "total": 500,
+    }
+
+
+def test_work_friendly_budget_targets_prioritize_stay():
+    prefs = Preferences(
+        city="Lisbon",
+        budget=500,
+        days=2,
+        interests=["Food"],
+        work_friendly=True,
+    )
+
+    targets = budget_targets(prefs)
+
+    assert targets["stay"] == 200
+    assert sum(targets[key] for key in ("transport", "stay", "food", "activities")) == 500
 
 
 def test_parser_normalizes_current_schema(planner):
@@ -228,6 +257,39 @@ def test_constraint_checking_uses_category_total(planner):
     assert "exceeds budget" in itinerary.validation_error
 
 
+def test_constraint_checking_requires_activity_category_match(planner):
+    itinerary = Itinerary(
+        city="Lisbon",
+        cost_breakdown=CostBreakdown(
+            transport=100,
+            stay=200,
+            food=80,
+            activities=10,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                activities=[
+                    Activity(
+                        name="Food walk",
+                        description="Market route",
+                        tags=["Food"],
+                        duration_hours=2.0,
+                        cost=25.0,
+                    )
+                ],
+            )
+        ],
+    )
+    prefs = Preferences(city="Lisbon", budget=500, days=1, interests=["Food"])
+
+    is_valid = planner._check_constraints(itinerary, prefs)
+
+    assert is_valid is False
+    assert itinerary.validation_error is not None
+    assert "Activity costs" in itinerary.validation_error
+
+
 def test_plan_trip_stream_yields_status_events_then_itinerary(planner):
     itinerary = Itinerary(
         city="Porto",
@@ -248,7 +310,7 @@ def test_plan_trip_stream_yields_status_events_then_itinerary(planner):
                         description="Douro viewpoint route",
                         tags=["Views"],
                         duration_hours=2.0,
-                        cost=0.0,
+                        cost=20.0,
                     )
                 ],
             )
@@ -343,3 +405,50 @@ def test_over_budget_final_plan_remains_invalid(planner):
     assert result.valid is False
     assert result.validation_error is not None
     assert "exceeds budget" in result.validation_error
+
+
+def test_over_budget_plan_is_refined_to_valid_itinerary(planner):
+    initial = Itinerary(
+        city="Lisbon",
+        cost_breakdown=CostBreakdown(
+            transport=300,
+            stay=300,
+            food=100,
+            activities=50,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                activities=[Activity(name="Dinner", description="Meal", cost=50)],
+            )
+        ],
+    )
+    refined = Itinerary(
+        city="Lisbon",
+        cost_breakdown=CostBreakdown(
+            transport=100,
+            stay=180,
+            food=70,
+            activities=50,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                activities=[Activity(name="Market walk", description="Food", cost=50)],
+            )
+        ],
+    )
+
+    prefs = Preferences(city="Lisbon", budget=500, days=1, interests=["Food"])
+
+    with (
+        patch.object(planner, "generate_initial_plan", return_value=initial),
+        patch.object(planner, "refine_plan", return_value=refined) as mock_refine,
+    ):
+        events = list(planner.plan_trip_stream(prefs))
+
+    result = events[-1]
+    assert isinstance(result, Itinerary)
+    assert mock_refine.call_count == 1
+    assert result.valid is True
+    assert result.cost_breakdown.total == 400

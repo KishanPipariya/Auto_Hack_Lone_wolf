@@ -11,12 +11,55 @@ DESTINATIONS_PATH = Path(__file__).resolve().parents[1] / "data" / "destinations
 INTEREST_KEYWORDS = {
     "adventure": {"adventure", "hiking", "trek", "surf", "diving", "rafting"},
     "art": {"art", "gallery", "museum", "architecture", "creative"},
+    "cafes": {"cafe", "cafes", "coffee", "street food", "food"},
     "food": {"food", "cuisine", "street food", "cafe", "cafes", "dining"},
     "history": {"history", "historic", "ancient", "heritage", "monastery"},
     "nature": {"nature", "beach", "mountain", "forest", "lake", "wildlife"},
     "nightlife": {"nightlife", "bars", "music", "lively"},
     "romantic": {"romantic", "relaxed", "sunset", "charm"},
     "shopping": {"market", "shopping", "shops", "boutique"},
+}
+
+VIBE_KEYWORDS = {
+    "ancient": {"ancient", "historic", "heritage", "temple", "medieval", "old town"},
+    "beach": {"beach", "coastal", "ocean", "island", "reef", "turquoise"},
+    "budget": {"budget", "affordable", "cheap", "shoestring", "reasonable"},
+    "cafes": {"cafe", "cafes", "coffee", "street food", "food"},
+    "chill": {"relaxed", "laid-back", "tranquil", "serene", "quiet"},
+    "city": {"city", "urban", "markets", "streets", "nightlife", "culture"},
+    "creative": {"art", "gallery", "murals", "architecture", "creative"},
+    "digital": {"cafe", "cafes", "city", "markets", "affordable", "culture"},
+    "foodie": {"food", "cuisine", "street food", "dining", "flavors"},
+    "luxury": {"luxury", "glamour", "high-end", "opulent", "designer"},
+    "mountain": {"mountain", "hike", "hiking", "trek", "alps", "andes"},
+    "quiet": {"tranquil", "serene", "laid-back", "relaxed", "hidden"},
+    "romantic": {"romantic", "sunset", "charm", "palaces", "canals"},
+}
+
+WORK_FRIENDLY_CITIES = {
+    "Bali",
+    "Bangkok",
+    "Budapest",
+    "Chiang Mai",
+    "Goa",
+    "Hanoi",
+    "Hoi An",
+    "Krakow",
+    "Lisbon",
+    "Medellin",
+    "Mexico City",
+    "Penang",
+    "Tbilisi",
+}
+
+REMOTE_WORK_RISK_TERMS = {
+    "safari",
+    "rainforest",
+    "national park",
+    "wilderness",
+    "gorillas",
+    "delta",
+    "outback",
 }
 
 
@@ -81,20 +124,30 @@ def _score_destination(item: dict[str, Any], preferences: Preferences) -> float:
         elif requested in city or requested in country:
             score += 80
 
-    score += _text_score(preferences.vibe or "", text, weight=8)
+    score += _text_score(preferences.vibe or "", text, weight=9)
+    score += _semantic_score(preferences.vibe or "", text, VIBE_KEYWORDS, weight=6)
     for interest in preferences.interests:
         normalized_interest = _clean_interest(interest)
-        score += _text_score(normalized_interest, text, weight=7)
-        score += _keyword_score(normalized_interest, text)
+        score += _text_score(normalized_interest, text, weight=8)
+        score += _keyword_score(normalized_interest, text, INTEREST_KEYWORDS, weight=7)
+        score += _semantic_score(
+            normalized_interest, text, VIBE_KEYWORDS, weight=4
+        )
 
     estimated_cost = float(item.get("estimated_cost") or 0)
     if estimated_cost and preferences.budget:
         if estimated_cost <= preferences.budget:
-            score += 35
-            score += max(0, 20 * (1 - (preferences.budget - estimated_cost) / preferences.budget))
+            score += 45
+            budget_room = max(preferences.budget - estimated_cost, 0)
+            score += max(0, 25 * (1 - budget_room / preferences.budget))
+            if estimated_cost <= preferences.budget * 0.75:
+                score += 8
         else:
             over_ratio = (estimated_cost - preferences.budget) / preferences.budget
-            score -= 60 + (over_ratio * 70)
+            score -= 85 + (over_ratio * 90)
+
+    if preferences.work_friendly:
+        score += _work_friendly_score(item, text, preferences)
 
     return score
 
@@ -115,9 +168,52 @@ def _text_score(query: str, text: str, weight: float) -> float:
     return sum(weight for word in words if word in text)
 
 
-def _keyword_score(interest: str, text: str) -> float:
-    keywords = INTEREST_KEYWORDS.get(interest, set())
-    return sum(6 for keyword in keywords if keyword in text)
+def _keyword_score(
+    interest: str,
+    text: str,
+    keyword_map: dict[str, set[str]],
+    weight: float,
+) -> float:
+    keywords = keyword_map.get(interest, set())
+    return sum(weight for keyword in keywords if keyword in text)
+
+
+def _semantic_score(
+    query: str,
+    text: str,
+    keyword_map: dict[str, set[str]],
+    weight: float,
+) -> float:
+    query_words = {
+        word for word in re.findall(r"[a-z0-9]+", query.lower()) if len(word) > 2
+    }
+    score = 0.0
+    for word in query_words:
+        keywords = keyword_map.get(word, set())
+        score += sum(weight for keyword in keywords if keyword in text)
+    return score
+
+
+def _work_friendly_score(
+    item: dict[str, Any],
+    text: str,
+    preferences: Preferences,
+) -> float:
+    score = 0.0
+    if item.get("city") in WORK_FRIENDLY_CITIES:
+        score += 28
+    score += _semantic_score(
+        "digital quiet cafes budget city",
+        text,
+        VIBE_KEYWORDS,
+        weight=3,
+    )
+    if any(term in text for term in REMOTE_WORK_RISK_TERMS):
+        score -= 35
+    estimated_cost = float(item.get("estimated_cost") or 0)
+    if estimated_cost and estimated_cost <= preferences.budget:
+        score += 10
+    return score
 
 
 def _matched_tags(text: str) -> set[str]:
