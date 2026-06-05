@@ -128,6 +128,19 @@ def requested_destination_terms(value: str | None) -> list[str]:
     return [term.strip() for term in terms if term.strip()]
 
 
+def requested_route_city_terms(value: str | None) -> list[str]:
+    countries = {
+        str(item.get("country", "")).lower()
+        for item in load_destinations()
+        if item.get("country")
+    }
+    return [
+        term
+        for term in requested_destination_terms(value)
+        if term.lower() not in countries
+    ]
+
+
 def _matches_requested_destination(
     item: dict[str, Any],
     requested_terms: list[str],

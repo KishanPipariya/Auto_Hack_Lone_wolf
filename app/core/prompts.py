@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timedelta
 from typing import Mapping
 
-from app.core.destinations import destination_context
+from app.core.destinations import destination_context, requested_route_city_terms
 from app.models.domain import Activity, DestinationSuggestion, Itinerary, Preferences
 
 MODEL_CANDIDATES = [
@@ -49,8 +49,15 @@ def initial_plan_prompt(
     category_targets: Mapping[str, float] | None = None,
 ) -> str:
     destination = (preferences.city or "").strip()
+    requested_destinations = requested_route_city_terms(destination)
+    multi_city_instruction = (
+        "The requested destination is a multi-city route. Keep all requested cities "
+        "in the plan, split days between them, and include travel time between cities."
+        if len(requested_destinations) > 1
+        else ""
+    )
     destination_instruction = (
-        f"Create the itinerary for {destination}."
+        f"Create the itinerary for {destination}. {multi_city_instruction}".strip()
         if destination
         else "Choose exactly one best-fit destination for this trip based on the vibe, budget, duration, and interests. Do not return a list of destination options."
     )
@@ -78,9 +85,10 @@ def initial_plan_prompt(
         {budget_context}
 
         CRITICAL INSTRUCTIONS:
-        1. Return one curated destination and a compact, detailed day-wise itinerary only.
+        1. Return one curated destination or one requested multi-city route and a compact, detailed day-wise itinerary only.
         2. MULTI-CITY LOGIC: If the user explicitly requests multiple destinations, split the days logically between them.
            - You MUST specify the 'city' field for EACH DayPlan object so we know where the user is.
+           - Every requested city MUST appear in at least one DayPlan 'city' value.
            - Account for travel time between cities as an activity.
         3. REALISM: Account for opening hours and logical travel times between venues.
         4. IMAGES: For every activity, generate a specific, search-friendly image_url query or real image URL.
@@ -93,7 +101,7 @@ def initial_plan_prompt(
         {activities_context}
 
         REQUIREMENTS:
-        - Return one curated destination and a compact day-wise itinerary only.
+        - Return one curated destination or one requested multi-city route and a compact day-wise itinerary only.
         - Include transport, stay, food, and activities estimates in USD.
         - cost_breakdown.total MUST be less than or equal to ${preferences.budget}.
         - Activity costs must match cost_breakdown.activities.
@@ -105,8 +113,8 @@ def initial_plan_prompt(
         OUTPUT FORMAT:
         Return ONLY a JSON object matching this structure:
         {{
-            "city": "Selected destination city",
-            "recommended_destination": "Selected destination city",
+            "city": "Selected destination city or requested multi-city route",
+            "recommended_destination": "Selected destination city or requested multi-city route",
             "vibe_rationale": "Why this destination matches the vibe and interests",
             "budget_notes": "How the budget is allocated and kept under cap",
             "work_friendly_notes": "Wi-Fi/coworking/stay notes or null",
@@ -122,6 +130,7 @@ def initial_plan_prompt(
             "days": [
                 {{
                     "day_number": 1,
+                    "city": "City for this day",
                     "activities": [
                         {{
                             "name": "Activity Name",
@@ -175,7 +184,8 @@ def refinement_prompt(
         {calendar_context(preferences)}
 
         Please fix the plan by reducing category estimates and swapping activities to meet the constraints.
-        Keep exactly one destination, exactly {preferences.days} days, and total cost <= ${preferences.budget}.
+        Keep the requested destination or multi-city route, exactly {preferences.days} days, and total cost <= ${preferences.budget}.
+        If multiple cities were requested, every requested city must appear in at least one DayPlan city value.
         Include a full cost_breakdown with transport, stay, food, activities, total, and remaining_budget.
         Ensure activity costs add up to cost_breakdown.activities and all cost categories add up to cost_breakdown.total.
         Preserve destination_suggestions from the previous plan.

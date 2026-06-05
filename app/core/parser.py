@@ -66,7 +66,8 @@ def normalize_itinerary_data(
         for day in days:
             if not isinstance(day, dict):
                 continue
-            normalize_day(day, str(data.get("city") or "destination"), image_search)
+            day_city = str(day.get("city") or data.get("city") or "destination")
+            normalize_day(day, day_city, image_search)
             day_activity_total = sum(
                 parse_money(activity.get("cost", 0))
                 for activity in day.get("activities", [])
@@ -119,6 +120,8 @@ def normalize_day_aliases(day: Any) -> None:
 
     if not day.get("day_number"):
         day["day_number"] = day.get("day")
+    if not day.get("city"):
+        day["city"] = day.get("destination") or day.get("location")
     if not day.get("activities") and isinstance(day.get("plan"), list):
         day["activities"] = [
             normalize_plan_item_aliases(item) for item in day["plan"] if isinstance(item, dict)

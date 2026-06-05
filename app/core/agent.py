@@ -7,7 +7,11 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 from app.core.data import MOCK_ACTIVITIES
-from app.core.destinations import recommend_destinations, requested_destination_terms
+from app.core.destinations import (
+    recommend_destinations,
+    requested_destination_terms,
+    requested_route_city_terms,
+)
 from app.core.images import search_real_image
 from app.core.parser import parse_llm_response
 from app.core.prompts import (
@@ -135,6 +139,16 @@ class TravelAgent:
             )
             return False
 
+        if preferences.city and not self._covers_requested_route_days(
+            itinerary, preferences.city
+        ):
+            itinerary.valid = False
+            itinerary.validation_error = (
+                "Multi-city itineraries must assign each requested city to at "
+                "least one itinerary day."
+            )
+            return False
+
         if preferences.city and itinerary.city.lower() != preferences.city.lower():
             itinerary.city = preferences.city
 
@@ -207,6 +221,21 @@ class TravelAgent:
         ).lower()
 
         return all(term.lower() in destination_text for term in requested_terms)
+
+    def _covers_requested_route_days(
+        self,
+        itinerary: Itinerary,
+        requested_destination: str,
+    ) -> bool:
+        route_terms = requested_route_city_terms(requested_destination)
+        if len(route_terms) <= 1:
+            return True
+
+        day_city_text = " ".join(day.city or "" for day in itinerary.days).lower()
+        if not day_city_text.strip():
+            return False
+
+        return all(term.lower() in day_city_text for term in route_terms)
 
     def _prepare_destination_context(
         self, preferences: Preferences

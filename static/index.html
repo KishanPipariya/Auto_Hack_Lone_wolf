@@ -789,15 +789,16 @@
         function renderDay(day, city) {
             const activities = Array.isArray(day.activities) ? day.activities : [];
             const dayTotal = activities.reduce((sum, act) => sum + (Number(act.cost) || 0), 0);
+            const dayCity = day.city || city;
             return `
                 <li class="day-card" style="animation-delay: ${Number(day.day_number || 1) * 0.1}s">
                     <section aria-labelledby="day-${escapeAttr(day.day_number || 1)}-title">
                         <div class="day-header">
-                            <h3 id="day-${escapeAttr(day.day_number || 1)}-title">Day ${escapeHTML(day.day_number || '')}</h3>
+                            <h3 id="day-${escapeAttr(day.day_number || 1)}-title">Day ${escapeHTML(day.day_number || '')}${dayCity ? ` - ${escapeHTML(dayCity)}` : ''}</h3>
                             <span class="day-total">Day total: $${formatMoney(dayTotal)}</span>
                         </div>
                         <ol class="activities-list">
-                            ${activities.map(activity => renderActivity(activity, city)).join('')}
+                            ${activities.map(activity => renderActivity(activity, dayCity)).join('')}
                         </ol>
                     </section>
                 </li>`;

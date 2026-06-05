@@ -383,6 +383,98 @@ def test_constraint_checking_rejects_unrequested_country_for_multi_city(planner)
     assert "does not match requested destination" in itinerary.validation_error
 
 
+def test_constraint_checking_requires_day_city_coverage_for_multi_city(planner):
+    itinerary = Itinerary(
+        city="Rotterdam, Amsterdam",
+        recommended_destination="Rotterdam, Amsterdam",
+        cost_breakdown=CostBreakdown(
+            transport=50,
+            stay=100,
+            food=40,
+            activities=20,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                city="Amsterdam",
+                activities=[
+                    Activity(
+                        name="Canal walk",
+                        description="Amsterdam route",
+                        tags=["History"],
+                        duration_hours=2.0,
+                        cost=20.0,
+                    )
+                ],
+            )
+        ],
+    )
+    prefs = Preferences(
+        city="Rotterdam, Amsterdam",
+        budget=500,
+        days=1,
+        interests=["History"],
+    )
+
+    is_valid = planner._check_constraints(itinerary, prefs)
+
+    assert is_valid is False
+    assert itinerary.validation_error is not None
+    assert "each requested city" in itinerary.validation_error
+
+
+def test_constraint_checking_accepts_multi_city_day_coverage(planner):
+    itinerary = Itinerary(
+        city="Rotterdam, Amsterdam",
+        recommended_destination="Rotterdam, Amsterdam",
+        cost_breakdown=CostBreakdown(
+            transport=50,
+            stay=100,
+            food=40,
+            activities=20,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                city="Rotterdam",
+                activities=[
+                    Activity(
+                        name="Markthal walk",
+                        description="Rotterdam market route",
+                        tags=["Food"],
+                        duration_hours=2.0,
+                        cost=10.0,
+                    )
+                ],
+            ),
+            DayPlan(
+                day_number=2,
+                city="Amsterdam",
+                activities=[
+                    Activity(
+                        name="Canal walk",
+                        description="Amsterdam route",
+                        tags=["History"],
+                        duration_hours=2.0,
+                        cost=10.0,
+                    )
+                ],
+            ),
+        ],
+    )
+    prefs = Preferences(
+        city="Rotterdam, Amsterdam",
+        budget=500,
+        days=2,
+        interests=["Food", "History"],
+    )
+
+    is_valid = planner._check_constraints(itinerary, prefs)
+
+    assert is_valid is True
+    assert itinerary.city == "Rotterdam, Amsterdam"
+
+
 def test_plan_trip_stream_yields_status_events_then_itinerary(planner):
     itinerary = Itinerary(
         city="Porto",

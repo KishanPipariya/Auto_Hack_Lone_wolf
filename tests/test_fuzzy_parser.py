@@ -172,6 +172,42 @@ class TestFuzzyParser(unittest.TestCase):
         assert itinerary.days[0].activities[1].name == "Kunsthal Rotterdam"
         assert itinerary.days[0].activities[1].cost == 19
 
+    def test_parser_uses_day_city_for_activity_image_context(self):
+        image_queries = []
+
+        def fake_image_search(query):
+            image_queries.append(query)
+            return None
+
+        itinerary = parse_llm_response(
+            """
+            {
+              "city": "Rotterdam, Amsterdam",
+              "days": [
+                {
+                  "day_number": 1,
+                  "city": "Rotterdam",
+                  "activities": [
+                    {"name": "Markthal", "cost": 0, "duration_hours": 1}
+                  ]
+                },
+                {
+                  "day_number": 2,
+                  "city": "Amsterdam",
+                  "activities": [
+                    {"name": "Canal walk", "cost": 0, "duration_hours": 2}
+                  ]
+                }
+              ]
+            }
+            """,
+            image_search=fake_image_search,
+        )
+
+        assert itinerary.days[0].city == "Rotterdam"
+        assert itinerary.days[1].city == "Amsterdam"
+        assert image_queries == ["Markthal Rotterdam", "Canal walk Amsterdam"]
+
 
 if __name__ == "__main__":
     unittest.main()
