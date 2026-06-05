@@ -1,13 +1,10 @@
-import json
 import logging
 import os
-import urllib.request
 from collections.abc import Iterator
 from typing import Any
 
 from dotenv import load_dotenv
-from google import genai
-from google.genai import types
+from openai import OpenAI
 
 from app.core.data import MOCK_ACTIVITIES
 from app.core.destinations import recommend_destinations
@@ -15,8 +12,8 @@ from app.core.images import search_real_image
 from app.core.parser import parse_llm_response
 from app.core.prompts import (
     MODEL_CANDIDATES,
-    OPENROUTER_CANDIDATES,
     initial_plan_prompt,
+    json_repair_prompt,
     refinement_prompt,
 )
 from app.models.domain import DestinationSuggestion, Itinerary, Preferences
@@ -60,72 +57,57 @@ class TravelAgent:
         self.activities = MOCK_ACTIVITIES
         self.client: Any | None = None
 
-        api_key = os.environ.get("GOOGLE_API_KEY")
+        api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
-            logger.warning("GOOGLE_API_KEY not found in environment.")
+            logger.warning("OPENAI_API_KEY not found in environment.")
         else:
-            self.client = genai.Client(api_key=api_key)
+            self.client = OpenAI(api_key=api_key)
 
-    def _call_openrouter(self, prompt: str) -> str:
-        api_key = os.environ.get("OPENROUTER_API_KEY")
-        if not api_key:
-            raise ValueError("OPENROUTER_API_KEY not found. Cannot use fallback.")
-
-        url = "https://openrouter.ai/api/v1/chat/completions"
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "http://localhost:8000",
-            "User-Agent": "TravelPlannerAgent/1.0",
-        }
-
+    def _call_model_with_fallback(
+        self,
+        prompt: str,
+        *,
+        use_web_search: bool = True,
+        json_mode: bool = False,
+    ) -> str:
         last_error: Exception | None = None
-        for model in OPENROUTER_CANDIDATES:
-            logger.debug("Attempting OpenRouter fallback with %s", model)
-            data = {"model": model, "messages": [{"role": "user", "content": prompt}]}
 
+        if not self.client:
+            raise RuntimeError("OPENAI_API_KEY not found. Cannot call OpenAI models.")
+
+        for model_name in MODEL_CANDIDATES:
             try:
-                req = urllib.request.Request(url, json.dumps(data).encode(), headers)
-                with urllib.request.urlopen(req) as response:
-                    result = json.loads(response.read().decode())
-                    if "choices" in result and result["choices"]:
-                        logger.debug("Success with OpenRouter model %s", model)
-                        return str(result["choices"][0]["message"]["content"])
+                logger.info("Attempting generation with model %s", model_name)
+                request_kwargs: dict[str, Any] = {
+                    "model": model_name,
+                    "input": prompt,
+                }
+                if use_web_search:
+                    request_kwargs["tools"] = [{"type": "web_search"}]
+                if json_mode:
+                    request_kwargs["text"] = {"format": {"type": "json_object"}}
+
+                response = self.client.responses.create(**request_kwargs)
+                logger.info("Generation succeeded with model %s", model_name)
+                return str(response.output_text)
             except Exception as exc:
-                logger.warning("OpenRouter model %s failed", model, exc_info=True)
+                logger.warning("Model %s failed", model_name, exc_info=True)
                 last_error = exc
 
-        raise ValueError(f"All OpenRouter candidates failed. Last error: {last_error}")
+        raise RuntimeError(f"All model candidates failed. Last error: {last_error}")
 
-    def _call_model_with_fallback(self, prompt: str) -> str:
-        last_error: Exception | None = None
-        if self.client:
-            config = types.GenerateContentConfig(
-                tools=[types.Tool(google_search=types.GoogleSearch())],
-                response_mime_type="application/json",
-            )
+    def _parse_or_repair_response(self, response_text: str) -> Itinerary:
+        itinerary = parse_llm_response(response_text, image_search=search_real_image)
+        if itinerary.city != "Unknown" and itinerary.days:
+            return itinerary
 
-            for model_name in MODEL_CANDIDATES:
-                try:
-                    logger.info("Attempting generation with model %s", model_name)
-                    response = self.client.models.generate_content(
-                        model=model_name,
-                        contents=prompt,
-                        config=config,
-                    )
-                    logger.info("Generation succeeded with model %s", model_name)
-                    return str(response.text)
-                except Exception as exc:
-                    logger.warning("Model %s failed", model_name, exc_info=True)
-                    last_error = exc
-
-        try:
-            return self._call_openrouter(prompt)
-        except Exception as openrouter_error:
-            final_error = last_error or openrouter_error
-            raise RuntimeError(
-                f"All model candidates failed. Last error: {final_error}"
-            ) from openrouter_error
+        logger.info("Attempting LLM JSON schema repair for itinerary response")
+        repaired_text = self._call_model_with_fallback(
+            json_repair_prompt(response_text),
+            use_web_search=False,
+            json_mode=True,
+        )
+        return parse_llm_response(repaired_text, image_search=search_real_image)
 
     def _check_constraints(
         self, itinerary: Itinerary, preferences: Preferences
@@ -244,7 +226,7 @@ class TravelAgent:
             preferences, self.activities, destination_suggestions or [], targets
         )
         response_text = self._call_model_with_fallback(prompt)
-        return parse_llm_response(response_text, image_search=search_real_image)
+        return self._parse_or_repair_response(response_text)
 
     def refine_plan(
         self,
@@ -264,7 +246,7 @@ class TravelAgent:
             targets,
         )
         response_text = self._call_model_with_fallback(prompt)
-        return parse_llm_response(response_text, image_search=search_real_image)
+        return self._parse_or_repair_response(response_text)
 
     def plan_trip_stream(self, preferences: Preferences) -> Iterator[str | Itinerary]:
         planning_preferences, destination_suggestions = self._prepare_destination_context(
@@ -276,7 +258,7 @@ class TravelAgent:
                 ", "
             )
 
-        yield "Google ADK Agent: Step 1 - Breaking plan into days & allocating activities..."
+        yield "Travel Agent: Step 1 - Breaking plan into days & allocating activities..."
         itinerary = self.generate_initial_plan(
             planning_preferences, destination_suggestions
         )
@@ -286,13 +268,13 @@ class TravelAgent:
         cost = itinerary.calculate_total_cost()
         yield f"Initial allocation complete. Estimated Cost: ${cost}"
 
-        yield "Google ADK Agent: Step 2 - Verifying budget & time constraints..."
+        yield "Travel Agent: Step 2 - Verifying budget & time constraints..."
         is_valid = self._check_constraints(itinerary, planning_preferences)
 
         max_retries = 3
         attempts = 0
         if not is_valid:
-            yield "Google ADK Agent: Step 3 - Budget exceeded. Initiating Re-planning Loop..."
+            yield "Travel Agent: Step 3 - Budget exceeded. Initiating Re-planning Loop..."
 
         while not is_valid and attempts < max_retries:
             attempts += 1
@@ -314,7 +296,7 @@ class TravelAgent:
         if not is_valid:
             yield "Warning: Constraints not fully met after re-planning. Returning validation error."
 
-        yield "Google ADK Agent: Step 4 - Finalizing itinerary & generating artifacts..."
+        yield "Travel Agent: Step 4 - Finalizing itinerary & generating artifacts..."
         yield itinerary
 
     def plan_trip(self, preferences: Preferences) -> Itinerary:

@@ -4,13 +4,13 @@ project_report.txt
 1. Project Description
    Planning a trip is often an overwhelming experience characterized by "tab fatigue" and information overload. Travelers are forced to juggle disparate sources—flight aggregators, blogs, maps, and currency converters—to piece together a coherent itinerary. Existing AI tools often fall short, ensuring only a generic list of tourist traps that ignore practical constraints like opening hours, geographic proximity, or strict budget limits. This gap necessitates a solution that moves beyond simple text generation to true autonomous planning, capable of reasoning like a human expert.
 
-   The Autonomous Travel Planner Agent is a sophisticated application designed to reclaim the joy of discovery. Built on the Google Agent Development Kit (ADK) pattern, it functions not merely as a chatbot, but as a goal-oriented intelligent system. When a user requests a trip, the agent doesn't just guess; it deeply analyzes the request through a structured cognitive loop. It breaks the trip into logical daily segments, allocates activities based on specific user interests (e.g., "Art" or "Food"), and rigorously validates every choice against the specified budget and time constraints using context-aware reasoning.
+   The Autonomous Travel Planner Agent is a sophisticated application designed to reclaim the joy of discovery. Built around an OpenAI-powered planning loop, it functions not merely as a chatbot, but as a goal-oriented intelligent system. When a user requests a trip, the agent doesn't just guess; it deeply analyzes the request through a structured cognitive loop. It breaks the trip into logical daily segments, allocates activities based on specific user interests (e.g., "Art" or "Food"), and rigorously validates every choice against the specified budget and time constraints using context-aware reasoning.
 
    What sets this project apart is its commitment to "grounded functionality." Unlike standard LLMs that might hallucinate costs, this agent employs a self-correcting feedback loop. If an initial plan exceeds the budget, the agent detects the violation, autonomously iterates on the itinerary to find more affordable alternatives, and only presents the final plan when it is mathematically and logically sound. The experience culminates in a professionally generated, downloadable PDF guide, complete with real-time curated imagery and cost breakdowns, transforming a complex planning ordeal into a seamless, visual, and actionable journey.
 
 2. Technology Stack Used
    - Core Language: Python 3.13+
-   - Agentic Framework: Google Gen AI SDK (Gemini Models) & Google ADK Pattern
+   - Agentic Framework: OpenAI Python SDK, Responses API, and hosted web search
    - Backend: FastAPI (High-performance Async API)
    - Search & Data: DuckDuckGo Search (DDGS) for real-time image sourcing
    - Document Generation: FPDF2 (Programmatic PDF creation)

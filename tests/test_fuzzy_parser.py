@@ -90,6 +90,61 @@ class TestFuzzyParser(unittest.TestCase):
         assert itinerary.cost_breakdown.activities == 25
         assert itinerary.cost_breakdown.total == 140
 
+    def test_parser_normalizes_llm_alias_schema(self):
+        itinerary = parse_llm_response(
+            """
+            {
+              "destination": "Rotterdam, Netherlands",
+              "destination_suggestions": [
+                {
+                  "name": "Krakow, Poland",
+                  "estimated_total_usd": 630,
+                  "tags": ["History", "Nightlife"],
+                  "rationale": "Affordable and lively."
+                }
+              ],
+              "days": [
+                {
+                  "day": 1,
+                  "date": "2026-02-04",
+                  "weekday": "Wednesday",
+                  "plan": [
+                    {
+                      "time": "Morning",
+                      "activity": "Walk around Markthal"
+                    },
+                    {
+                      "time": "Afternoon",
+                      "activity": "Kunsthal Rotterdam",
+                      "opening_hours_checked": "Tuesday to Sunday, 10:00-17:00",
+                      "cost_usd": 19
+                    }
+                  ]
+                }
+              ],
+              "cost_breakdown": {
+                "transport": 60,
+                "stay": 175,
+                "food": 95,
+                "activities": 19,
+                "total": 349,
+                "remaining_budget": 151
+              }
+            }
+            """,
+            image_search=lambda _: None,
+        )
+
+        assert itinerary.city == "Rotterdam, Netherlands"
+        assert itinerary.recommended_destination == "Rotterdam, Netherlands"
+        assert itinerary.destination_suggestions[0].city == "Krakow, Poland"
+        assert itinerary.destination_suggestions[0].estimated_total_cost == 630
+        assert itinerary.days[0].day_number == 1
+        assert itinerary.days[0].activities[0].name == "Walk around Markthal"
+        assert itinerary.days[0].activities[0].tags == ["Morning"]
+        assert itinerary.days[0].activities[1].name == "Kunsthal Rotterdam"
+        assert itinerary.days[0].activities[1].cost == 19
+
 
 if __name__ == "__main__":
     unittest.main()

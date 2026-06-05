@@ -69,6 +69,36 @@ class TestImageSystem:
         assert activity.image_url is not None
         assert "pollinations.ai" in activity.image_url
 
+    def test_image_query_is_converted_to_renderable_url(self):
+        """Test that search-query image_url values become usable image URLs."""
+        raw_response = json.dumps(
+            {
+                "city": "Test City",
+                "days": [
+                    {
+                        "day_number": 1,
+                        "activities": [
+                            {
+                                "name": "Test Activity",
+                                "cost": 10,
+                                "duration_hours": "1 hour",
+                                "image_url": "Test Activity Test City landmark photo",
+                            }
+                        ],
+                    }
+                ],
+            }
+        )
+
+        itinerary = parse_llm_response(raw_response, image_search=lambda _: None)
+
+        activity = itinerary.days[0].activities[0]
+
+        assert activity.image_url is not None
+        assert activity.image_url.startswith("https://")
+        assert "pollinations.ai" in activity.image_url
+        assert "Test%20Activity%20Test%20City%20landmark%20photo" in activity.image_url
+
     @pytest.mark.integration
     @pytest.mark.skipif(
         os.environ.get("RUN_REAL_IMAGE_SEARCH") != "1",

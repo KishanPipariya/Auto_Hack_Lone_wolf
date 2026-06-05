@@ -14,7 +14,10 @@
     <header>
         <div class="header-top"
             style="width: 100%; position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; min-height: 40px;">
-            <h1 style="cursor: pointer; margin: 0;" onclick="window.location.reload()">✈️ Travel Planner Agent</h1>
+            <h1 style="margin: 0;">
+                <button type="button" id="brand-home" class="brand-button"
+                    aria-label="Travel Planner Agent home">✈️ Travel Planner Agent</button>
+            </h1>
 
             <div class="theme-switch-wrapper"
                 style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); white-space: nowrap;">
@@ -30,15 +33,15 @@
         <div class="header-bottom"
             style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
             <div class="nav-left">
-                <button id="nav-dashboard" class="nav-btn" style="display: none;">🏠 Home</button>
+                <button type="button" id="nav-dashboard" class="nav-btn" style="display: none;">🏠 Home</button>
             </div>
 
             <div class="header-right">
                 <nav id="auth-nav" style="display: flex; gap: 10px; margin-left: 20px;">
                     <!-- nav-new-trip removed -->
                     <!-- nav-dashboard moved to left -->
-                    <button id="nav-logout" class="nav-btn" style="display: none;">👋 Logout</button>
-                    <button id="nav-login" class="nav-btn">🔐 Login</button>
+                    <button type="button" id="nav-logout" class="nav-btn" style="display: none;">👋 Logout</button>
+                    <button type="button" id="nav-login" class="nav-btn">🔐 Login</button>
                 </nav>
             </div>
         </div>
@@ -66,6 +69,21 @@
         header h1 {
             margin: 0;
             font-size: 1.5rem;
+        }
+
+        .brand-button {
+            background: transparent;
+            color: var(--color-text-primary);
+            border: 0;
+            box-shadow: none;
+            padding: 0.5rem;
+            width: auto;
+            font-size: inherit;
+        }
+
+        .brand-button:hover {
+            background: transparent;
+            color: var(--color-primary);
         }
 
         .nav-btn {
@@ -223,30 +241,33 @@
     </style>
 
     <main id="main-content" class="container">
-        <!-- Toast Container -->
-        <div id="toast-container"></div>
+        <div id="live-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+        <div id="alert-region" class="sr-only" role="alert" aria-live="assertive" aria-atomic="true"></div>
+        <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
         <!-- Auth View -->
         <div id="auth-view" class="view-section">
             <div class="auth-card">
-                <h2 id="auth-title">Login</h2>
-                <label for="auth-email" class="sr-only"
-                    style="position:absolute; width:1px; height:1px; overflow:hidden;">Email</label>
+                <h2 id="auth-title" tabindex="-1">Login</h2>
+                <div id="auth-error" class="field-error" role="alert" tabindex="-1" hidden></div>
+                <label for="auth-email" class="sr-only">Email</label>
                 <input type="email" id="auth-email" class="auth-input" placeholder="Email" autocomplete="username"
-                    aria-label="Email Address">
+                    aria-describedby="auth-email-hint auth-email-error" required>
+                <span id="auth-email-hint" class="sr-only">Enter the email address for your account.</span>
+                <span id="auth-email-error" class="field-error" hidden></span>
 
-                <label for="auth-password" class="sr-only"
-                    style="position:absolute; width:1px; height:1px; overflow:hidden;">Password</label>
+                <label for="auth-password" class="sr-only">Password</label>
                 <input type="password" id="auth-password" class="auth-input" placeholder="Password"
-                    autocomplete="current-password" aria-label="Password">
+                    autocomplete="current-password" aria-describedby="auth-password-hint auth-password-error" required>
+                <span id="auth-password-hint" class="sr-only">Enter your account password.</span>
+                <span id="auth-password-error" class="field-error" hidden></span>
 
-                <button id="auth-action-btn" class="nav-btn"
+                <button type="button" id="auth-action-btn" class="nav-btn"
                     style="width:100%; margin-top:10px; background:var(--color-primary); color:white; border:none;">Login</button>
                 <p style="margin-top:15px; font-size:0.9rem;">
                     <span id="auth-toggle-text">New here?</span>
-                    <a href="#" id="auth-toggle-link" role="button" can-tab="0"
-                        style="color:var(--color-primary); font-weight:bold;">Register</a>
+                    <button type="button" id="auth-toggle-link" class="text-button">Register</button>
                 </p>
-                <button id="auth-guest-btn" class="nav-btn"
+                <button type="button" id="auth-guest-btn" class="nav-btn"
                     style="width:100%; margin-top:20px; background:transparent; border:1px solid var(--color-border);">Continue
                     as Guest</button>
             </div>
@@ -254,72 +275,81 @@
 
         <!-- Dashboard View -->
         <div id="dashboard-view" class="view-section">
-            <h2 style="margin-bottom: 20px;">My Trips</h2>
+            <h2 id="dashboard-title" style="margin-bottom: 20px;" tabindex="-1">My Trips</h2>
             <div id="trip-history-grid" class="trip-history-grid">
                 <!-- Injected by JS -->
             </div>
-            <button id="dashboard-new-trip-btn" class="nav-btn"
+            <button type="button" id="dashboard-new-trip-btn" class="nav-btn"
                 style="margin-top: 30px; background: var(--color-primary); color: white; width: auto; padding: 12px 24px;">+
                 Plan New Trip</button>
         </div>
 
         <!-- Planner View -->
         <div id="planner-view" class="view-section active">
+            <h2 id="planner-title" class="sr-only" tabindex="-1">Plan a trip</h2>
             <form id="planForm" aria-label="Trip planning form">
                 <div class="form-group">
                     <label for="destinationInput">Optional Destinations</label>
+                    <span id="destination-hint" class="field-hint">Type a city and press Enter or comma to add it. Each
+                        selected city becomes a removable chip.</span>
 
                     <div class="destination-control"
                         style="background: var(--color-bg-body); padding: 5px; border-radius: 8px; border: 1px solid var(--color-border); display: flex; flex-wrap: wrap; gap: 5px; min-height: 48px; align-items: center;">
-                        <div id="destinationChips" style="display: contents;" aria-live="polite"></div>
+                        <div id="destinationChips" style="display: contents;"></div>
                         <input type="text" id="destinationInput" placeholder="Add a city or leave blank for vibe discovery"
                             style="border: none; background: transparent; flex: 1; min-width: 120px; outline: none; padding: 8px;"
-                            autocomplete="address-level2">
+                            autocomplete="address-level2" aria-describedby="destination-hint">
                     </div>
                     <input type="hidden" id="city">
                 </div>
 
                 <div class="form-group">
                     <label for="start_date">Start Date (Optional)</label>
-                    <input type="date" id="start_date">
+                    <input type="date" id="start_date" aria-describedby="start-date-hint">
+                    <span id="start-date-hint" class="sr-only">Leave this blank if your dates are flexible.</span>
                 </div>
 
                 <div class="form-group">
                     <label for="budget">Total Budget ($)</label>
                     <div class="number-control">
                         <input type="number" id="budget" required placeholder="e.g. 500" min="1" step="1" data-step="50"
-                            value="500">
+                            value="500" aria-describedby="budget-error">
                         <div class="spinner-controls">
                             <button type="button" class="control-btn plus" aria-label="Increase budget">▲</button>
                             <button type="button" class="control-btn minus" aria-label="Decrease budget">▼</button>
                         </div>
                     </div>
+                    <span id="budget-error" class="field-error" hidden></span>
                 </div>
 
                 <div class="form-group">
                     <label for="days">Duration (Days)</label>
                     <div class="number-control">
                         <input type="number" id="days" required placeholder="e.g. 3" min="1" max="14" step="1"
-                            value="3">
+                            value="3" aria-describedby="days-error">
                         <div class="spinner-controls">
                             <button type="button" class="control-btn plus" aria-label="Increase days">▲</button>
                             <button type="button" class="control-btn minus" aria-label="Decrease days">▼</button>
                         </div>
                     </div>
+                    <span id="days-error" class="field-error" hidden></span>
                 </div>
 
                 <div class="form-group">
                     <label for="vibe">Vibe / Aesthetic</label>
-                    <input type="text" id="vibe" placeholder="e.g. coastal cafes, quiet art streets, budget nightlife">
+                    <input type="text" id="vibe" placeholder="e.g. coastal cafes, quiet art streets, budget nightlife"
+                        aria-describedby="vibe-hint">
+                    <span id="vibe-hint" class="sr-only">Describe the travel style you want, or leave it blank.</span>
                 </div>
 
                 <div class="form-group toggle-row">
                     <div>
                         <label for="workFriendly">Work-Friendly</label>
-                        <span class="field-hint">Prioritize strong Wi-Fi, coworking access, and productive stays.</span>
+                        <span id="work-friendly-hint" class="field-hint">Prioritize strong Wi-Fi, coworking access, and
+                            productive stays.</span>
                     </div>
                     <label class="work-toggle" for="workFriendly">
-                        <input type="checkbox" id="workFriendly">
+                        <input type="checkbox" id="workFriendly" aria-describedby="work-friendly-hint">
                         <span class="work-toggle-track"></span>
                     </label>
                 </div>
@@ -329,91 +359,117 @@
                     <div id="chipContainer" class="chip-container" role="group" aria-label="Predefined interests">
                         <!-- Chips injected here by JS -->
                     </div>
-                    <input type="text" id="interests" placeholder="Other interests (e.g. Hiking, Photography)">
+                    <input type="text" id="interests" placeholder="Other interests (e.g. Hiking, Photography)"
+                        aria-describedby="interests-hint">
+                    <span id="interests-hint" class="sr-only">Separate additional interests with commas.</span>
                 </div>
 
                 <button type="submit" id="submitBtn">Plan My Trip</button>
             </form>
 
-            <div id="loading" class="spinner" style="display: none;" role="status" aria-label="Loading itinerary"></div>
-            <div id="result" aria-live="polite"></div>
+            <div id="loading" class="spinner" style="display: none;" role="status" aria-label="Loading itinerary">
+                <span class="sr-only">Loading itinerary</span>
+            </div>
+            <div id="result" aria-live="polite" tabindex="-1"></div>
         </div>
     </main>
 
     <script>
-        // Interest Chips Logic
         const POPULAR_INTERESTS = [
             "🏛️ History", "🎨 Art", "🍜 Food", "🍷 Nightlife",
             "🌲 Nature", "🛍️ Shopping", "👨‍👩‍👧 Family", "💑 Romantic"
         ];
 
+        const liveStatus = document.getElementById('live-status');
+        const alertRegion = document.getElementById('alert-region');
         const chipContainer = document.getElementById('chipContainer');
         const selectedInterests = new Set();
-
-        POPULAR_INTERESTS.forEach(interest => {
-            const btn = document.createElement('button');
-            btn.type = 'button'; // Prevent form submit
-            btn.className = 'chip';
-            btn.textContent = interest;
-            btn.setAttribute('aria-pressed', 'false');
-
-            btn.addEventListener('click', () => {
-                const isSelected = selectedInterests.has(interest);
-                if (isSelected) {
-                    selectedInterests.delete(interest);
-                    btn.classList.remove('selected');
-                    btn.setAttribute('aria-pressed', 'false');
-                } else {
-                    selectedInterests.add(interest);
-                    btn.classList.add('selected');
-                    btn.setAttribute('aria-pressed', 'true');
-                }
-            });
-
-            chipContainer.appendChild(btn);
-        });
-
-        // Number Control Logic
-        document.querySelectorAll('.number-control').forEach(control => {
-            const input = control.querySelector('input');
-            const minus = control.querySelector('.minus');
-            const plus = control.querySelector('.plus');
-
-            minus.addEventListener('click', () => {
-                const step = parseFloat(input.dataset.step) || parseFloat(input.step) || 1;
-                const min = parseFloat(input.min) || 0;
-                let val = parseFloat(input.value);
-
-                if (isNaN(val)) val = min; // Start at min if empty
-
-                if (val - step >= min) {
-                    input.value = val - step;
-                } else {
-                    input.value = min;
-                }
-            });
-
-            plus.addEventListener('click', () => {
-                const step = parseFloat(input.dataset.step) || parseFloat(input.step) || 1;
-                const max = input.max ? parseFloat(input.max) : Infinity;
-                let val = parseFloat(input.value);
-
-                if (isNaN(val)) val = parseFloat(input.min) || 0; // Start at valid value
-
-                if (val + step <= max) {
-                    input.value = val + step;
-                }
-            });
-        });
-
-        // Destination Chips Logic
         const destInput = document.getElementById('destinationInput');
         const destContainer = document.getElementById('destinationChips');
         const hiddenCityInput = document.getElementById('city');
         const destinations = new Set();
+        let currentToken = localStorage.getItem('token');
+        let authMode = 'login';
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
+        function escapeAttr(value) {
+            return escapeHTML(value);
+        }
+
+        function announce(message, assertive = false) {
+            const region = assertive ? alertRegion : liveStatus;
+            region.textContent = '';
+            window.setTimeout(() => {
+                region.textContent = message;
+            }, 20);
+        }
+
+        function focusElement(element) {
+            if (!element) return;
+            element.focus({ preventScroll: true });
+            element.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        }
+
+        function setFieldError(inputId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(`${inputId}-error`);
+            if (!input || !error) return;
+            input.setAttribute('aria-invalid', 'true');
+            error.textContent = message;
+            error.hidden = false;
+        }
+
+        function clearFieldErrors() {
+            document.querySelectorAll('[aria-invalid="true"]').forEach(input => {
+                input.removeAttribute('aria-invalid');
+            });
+            document.querySelectorAll('.field-error').forEach(error => {
+                error.textContent = '';
+                error.hidden = true;
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+
+            const text = document.createElement('span');
+            text.textContent = message;
+            toast.appendChild(text);
+            container.appendChild(toast);
+            announce(message, type === 'error');
+
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
 
         function updateHiddenInput() {
             hiddenCityInput.value = Array.from(destinations).join(', ');
+        }
+
+        function removeDestination(name, chip) {
+            destinations.delete(name);
+            updateHiddenInput();
+            chip.remove();
+            announce(`${name} removed from destinations.`);
+            destInput.focus();
         }
 
         function addDestination(name) {
@@ -424,25 +480,74 @@
             updateHiddenInput();
 
             const chip = document.createElement('button');
-            chip.type = 'button'; // Prevent form submission
+            chip.type = 'button';
             chip.className = 'chip selected';
             chip.setAttribute('aria-label', `Remove ${cleanName}`);
             chip.style.cursor = 'pointer';
             chip.style.display = 'inline-flex';
             chip.style.alignItems = 'center';
             chip.style.gap = '5px';
-            chip.innerHTML = `${cleanName} <span aria-hidden="true" style="font-size: 0.8em; opacity: 0.7;">✕</span>`;
+            chip.append(document.createTextNode(cleanName));
 
-            chip.addEventListener('click', () => {
-                destinations.delete(cleanName);
-                updateHiddenInput();
-                chip.remove();
-                destInput.focus(); // Return focus to input
-            });
+            const icon = document.createElement('span');
+            icon.setAttribute('aria-hidden', 'true');
+            icon.style.fontSize = '0.8em';
+            icon.style.opacity = '0.7';
+            icon.textContent = '✕';
+            chip.appendChild(icon);
+            chip.addEventListener('click', () => removeDestination(cleanName, chip));
 
             destContainer.appendChild(chip);
             destInput.value = '';
+            announce(`${cleanName} added to destinations.`);
         }
+
+        POPULAR_INTERESTS.forEach(interest => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'chip';
+            btn.textContent = interest;
+            btn.setAttribute('aria-pressed', 'false');
+
+            btn.addEventListener('click', () => {
+                const isSelected = selectedInterests.has(interest);
+                if (isSelected) {
+                    selectedInterests.delete(interest);
+                    btn.classList.remove('selected');
+                    btn.setAttribute('aria-pressed', 'false');
+                    announce(`${interest} removed from interests.`);
+                } else {
+                    selectedInterests.add(interest);
+                    btn.classList.add('selected');
+                    btn.setAttribute('aria-pressed', 'true');
+                    announce(`${interest} added to interests.`);
+                }
+            });
+
+            chipContainer.appendChild(btn);
+        });
+
+        document.querySelectorAll('.number-control').forEach(control => {
+            const input = control.querySelector('input');
+            const minus = control.querySelector('.minus');
+            const plus = control.querySelector('.plus');
+
+            minus.addEventListener('click', () => {
+                const step = parseFloat(input.dataset.step) || parseFloat(input.step) || 1;
+                const min = parseFloat(input.min) || 0;
+                const val = parseFloat(input.value);
+                input.value = Math.max(isNaN(val) ? min : val - step, min);
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
+            plus.addEventListener('click', () => {
+                const step = parseFloat(input.dataset.step) || parseFloat(input.step) || 1;
+                const max = input.max ? parseFloat(input.max) : Infinity;
+                const val = parseFloat(input.value);
+                input.value = Math.min((isNaN(val) ? parseFloat(input.min) || 0 : val) + step, max);
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+        });
 
         destInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ',') {
@@ -450,11 +555,9 @@
                 addDestination(destInput.value);
             }
             if (e.key === 'Backspace' && !destInput.value && destinations.size > 0) {
-                // Optional: Remove last tag on backspace
                 const lastDest = Array.from(destinations).pop();
-                destinations.delete(lastDest);
-                updateHiddenInput();
-                destContainer.lastElementChild.remove();
+                const lastChip = destContainer.lastElementChild;
+                if (lastChip) removeDestination(lastDest, lastChip);
             }
         });
 
@@ -462,35 +565,92 @@
             if (destInput.value) addDestination(destInput.value);
         });
 
-        // Dark Mode Logic
         const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
         const currentTheme = localStorage.getItem('theme');
 
         if (currentTheme) {
             document.body.classList.add(currentTheme);
-            if (currentTheme === 'dark-mode') {
-                toggleSwitch.checked = true;
-            }
+            toggleSwitch.checked = currentTheme === 'dark-mode';
         } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            // Auto-detect system preference
             document.body.classList.add('dark-mode');
             toggleSwitch.checked = true;
         }
 
-        function switchTheme(e) {
-            if (e.target.checked) {
-                document.body.classList.add('dark-mode');
-                localStorage.setItem('theme', 'dark-mode');
-            } else {
-                document.body.classList.remove('dark-mode');
-                localStorage.setItem('theme', 'light-mode');
-            }
+        toggleSwitch.addEventListener('change', (e) => {
+            const darkMode = e.target.checked;
+            document.body.classList.toggle('dark-mode', darkMode);
+            localStorage.setItem('theme', darkMode ? 'dark-mode' : 'light-mode');
+            announce(`${darkMode ? 'Dark' : 'Light'} mode enabled.`);
+        });
+
+        function updateNav() {
+            const isAuth = !!currentToken;
+            document.getElementById('nav-login').style.display = isAuth ? 'none' : 'block';
+            document.getElementById('nav-logout').style.display = isAuth ? 'inline-block' : 'none';
+            document.getElementById('nav-dashboard').style.display = isAuth ? 'block' : 'none';
         }
 
-        toggleSwitch.addEventListener('change', switchTheme, false);
-        // Core App Logic
+        function showView(viewId, options = {}) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const view = document.getElementById(viewId);
+            view.classList.add('active');
+            updateNav();
+
+            if (options.focus === false) return;
+            const focusTargets = {
+                'auth-view': document.getElementById('auth-title'),
+                'dashboard-view': document.getElementById('dashboard-title'),
+                'planner-view': document.getElementById('destinationInput')
+            };
+            const focusTarget = focusTargets[viewId] || view.querySelector('[tabindex="-1"], h2, input, button');
+            window.setTimeout(() => focusElement(focusTarget), 0);
+        }
+
+        function resetPlanner() {
+            const planForm = document.getElementById('planForm');
+            const resultDiv = document.getElementById('result');
+            planForm.style.display = 'block';
+            planForm.reset();
+            resultDiv.style.display = 'none';
+            resultDiv.innerHTML = '';
+            destinations.clear();
+            updateHiddenInput();
+            destContainer.innerHTML = '';
+            selectedInterests.clear();
+            chipContainer.querySelectorAll('.chip.selected').forEach(chip => {
+                chip.classList.remove('selected');
+                chip.setAttribute('aria-pressed', 'false');
+            });
+            clearFieldErrors();
+            announce('Trip form reset.');
+        }
+
+        function validatePlanningFields() {
+            clearFieldErrors();
+            const budget = document.getElementById('budget');
+            const days = document.getElementById('days');
+            const invalidFields = [];
+
+            if (!budget.checkValidity()) {
+                setFieldError('budget', 'Enter a budget of at least 1 dollar.');
+                invalidFields.push(budget);
+            }
+            if (!days.checkValidity()) {
+                setFieldError('days', 'Enter a duration from 1 to 14 days.');
+                invalidFields.push(days);
+            }
+
+            if (invalidFields.length) {
+                showToast('Please fix the highlighted fields before planning your trip.', 'error');
+                focusElement(invalidFields[0]);
+                return false;
+            }
+            return true;
+        }
+
         document.getElementById('planForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (!validatePlanningFields()) return;
 
             const btn = document.getElementById('submitBtn');
             const resultDiv = document.getElementById('result');
@@ -498,13 +658,11 @@
 
             btn.disabled = true;
             btn.textContent = 'Planning...';
-
-            // Show Spinner
             resultDiv.style.display = 'none';
             resultDiv.innerHTML = '';
             loadingDiv.style.display = 'block';
+            announce('Planning your trip. Results will appear below.');
 
-            // Combine chips + text input
             const customInput = document.getElementById('interests').value;
             const finalInterests = [...selectedInterests, ...customInput.split(',')]
                 .map(s => s.trim())
@@ -523,15 +681,11 @@
             try {
                 const response = await fetch('/plan_stream', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
-                if (!response.ok) {
-                    throw new Error(response.statusText);
-                }
+                if (!response.ok) throw new Error(response.statusText);
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
@@ -543,42 +697,23 @@
 
                     buffer += decoder.decode(value, { stream: true });
                     const lines = buffer.split('\n');
-
-                    // Process all complete lines
-                    buffer = lines.pop(); // Keep the incomplete line in buffer
+                    buffer = lines.pop();
 
                     for (const line of lines) {
                         if (!line.trim()) continue;
-
-                        try {
-                            const msg = JSON.parse(line);
-                            if (msg.type === 'status') {
-                                btn.textContent = msg.message;
-                            } else if (msg.type === 'token') {
-                                // No longer displaying tokens
-                            } else if (msg.type === 'result') {
-                                renderItinerary(msg.data);
-                                // saveHistory(msg.data); // Auto-save disabled per request
-                            } else if (msg.type === 'error') {
-                                throw new Error(msg.message);
-                            }
-                        } catch (e) {
-                            console.error("Error parsing stream line:", e);
-                            if (e.message) throw e; // Rethrow actual errors
+                        const msg = JSON.parse(line);
+                        if (msg.type === 'status') {
+                            btn.textContent = msg.message;
+                            announce(msg.message);
+                        } else if (msg.type === 'result') {
+                            renderItinerary(msg.data);
+                        } else if (msg.type === 'error') {
+                            throw new Error(msg.message);
                         }
                     }
                 }
-
             } catch (error) {
-                resultDiv.style.display = 'block';
-                resultDiv.innerHTML = `
-                    <div class="error-card" style="text-align: center; padding: 2rem; background: #fff; border-radius: 12px; border: 1px solid #ffccc7; box-shadow: 0 4px 12px rgba(255, 0, 0, 0.05);">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">😔</div>
-                        <h3 style="color: #d32f2f; margin: 0 0 0.5rem 0;">Oops! Something went wrong</h3>
-                        <p style="color: #555; margin-bottom: 1.5rem;">${error.message.replace('API Error: ', '')}</p>
-                        <button onclick="document.getElementById('submitBtn').click()" style="background: #d32f2f; width: auto; padding: 0.75rem 1.5rem;">Try Again</button>
-                    </div>
-                `;
+                renderInlineError('Oops! Something went wrong', error.message.replace('API Error: ', ''), true);
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Plan My Trip';
@@ -586,100 +721,107 @@
             }
         });
 
+        function renderInlineError(title, message, retry = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div class="error-card" role="alert">
+                    <h3 tabindex="-1">${escapeHTML(title)}</h3>
+                    <p>${escapeHTML(message)}</p>
+                    ${retry ? '<button type="button" id="retry-plan-btn" class="retry-button">Try Again</button>' : ''}
+                </div>`;
+            const retryBtn = document.getElementById('retry-plan-btn');
+            if (retryBtn) retryBtn.addEventListener('click', () => document.getElementById('submitBtn').click());
+            announce(`${title}. ${message}`, true);
+            focusElement(resultDiv.querySelector('h3'));
+        }
+
         function renderItinerary(data) {
             const resultDiv = document.getElementById('result');
             const planForm = document.getElementById('planForm');
-
             resultDiv.style.display = 'block';
 
             if (!data.valid) {
-                // Validation error: Keep form visible so user can fix
-                resultDiv.innerHTML = `
-                    <div class="error-card" role="alert">
-                        <h3>Validation Error</h3>
-                        <p>${data.validation_error}</p>
-                    </div>`;
+                renderInlineError('Validation Error', data.validation_error || 'The itinerary could not be validated.');
                 return;
             }
 
-            // Valid Itinerary: Hide form to focus on details
             planForm.style.display = 'none';
-
-            // Store data for PDF download
             window.itineraryData = data;
+            const days = Array.isArray(data.days) ? data.days : [];
+            const destination = data.recommended_destination || data.city || 'your destination';
+            const total = data.cost_breakdown?.total ?? data.total_cost ?? days.reduce((sum, day) =>
+                sum + (day.activities || []).reduce((dSum, act) => dSum + (Number(act.cost) || 0), 0), 0
+            );
 
-            let html = `
-                <h2 style="text-align:center; margin-bottom: 1rem;">Itinerary for ${data.recommended_destination || data.city}</h2>
-                ${renderTripSummary(data)}
-                
-                <div class="trip-days">
-                    ${data.days.map(day => `
-                        <div class="day-card" style="animation-delay: ${day.day_number * 0.1}s">
-                            <div class="day-header">
-                                <h2>Day ${day.day_number}</h2>
-                                <span class="day-total">
-                                    $${day.activities.reduce((sum, act) => sum + (act.cost || 0), 0)}
-                                </span>
-                            </div>
-                            <div class="activities-list">
-                                ${day.activities.map(activity => `
-                                    <div class="activity-item">
-                                        <div class="activity-layout">
-                                            <!-- Image Column -->
-                                            <div class="activity-image-wrapper">
-                                                <img 
-                                                    src="${activity.image_url || `https://image.pollinations.ai/prompt/${encodeURIComponent(activity.name)}?width=800&height=600&nologo=true`}" 
-                                                    alt="Photo of ${activity.name}" 
-                                                    class="activity-image"
-                                                    loading="lazy"
-                                                    onerror="this.onerror=null; this.src='https://image.pollinations.ai/prompt/${encodeURIComponent(activity.name + ' ' + data.city)}?width=800&height=600&nologo=true';"
-                                                >
-                                            </div>
+            resultDiv.innerHTML = `
+                <section class="itinerary-results" aria-labelledby="itinerary-title">
+                    <h2 id="itinerary-title" tabindex="-1" style="text-align:center; margin-bottom: 1rem;">Itinerary for ${escapeHTML(destination)}</h2>
+                    ${renderTripSummary(data)}
+                    <ol class="trip-days" aria-label="Itinerary days">
+                        ${days.map(day => renderDay(day, data.city || destination)).join('')}
+                    </ol>
+                    <p class="total-trip-cost">Total Trip Cost: $${formatMoney(total)}</p>
+                    <div class="summary-container export-actions" aria-label="Itinerary actions">
+                        <button type="button" data-action="save-history" class="plan-btn primary-action">
+                            <span class="icon" aria-hidden="true">💾</span> Save Trip
+                        </button>
+                        <button type="button" data-action="download-pdf" class="plan-btn secondary-action">
+                            <span class="icon" aria-hidden="true">📄</span> Download PDF
+                        </button>
+                        <button type="button" data-action="download-calendar" class="plan-btn secondary-action">
+                            <span class="icon" aria-hidden="true">📅</span> Add to Calendar
+                        </button>
+                        <button type="button" data-action="share-itinerary" class="plan-btn secondary-action">
+                            <span class="icon" aria-hidden="true">🔗</span> Share
+                        </button>
+                    </div>
+                </section>`;
 
-                                            <!-- Content Column -->
-                                            <div class="activity-content">
-                                                <h3>${activity.name}</h3>
-                                                <p>${activity.description}</p>
-                                                
-                                                <div class="activity-meta">
-                                                    <span class="cost-tag">$${activity.cost || 0}</span>
-                                                    ${activity.duration_str ? `<span class="duration-tag">⏱ ${activity.duration_str}</span>` : ''}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `).join('')}
+            resultDiv.querySelector('[data-action="save-history"]').addEventListener('click', () => saveHistory(window.itineraryData));
+            resultDiv.querySelector('[data-action="download-pdf"]').addEventListener('click', (event) => downloadPdf(event.currentTarget));
+            resultDiv.querySelector('[data-action="download-calendar"]').addEventListener('click', (event) => downloadCalendar(event.currentTarget));
+            resultDiv.querySelector('[data-action="share-itinerary"]').addEventListener('click', () => shareItinerary());
+            announce(`Itinerary for ${destination} loaded.`);
+            focusElement(document.getElementById('itinerary-title'));
+        }
+
+        function renderDay(day, city) {
+            const activities = Array.isArray(day.activities) ? day.activities : [];
+            const dayTotal = activities.reduce((sum, act) => sum + (Number(act.cost) || 0), 0);
+            return `
+                <li class="day-card" style="animation-delay: ${Number(day.day_number || 1) * 0.1}s">
+                    <section aria-labelledby="day-${escapeAttr(day.day_number || 1)}-title">
+                        <div class="day-header">
+                            <h3 id="day-${escapeAttr(day.day_number || 1)}-title">Day ${escapeHTML(day.day_number || '')}</h3>
+                            <span class="day-total">Day total: $${formatMoney(dayTotal)}</span>
+                        </div>
+                        <ol class="activities-list">
+                            ${activities.map(activity => renderActivity(activity, city)).join('')}
+                        </ol>
+                    </section>
+                </li>`;
+        }
+
+        function renderActivity(activity, city) {
+            const name = activity.name || 'Activity';
+            const imageUrl = activity.image_url || `https://image.pollinations.ai/prompt/${encodeURIComponent(`${name} ${city}`)}?width=800&height=600&nologo=true`;
+            return `
+                <li class="activity-item">
+                    <div class="activity-layout">
+                        <div class="activity-image-wrapper">
+                            <img src="${escapeAttr(imageUrl)}" alt="Photo of ${escapeAttr(name)}" class="activity-image" loading="lazy">
+                        </div>
+                        <div class="activity-content">
+                            <h4>${escapeHTML(name)}</h4>
+                            <p>${escapeHTML(activity.description || '')}</p>
+                            <div class="activity-meta">
+                                <span class="cost-tag">Cost: $${formatMoney(activity.cost)}</span>
+                                ${activity.duration_str ? `<span class="duration-tag"><span aria-hidden="true">⏱</span> Duration: ${escapeHTML(activity.duration_str)}</span>` : ''}
                             </div>
                         </div>
-                    `).join('')}
-                </div>
-            `;
-
-            // Add total cost at the bottom
-            const total = data.cost_breakdown?.total ?? data.total_cost ?? data.days.reduce((sum, day) =>
-                sum + day.activities.reduce((dSum, act) => dSum + (act.cost || 0), 0), 0
-            );
-            html += `<div class="total-trip-cost" style="text-align:center; margin-top:2rem; font-size:1.2rem; font-weight:bold;">Total Trip Cost: $${formatMoney(total)}</div>`;
-
-            // Add Download Button at the bottom
-            html += `
-                <div class="summary-container export-actions">
-                    <button onclick="saveHistory(window.itineraryData)" class="plan-btn" style="background: var(--color-primary); color: white; border: none; font-weight: bold;">
-                        <span class="icon">💾</span> Save Trip
-                    </button>
-                    <button onclick="downloadPdf()" class="plan-btn" style="background: var(--color-bg-card); color: var(--color-text-primary); border: 1px solid var(--color-border);">
-                        <span class="icon">📄</span> Download PDF
-                    </button>
-                    <button onclick="downloadCalendar()" class="plan-btn" style="background: var(--color-bg-card); color: var(--color-text-primary); border: 1px solid var(--color-border);">
-                        <span class="icon">📅</span> Add to Calendar
-                    </button>
-                    <button onclick="shareItinerary()" class="plan-btn" style="background: var(--color-bg-card); color: var(--color-text-primary); border: 1px solid var(--color-border);">
-                        <span class="icon">🔗</span> Share
-                    </button>
-                </div>
-            `;
-
-            resultDiv.innerHTML = html;
+                    </div>
+                </li>`;
         }
 
         function formatMoney(value) {
@@ -691,108 +833,99 @@
             const breakdown = data.cost_breakdown || {};
             const remaining = Number(breakdown.remaining_budget || 0);
             const suggestions = Array.isArray(data.destination_suggestions) ? data.destination_suggestions : [];
+            const costLabels = {
+                transport: 'Transport',
+                stay: 'Stay',
+                food: 'Food',
+                activities: 'Activities',
+            };
             const warning = remaining < 0
                 ? `<div class="budget-warning">Budget warning: this plan is over budget by $${formatMoney(Math.abs(remaining))}.</div>`
                 : '';
 
             return `
                 <section class="trip-summary" aria-label="Trip summary">
-                    <div class="summary-main">
+                    <dl class="summary-main">
                         <div>
-                            <span class="summary-label">Recommended destination</span>
-                            <strong>${data.recommended_destination || data.city}</strong>
+                            <dt class="summary-label">Recommended destination</dt>
+                            <dd><strong>${escapeHTML(data.recommended_destination || data.city || 'Flexible')}</strong></dd>
                         </div>
                         <div>
-                            <span class="summary-label">Estimated total</span>
-                            <strong>$${formatMoney(breakdown.total ?? data.total_cost)}</strong>
+                            <dt class="summary-label">Estimated total</dt>
+                            <dd><strong>$${formatMoney(breakdown.total ?? data.total_cost)}</strong></dd>
                         </div>
                         <div>
-                            <span class="summary-label">Remaining budget</span>
-                            <strong class="${remaining < 0 ? 'negative-budget' : ''}">$${formatMoney(remaining)}</strong>
+                            <dt class="summary-label">Remaining budget</dt>
+                            <dd><strong class="${remaining < 0 ? 'negative-budget' : ''}">$${formatMoney(remaining)}</strong></dd>
                         </div>
-                    </div>
-                    ${data.vibe_rationale ? `<p class="summary-note">${data.vibe_rationale}</p>` : ''}
-                    ${data.work_friendly_notes ? `<p class="summary-note">${data.work_friendly_notes}</p>` : ''}
-                    ${data.budget_notes ? `<p class="summary-note">${data.budget_notes}</p>` : ''}
+                    </dl>
+                    ${data.vibe_rationale ? `<p class="summary-note">${escapeHTML(data.vibe_rationale)}</p>` : ''}
+                    ${data.work_friendly_notes ? `<p class="summary-note">${escapeHTML(data.work_friendly_notes)}</p>` : ''}
+                    ${data.budget_notes ? `<p class="summary-note">${escapeHTML(data.budget_notes)}</p>` : ''}
                     ${suggestions.length ? `
-                        <div class="suggestions-list" aria-label="Curated destination suggestions">
+                        <ul class="suggestions-list" aria-label="Curated destination suggestions">
                             ${suggestions.map(suggestion => `
-                                <div class="suggestion-item">
-                                    <strong>${suggestion.city}${suggestion.country ? `, ${suggestion.country}` : ''}</strong>
+                                <li class="suggestion-item">
+                                    <strong>${escapeHTML(suggestion.city)}${suggestion.country ? `, ${escapeHTML(suggestion.country)}` : ''}</strong>
                                     <span>$${formatMoney(suggestion.estimated_total_cost)} estimated</span>
-                                    ${suggestion.rationale ? `<p>${suggestion.rationale}</p>` : ''}
-                                </div>
+                                    ${suggestion.rationale ? `<p>${escapeHTML(suggestion.rationale)}</p>` : ''}
+                                </li>
                             `).join('')}
-                        </div>
+                        </ul>
                     ` : ''}
-                    <div class="cost-grid">
+                    <dl class="cost-grid">
                         ${['transport', 'stay', 'food', 'activities'].map(key => `
                             <div class="cost-cell">
-                                <span>${key}</span>
-                                <strong>$${formatMoney(breakdown[key])}</strong>
+                                <dt>${costLabels[key]}</dt>
+                                <dd><strong>$${formatMoney(breakdown[key])}</strong></dd>
                             </div>
                         `).join('')}
-                    </div>
+                    </dl>
                     ${warning}
-                </section>
-            `;
+                </section>`;
         }
 
-        async function downloadPdf() {
-            if (!itineraryData) return;
-
-            const btn = document.querySelector('button[onclick="downloadPdf()"]');
+        async function downloadPdf(btn) {
+            if (!window.itineraryData) return;
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="icon">⏳</span> Generating...';
+            btn.innerHTML = '<span class="icon" aria-hidden="true">⏳</span> Generating PDF';
             btn.disabled = true;
+            announce('Generating PDF.');
 
             try {
                 const response = await fetch('/pdf', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(itineraryData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(window.itineraryData)
                 });
 
                 if (!response.ok) throw new Error('PDF generation failed');
-
                 const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Trip_to_${itineraryData.city}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+                triggerDownload(blob, `Trip_to_${window.itineraryData.city || 'destination'}.pdf`);
+                showToast('PDF download started.', 'success');
             } catch (error) {
                 console.error('Download failed:', error);
-                alert('Could not download PDF. Please try again.');
+                showToast('Could not download PDF. Please try again.', 'error');
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         }
-        async function downloadCalendar() {
-            if (!itineraryData) return;
 
-            const btn = document.querySelector('button[onclick="downloadCalendar()"]');
+        async function downloadCalendar(btn) {
+            if (!window.itineraryData) return;
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="icon">⏳</span> Generating...';
+            btn.innerHTML = '<span class="icon" aria-hidden="true">⏳</span> Generating calendar';
             btn.disabled = true;
+            announce('Generating calendar file.');
 
             try {
-                // Get start date from form or fallback to tomorrow
                 const startDate = document.getElementById('start_date').value;
-                const queryParams = startDate ? `?start_date=${startDate}` : '';
-
+                const queryParams = startDate ? `?start_date=${encodeURIComponent(startDate)}` : '';
                 const response = await fetch(`/calendar${queryParams}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(itineraryData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(window.itineraryData)
                 });
 
                 if (!response.ok) {
@@ -801,39 +934,41 @@
                 }
 
                 const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Trip_to_${itineraryData.city}.ics`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+                triggerDownload(blob, `Trip_to_${window.itineraryData.city || 'destination'}.ics`);
+                showToast('Calendar download started.', 'success');
             } catch (error) {
                 console.error('Download failed:', error);
-                alert('Could not download Calendar: ' + error.message);
+                showToast(`Could not download calendar. ${error.message}`, 'error');
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         }
 
+        function triggerDownload(blob, filename) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
         function itineraryShareText(data) {
             const breakdown = data.cost_breakdown || {};
             const destination = data.recommended_destination || data.city;
-            const total = formatMoney(breakdown.total ?? data.total_cost);
-            const remaining = formatMoney(breakdown.remaining_budget || 0);
             const lines = [
                 `Trip to ${destination}`,
-                `Estimated total: $${total}`,
-                `Remaining budget: $${remaining}`,
+                `Estimated total: $${formatMoney(breakdown.total ?? data.total_cost)}`,
+                `Remaining budget: $${formatMoney(breakdown.remaining_budget || 0)}`,
             ];
 
             if (data.vibe_rationale) lines.push(`Why it fits: ${data.vibe_rationale}`);
             if (data.work_friendly_notes) lines.push(`Work-friendly notes: ${data.work_friendly_notes}`);
-
-            data.days.forEach(day => {
-                const activities = day.activities.map(activity => activity.name).join(', ');
+            (data.days || []).forEach(day => {
+                const activities = (day.activities || []).map(activity => activity.name).join(', ');
                 lines.push(`Day ${day.day_number}: ${activities}`);
             });
 
@@ -841,14 +976,14 @@
         }
 
         async function shareItinerary() {
-            if (!itineraryData) return;
-
-            const text = itineraryShareText(itineraryData);
-            const title = `Trip to ${itineraryData.recommended_destination || itineraryData.city}`;
+            if (!window.itineraryData) return;
+            const text = itineraryShareText(window.itineraryData);
+            const title = `Trip to ${window.itineraryData.recommended_destination || window.itineraryData.city}`;
 
             if (navigator.share) {
                 try {
                     await navigator.share({ title, text });
+                    showToast('Share sheet opened.', 'success');
                     return;
                 } catch (error) {
                     if (error.name === 'AbortError') return;
@@ -857,78 +992,74 @@
 
             try {
                 await navigator.clipboard.writeText(text);
-                alert('Itinerary copied to clipboard.');
+                showToast('Itinerary copied to clipboard.', 'success');
             } catch (error) {
                 console.error('Share failed:', error);
-                alert(text);
+                showToast('Sharing failed. Select and copy the itinerary details from the page.', 'error');
             }
         }
 
-        // --- AUTH & HISTORY LOGIC ---
-        let currentToken = localStorage.getItem('token');
-        let authMode = 'login'; // or 'register'
-
-        function showView(viewId) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            updateNav();
-        }
-
-        function updateNav() {
-            const isAuth = !!currentToken;
-            document.getElementById('nav-login').style.display = isAuth ? 'none' : 'block';
-            document.getElementById('nav-logout').style.display = isAuth ? 'inline-block' : 'none';
-            document.getElementById('nav-dashboard').style.display = isAuth ? 'block' : 'none';
-            // nav-new-trip removed
-        }
-
+        document.getElementById('brand-home').addEventListener('click', () => {
+            resetPlanner();
+            showView('planner-view');
+        });
         document.getElementById('nav-login').addEventListener('click', () => showView('auth-view'));
         document.getElementById('nav-dashboard').addEventListener('click', () => {
             showView('dashboard-view');
             loadHistory();
         });
-        // nav-new-trip listener removed
-
         document.getElementById('dashboard-new-trip-btn').addEventListener('click', () => {
+            resetPlanner();
             showView('planner-view');
-            // Show form again
-            document.getElementById('planForm').style.display = 'block';
-            // Clear result and reset form for fresh start
-            document.getElementById('result').style.display = 'none';
-            document.getElementById('result').innerHTML = '';
-            document.getElementById('planForm').reset();
-            // Reset chips
-            document.getElementById('destinationChips').innerHTML = '';
-            document.getElementById('city').value = '';
-            document.getElementById('chipContainer').querySelectorAll('.chip.selected').forEach(c => c.click());
         });
-
         document.getElementById('nav-logout').addEventListener('click', () => {
             localStorage.removeItem('token');
             currentToken = null;
+            showToast('Logged out.', 'success');
             showView('auth-view');
         });
-        document.getElementById('auth-guest-btn').addEventListener('click', () => showView('planner-view'));
+        document.getElementById('auth-guest-btn').addEventListener('click', () => {
+            showToast('Continuing as guest.', 'success');
+            showView('planner-view');
+        });
 
-        // Toggle Auth Mode
-        document.getElementById('auth-toggle-link').addEventListener('click', (e) => {
-            e.preventDefault();
+        document.getElementById('auth-toggle-link').addEventListener('click', () => {
             authMode = authMode === 'login' ? 'register' : 'login';
             document.getElementById('auth-title').textContent = authMode === 'login' ? 'Login' : 'Register';
             document.getElementById('auth-action-btn').textContent = authMode === 'login' ? 'Login' : 'Register';
             document.getElementById('auth-toggle-text').textContent = authMode === 'login' ? 'New here?' : 'Already have an account?';
             document.getElementById('auth-toggle-link').textContent = authMode === 'login' ? 'Register' : 'Login';
+            document.getElementById('auth-password').autocomplete = authMode === 'login' ? 'current-password' : 'new-password';
+            clearFieldErrors();
+            announce(`${authMode === 'login' ? 'Login' : 'Registration'} form shown.`);
+            focusElement(document.getElementById('auth-title'));
         });
 
-        // Auth Action
         document.getElementById('auth-action-btn').addEventListener('click', async () => {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            const endpoint = authMode === 'login' ? '/auth/token' : '/auth/register';
+            clearFieldErrors();
+            const emailInput = document.getElementById('auth-email');
+            const passwordInput = document.getElementById('auth-password');
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const invalidFields = [];
 
-            // Password flow requires form data for token endpoint
+            if (!emailInput.checkValidity()) {
+                setFieldError('auth-email', 'Enter a valid email address.');
+                invalidFields.push(emailInput);
+            }
+            if (!password) {
+                setFieldError('auth-password', 'Enter your password.');
+                invalidFields.push(passwordInput);
+            }
+            if (invalidFields.length) {
+                announce('Please fix the highlighted account fields.', true);
+                focusElement(invalidFields[0]);
+                return;
+            }
+
+            const endpoint = authMode === 'login' ? '/auth/token' : '/auth/register';
             let body;
-            let headers = {};
+            const headers = {};
 
             if (authMode === 'login') {
                 body = new URLSearchParams();
@@ -941,90 +1072,97 @@
             }
 
             try {
+                announce(`${authMode === 'login' ? 'Logging in' : 'Registering account'}.`);
                 const res = await fetch(endpoint, { method: 'POST', headers, body });
                 if (!res.ok) throw new Error(await res.text());
 
                 const data = await res.json();
                 localStorage.setItem('token', data.access_token);
                 currentToken = data.access_token;
-
+                showToast('Signed in. Trip history loaded.', 'success');
                 showView('dashboard-view');
                 loadHistory();
             } catch (e) {
-                alert('Auth Failed: ' + e.message);
+                const authError = document.getElementById('auth-error');
+                const message = `Auth failed: ${e.message}`;
+                authError.textContent = message;
+                authError.hidden = false;
+                announce(message, true);
+                focusElement(authError);
             }
         });
 
         async function loadHistory() {
             if (!currentToken) return;
+            const grid = document.getElementById('trip-history-grid');
+            grid.innerHTML = '<p role="status">Loading trip history.</p>';
+            announce('Loading trip history.');
+
             try {
-                const res = await fetch('/history', {
+                const res = await fetch('/history/', {
                     headers: { 'Authorization': `Bearer ${currentToken}` }
                 });
-                if (!res.ok) throw new Error("Failed to load history");
+                if (!res.ok) throw new Error('Failed to load history');
 
                 const history = await res.json();
-                const grid = document.getElementById('trip-history-grid');
+                if (!history.length) {
+                    grid.innerHTML = '<p>No saved trips yet.</p>';
+                    announce('No saved trips yet.');
+                    return;
+                }
+
                 grid.innerHTML = history.map(h => `
-                    <button type="button" class="history-card" 
-                        onclick="loadHistoryItem(${h.id})" 
-                        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); loadHistoryItem(${h.id});}"
-                        aria-label="View Info for trip to ${h.city}"
-                        tabindex="0">
-                        <span class="history-city" style="display:block">${h.city}</span>
-                        <span class="history-date" style="display:block">${h.days} Days • ${new Date(h.created_at).toLocaleDateString()}</span>
-                        <span style="font-size:0.8rem; color:#666; display:block">View Itinerary →</span>
+                    <button type="button" class="history-card" data-history-id="${escapeAttr(h.id)}"
+                        aria-label="View itinerary for trip to ${escapeAttr(h.city)}">
+                        <span class="history-city">${escapeHTML(h.city)}</span>
+                        <span class="history-date">${escapeHTML(h.days)} Days • ${escapeHTML(new Date(h.created_at).toLocaleDateString())}</span>
+                        <span class="history-action">View Itinerary →</span>
                     </button>
                 `).join('');
+                grid.querySelectorAll('[data-history-id]').forEach(button => {
+                    button.addEventListener('click', () => loadHistoryItem(button.dataset.historyId));
+                });
+                announce(`${history.length} saved ${history.length === 1 ? 'trip' : 'trips'} loaded.`);
             } catch (e) {
                 console.error(e);
+                grid.innerHTML = '<p class="field-error" role="alert">Could not load trip history.</p>';
+                announce('Could not load trip history.', true);
             }
         }
 
         async function loadHistoryItem(id) {
             try {
-                const res = await fetch(`/history/${id}`, {
+                announce('Loading saved trip.');
+                const res = await fetch(`/history/${encodeURIComponent(id)}`, {
                     headers: { 'Authorization': `Bearer ${currentToken}` }
                 });
-                if (!res.ok) throw new Error("Failed to load item: " + res.status);
+                if (!res.ok) throw new Error(`Failed to load item: ${res.status}`);
 
                 const text = await res.text();
-                console.log("Raw response:", text);
-                if (!text) throw new Error("Empty response from server");
+                if (!text) throw new Error('Empty response from server');
 
                 const data = JSON.parse(text);
-                console.log("Loaded history item:", data);
+                if (!data) throw new Error('No data received from server');
 
-                if (!data) {
-                    throw new Error("No data received from server");
-                }
-                if (!data.full_json_blob) {
-                    // Fallback: If full_json_blob is missing, maybe data ITSELF is the blob?
-                    // Or maybe it's the old format?
-                    console.warn("full_json_blob missing, trying fallback");
-                    if (data.days && data.city) {
-                        renderItinerary(data); // Assume data is the blob
-                        showView('planner-view');
-                        return;
-                    }
-                    throw new Error("Invalid history data: missing full_json_blob");
-                }
+                const itinerary = data.full_json_blob || (data.days && data.city ? data : null);
+                if (!itinerary) throw new Error('Invalid history data: missing itinerary details');
 
-                renderItinerary(data.full_json_blob);
-                showView('planner-view');
+                showView('planner-view', { focus: false });
+                renderItinerary(itinerary);
             } catch (e) {
-                console.error("loadHistoryItem Error:", e);
-                alert("Error loading trip: " + e.message);
+                console.error('loadHistoryItem Error:', e);
+                showToast(`Error loading trip: ${e.message}`, 'error');
             }
         }
 
         async function saveHistory(data) {
             if (!currentToken) {
-                showToast("Login to save this trip to your history.", "error");
+                showToast('Login to save this trip to your history.', 'error');
                 return;
             }
             try {
-                const response = await fetch('/history', {
+                announce('Saving trip.');
+                const response = await fetch('/history/', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${currentToken}`,
@@ -1032,47 +1170,24 @@
                     },
                     body: JSON.stringify({
                         city: data.city,
-                        days: data.days.length,
-                        start_date: data.start_date, // fixed property name
+                        days: (data.days || []).length,
+                        start_date: data.start_date,
                         full_json_blob: data
                     })
                 });
 
                 if (response.ok) {
-                    console.log("History saved");
-                    showToast("Trip saved to history!", "success");
-                    // Optionally reload history if dashboard is open/cached?
-                    // But usually user is on planner view now.
+                    showToast('Trip saved to history.', 'success');
                 } else {
-                    console.error("Failed to save history:", await response.text());
-                    showToast("Failed to save trip to history.", "error");
+                    console.error('Failed to save history:', await response.text());
+                    showToast('Failed to save trip to history.', 'error');
                 }
             } catch (e) {
-                console.error("Failed to save history", e);
-                showToast("Network error saving history.", "error");
+                console.error('Failed to save history', e);
+                showToast('Network error saving history.', 'error');
             }
         }
 
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<span>${message}</span>`;
-
-            container.appendChild(toast);
-
-            // Trigger animation
-            requestAnimationFrame(() => {
-                toast.classList.add('show');
-            });
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Initialize
         if (currentToken) {
             showView('dashboard-view');
             loadHistory();

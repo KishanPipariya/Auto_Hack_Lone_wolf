@@ -1,6 +1,7 @@
 import logging
 import urllib.parse
 from collections.abc import Callable
+from urllib.parse import urlparse
 
 from ddgs import DDGS
 
@@ -25,6 +26,11 @@ def search_real_image(query: str) -> str | None:
     return None
 
 
+def is_renderable_image_url(value: str) -> bool:
+    parsed = urlparse(value.strip())
+    return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+
+
 def resolve_activity_image(
     activity: dict,
     city: str,
@@ -32,9 +38,13 @@ def resolve_activity_image(
 ) -> str:
     current_image = activity.get("image_url")
     if isinstance(current_image, str) and current_image.strip():
-        return current_image
+        current_image = current_image.strip()
+        if is_renderable_image_url(current_image):
+            return current_image
+        query = current_image
+    else:
+        query = f"{activity.get('name', 'Travel activity')} {city}".strip()
 
-    query = f"{activity.get('name', 'Travel activity')} {city}".strip()
     if image_search:
         real_image = image_search(query)
     else:

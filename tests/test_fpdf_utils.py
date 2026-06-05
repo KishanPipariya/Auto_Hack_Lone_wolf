@@ -30,18 +30,19 @@ async def test_generate_pdf_mixed_costs():
             image_url="http://example.com/2.jpg",
         ),
         Activity(
-            name="Unicode Activity",
-            description="Costs Euro",
+            name="Unicode Activity – Café",
+            description="Rotterdam’s harbor tour includes architecture, art, and €25 snacks.",
             cost="€25",  # Unicode string cost
             tags=["euro"],
             duration_hours=3.0,
+            duration_str="2–3 hours",
             image_url="http://example.com/3.jpg",
         ),
     ]
 
     day = DayPlan(day_number=1, activities=activities)
     itinerary = Itinerary(
-        city="Paris",
+        city="Rótterdam",
         days=[day],
         total_cost=25.0,  # Only sums numeric
     )
@@ -57,6 +58,11 @@ async def test_generate_pdf_mixed_costs():
         try:
             response = await generate_pdf(itinerary)
             assert response.media_type == "application/pdf"
+            assert response.body.startswith(b"%PDF")
+            assert (
+                response.headers["Content-Disposition"]
+                == "attachment; filename=Trip_to_Rotterdam.pdf"
+            )
             print("PDF Generated Successfully")
         except Exception as e:
             pytest.fail(f"PDF Generation failed: {e}")

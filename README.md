@@ -1,6 +1,6 @@
-# Travel Planner Agent ✈️
+# Travel Planner Agent
 
-A smart AI-powered travel agent that creates personalized itineraries using Gemini 2.0.
+A smart AI-powered travel agent that creates personalized itineraries using OpenAI.
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ A smart AI-powered travel agent that creates personalized itineraries using Gemi
   # Install uv if you haven't already
   curl -LsSf https://astral.sh/uv/install.sh | sh
   ```
-- **Gemini API Key**: Get one from [Google AI Studio](https://aistudio.google.com/).
+- **OpenAI API Key**: Create one from the OpenAI platform.
 
 ## Installation
 
@@ -37,9 +37,7 @@ A smart AI-powered travel agent that creates personalized itineraries using Gemi
 2.  **Edit `.env`**:
     Open `.env` and add your API keys:
     ```env
-    GOOGLE_API_KEY=your_gemini_api_key_here
-    # Optional: For fallback models
-    OPENROUTER_API_KEY=your_openrouter_key_here
+    OPENAI_API_KEY=your_openai_api_key_here
     ```
 
 ## Running the Application

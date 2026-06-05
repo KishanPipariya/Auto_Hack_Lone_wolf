@@ -6,16 +6,9 @@ from app.core.destinations import destination_context
 from app.models.domain import Activity, DestinationSuggestion, Itinerary, Preferences
 
 MODEL_CANDIDATES = [
-    "gemini-2.0-flash",
-    "gemini-flash-latest",
-    "gemini-1.5-flash",
-    "gemini-pro-latest",
-]
-
-OPENROUTER_CANDIDATES = [
-    "google/gemini-2.0-flash-exp:free",
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "google/gemma-3-27b-it:free",
+    "gpt-5.4-mini",
+    "gpt-5.4-nano",
+    "gpt-5.5",
 ]
 
 
@@ -198,6 +191,48 @@ def refinement_prompt(
         """
 
 
+def json_repair_prompt(raw_response: str) -> str:
+    return f"""
+        Convert the following travel itinerary response into valid JSON matching
+        the Itinerary schema exactly. Preserve the same trip content, dates,
+        costs, activities, destination suggestions, and notes where possible.
+        Do not add markdown, citations, source IDs, or explanatory text.
+
+        Required top-level fields:
+        - city: string
+        - recommended_destination: string or null
+        - vibe_rationale: string or null
+        - budget_notes: string or null
+        - work_friendly_notes: string or null
+        - destination_suggestions: array of objects with city, country,
+          rationale, estimated_total_cost, tags
+        - cost_breakdown: object with transport, stay, food, activities, total,
+          remaining_budget
+        - days: array of objects with day_number and activities
+
+        Required activity fields:
+        - name: string
+        - description: string
+        - cost: number in USD
+        - duration_hours: number
+        - duration_str: string or null
+        - image_url: string or null
+        - tags: array of strings
+
+        If the source uses aliases, map them as follows:
+        - destination/name -> city
+        - day -> day_number
+        - plan -> activities
+        - activity/title -> activity name
+        - cost_usd/estimated_cost_usd -> cost
+
+        Return ONLY the corrected JSON object.
+
+        Source response:
+        {raw_response}
+        """
+
+
 def budget_targets_context(
     preferences: Preferences,
     category_targets: Mapping[str, float] | None,
@@ -238,13 +273,13 @@ def activities_context_for_destination(
     if refinement:
         return """
              AVAILABLE ACTIVITIES:
-             You are free to find real activities using Google Search.
+             You are free to find real activities using web search.
              **REMINDER**: Estimate costs in LOCAL currency, then convert to USD. Be realistic (e.g. Mumbai street food is <$5).
              """
 
     return """
              AVAILABLE ACTIVITIES:
-             You are free to find real activities using Google Search.
+             You are free to find real activities using web search.
 
              **CRITICAL INSTRUCTION: COST & CURRENCY**
              - Estimate costs in the destination's LOCAL currency first (e.g. Rupees, Yen, Euros).

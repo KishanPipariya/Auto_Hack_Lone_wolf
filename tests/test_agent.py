@@ -28,18 +28,21 @@ VALID_JSON_RESPONSE = """
 
 @pytest.fixture
 def planner():
-    """Returns a TravelAgent instance with mocked Google Client."""
-    with patch("app.core.agent.genai.Client") as mock_client:
+    """Returns a TravelAgent instance with mocked OpenAI client."""
+    with (
+        patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}),
+        patch("app.core.agent.OpenAI") as mock_client,
+    ):
         agent = TravelAgent()
-        agent.client = mock_client
+        agent.client = mock_client.return_value
         return agent
 
 
 def test_initial_plan_success(planner):
     """Verifies that plan_trip parses a valid JSON response correctly."""
     mock_response = MagicMock()
-    mock_response.text = VALID_JSON_RESPONSE
-    planner.client.models.generate_content.return_value = mock_response
+    mock_response.output_text = VALID_JSON_RESPONSE
+    planner.client.responses.create.return_value = mock_response
 
     prefs = Preferences(city="London", budget=1000, days=1, interests=["History"])
     itinerary = planner.plan_trip(prefs)
@@ -47,6 +50,9 @@ def test_initial_plan_success(planner):
     assert itinerary.city == "London"
     assert len(itinerary.days) == 1
     assert itinerary.days[0].activities[0].name == "Big Ben"
+    request_kwargs = planner.client.responses.create.call_args.kwargs
+    assert request_kwargs["tools"] == [{"type": "web_search"}]
+    assert "text" not in request_kwargs
 
 
 def test_json_parsing_resilience(planner):
@@ -58,18 +64,65 @@ def test_json_parsing_resilience(planner):
     assert len(itinerary.days) == 1
 
 
-def test_openrouter_fallback(planner):
-    """Verifies fallback logic when Google API fails."""
-    planner.client.models.generate_content.side_effect = Exception("Quota Exceeded")
+def test_openai_model_candidate_fallback(planner):
+    """Verifies fallback logic when the first OpenAI model candidate fails."""
+    mock_response = MagicMock()
+    mock_response.output_text = VALID_JSON_RESPONSE
+    planner.client.responses.create.side_effect = [
+        Exception("Quota Exceeded"),
+        mock_response,
+    ]
 
-    with patch.object(
-        planner, "_call_openrouter", return_value=VALID_JSON_RESPONSE
-    ) as mock_or:
-        prefs = Preferences(city="London", budget=1000, days=1, interests=["History"])
-        itinerary = planner.plan_trip(prefs)
+    prefs = Preferences(city="London", budget=1000, days=1, interests=["History"])
+    itinerary = planner.plan_trip(prefs)
 
-        mock_or.assert_called_once()
-        assert itinerary.city == "London"
+    assert planner.client.responses.create.call_count == 2
+    assert (
+        planner.client.responses.create.call_args_list[0].kwargs["model"]
+        == "gpt-5.4-mini"
+    )
+    assert (
+        planner.client.responses.create.call_args_list[1].kwargs["model"]
+        == "gpt-5.4-nano"
+    )
+    assert itinerary.city == "London"
+
+
+def test_invalid_schema_response_is_repaired_with_json_mode(planner):
+    invalid_response = MagicMock()
+    invalid_response.output_text = '{"destination": "Rotterdam, Netherlands"}'
+    repaired_response = MagicMock()
+    repaired_response.output_text = VALID_JSON_RESPONSE
+    planner.client.responses.create.side_effect = [invalid_response, repaired_response]
+
+    prefs = Preferences(city="London", budget=1000, days=1, interests=["History"])
+    itinerary = planner.generate_initial_plan(prefs)
+
+    assert itinerary.city == "London"
+    assert planner.client.responses.create.call_count == 2
+
+    planning_kwargs = planner.client.responses.create.call_args_list[0].kwargs
+    assert planning_kwargs["tools"] == [{"type": "web_search"}]
+    assert "text" not in planning_kwargs
+
+    repair_kwargs = planner.client.responses.create.call_args_list[1].kwargs
+    assert "tools" not in repair_kwargs
+    assert repair_kwargs["text"] == {"format": {"type": "json_object"}}
+    assert "Convert the following travel itinerary response" in repair_kwargs["input"]
+
+
+def test_missing_openai_api_key_leaves_client_unset():
+    with (
+        patch.dict(os.environ, {}, clear=True),
+        patch("app.core.agent.OpenAI") as mock_openai,
+    ):
+        planner = TravelAgent()
+
+    assert planner.client is None
+    mock_openai.assert_not_called()
+
+    with pytest.raises(RuntimeError, match="OPENAI_API_KEY"):
+        planner._call_model_with_fallback("Return JSON")
 
 
 def test_constraint_checking(planner):

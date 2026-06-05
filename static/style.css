@@ -6,15 +6,15 @@
     --color-text-primary: #1F2937;
     --color-text-secondary: #374151;
     /* Darkened for accessibility */
-    --color-primary: #2563EB;
+    --color-primary: #174EA6;
     /* WCAG Accessible Blue */
-    --color-primary-hover: #1D4ED8;
+    --color-primary-hover: #0F3D84;
     --color-border: #E5E7EB;
     --color-accent-bg: #EFF6FF;
     --color-success: #059669;
     --color-error-bg: #FEF2F2;
     --color-error-border: #FECACA;
-    --color-error-text: #B91C1C;
+    --color-error-text: #991B1B;
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -31,9 +31,9 @@ body.dark-mode {
     --color-bg-card: #1F2937;
     --color-text-primary: #F9FAFB;
     --color-text-secondary: #D1D5DB;
-    --color-primary: #3B82F6;
+    --color-primary: #8AB4F8;
     /* Lighter Blue for Dark Mode */
-    --color-primary-hover: #60A5FA;
+    --color-primary-hover: #AECBFA;
     --color-border: #374151;
     --color-accent-bg: #1E3A8A;
     --color-error-bg: #450A0A;
@@ -61,10 +61,11 @@ body {
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
     margin-top: 0;
     font-weight: 700;
-    letter-spacing: -0.025em;
+    letter-spacing: 0;
 }
 
 h1 {
@@ -109,15 +110,31 @@ input {
 }
 
 input:focus {
-    outline: none;
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    box-shadow: none;
+}
+
+input[aria-invalid="true"] {
+    border-color: var(--color-error-text);
 }
 
 .field-hint {
     display: block;
     color: var(--color-text-secondary);
     font-size: 0.9rem;
+}
+
+.field-error {
+    display: block;
+    color: var(--color-error-text);
+    font-weight: 700;
+    margin: 0.35rem 0 0.75rem;
+}
+
+.field-error[hidden] {
+    display: none;
 }
 
 .toggle-row {
@@ -138,7 +155,7 @@ input:focus {
     position: relative;
     display: inline-block;
     width: 54px;
-    height: 30px;
+    height: 44px;
     flex: 0 0 auto;
     margin: 0;
 }
@@ -151,7 +168,7 @@ input:focus {
 
 .work-toggle-track {
     position: absolute;
-    inset: 0;
+    inset: 7px 0;
     cursor: pointer;
     background-color: #CBD5E1;
     border-radius: 999px;
@@ -179,6 +196,11 @@ input:focus {
     transform: translateX(24px);
 }
 
+.work-toggle input:focus-visible + .work-toggle-track {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
 /* Hide default spinners */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
@@ -204,7 +226,9 @@ input[type=number] {
 
 .number-control:focus-within {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    box-shadow: none;
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 .number-control input {
@@ -226,7 +250,7 @@ input[type=number] {
 .spinner-controls {
     display: flex;
     flex-direction: column;
-    width: 32px;
+    width: 44px;
     /* Increased from 24px for better touch target */
     gap: 6px;
     margin-right: 4px;
@@ -246,6 +270,7 @@ input[type=number] {
     justify-content: center;
     transition: background-color var(--transition-base);
     padding: 0;
+    min-height: 44px;
     border-radius: 4px;
     /* distinct buttons */
 }
@@ -280,6 +305,8 @@ input[type=number] {
     width: auto;
     /* Fixes layout issue where chips took full width */
     margin-bottom: 0;
+    min-height: 44px;
+    min-width: 44px;
 }
 
 .chip:hover {
@@ -310,6 +337,7 @@ button {
     border-radius: 8px;
     cursor: pointer;
     width: 100%;
+    min-height: 44px;
     transition: transform 100ms ease, background-color var(--transition-base);
 }
 
@@ -328,17 +356,57 @@ button:disabled {
     transform: none;
 }
 
+body.dark-mode .chip.selected,
+body.dark-mode #submitBtn,
+body.dark-mode #auth-action-btn,
+body.dark-mode #dashboard-new-trip-btn,
+body.dark-mode .primary-action {
+    color: #111827 !important;
+}
+
+.text-button {
+    background: transparent;
+    border: 0;
+    color: var(--color-primary);
+    display: inline;
+    font: inherit;
+    font-weight: 700;
+    min-height: 44px;
+    padding: 0.2rem 0.4rem;
+    text-decoration: underline;
+    width: auto;
+}
+
+.text-button:hover {
+    background: transparent;
+    color: var(--color-primary-hover);
+}
+
 /* Accessibility: Focus Rings */
 button:focus-visible,
+a:focus-visible,
+[tabindex="-1"]:focus-visible,
 .theme-switch input:focus-visible+.slider {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
 }
 
 /* Results Area */
 #result {
     margin-top: 2.5rem;
     animation: fadeIn 0.4s ease-out;
+}
+
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }
 
 .trip-summary {
@@ -353,6 +421,11 @@ button:focus-visible,
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
+}
+
+.summary-main dd,
+.cost-grid dd {
+    margin: 0;
 }
 
 .summary-label {
@@ -374,6 +447,13 @@ button:focus-visible,
 .summary-note {
     color: var(--color-text-secondary);
     margin: 1rem 0 0;
+}
+
+.suggestions-list,
+.trip-days,
+.activities-list {
+    list-style: none;
+    padding: 0;
 }
 
 .suggestions-list {
@@ -451,7 +531,8 @@ button:focus-visible,
 }
 
 /* Itinerary Cards */
-.itinerary-day {
+.itinerary-day,
+.day-card {
     background: var(--color-bg-card);
     border: 1px solid var(--color-border);
     border-radius: 12px;
@@ -461,7 +542,8 @@ button:focus-visible,
     transition: transform var(--transition-base), box-shadow var(--transition-base);
 }
 
-.itinerary-day:hover {
+.itinerary-day:hover,
+.day-card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
 }
@@ -508,7 +590,8 @@ button:focus-visible,
     min-width: 0;
 }
 
-.activity-content h3 {
+.activity-content h3,
+.activity-content h4 {
     margin-top: 0;
     margin-bottom: 0.5rem;
     color: var(--color-text-primary);
@@ -577,7 +660,7 @@ body.dark-mode .duration-tag {
 }
 
 .day-total {
-    background-color: #059669;
+    background-color: #036242;
     /* Emerald 600 - Accessible Green */
     color: #ffffff;
     padding: 0.5rem 1rem;
@@ -599,6 +682,41 @@ body.dark-mode .duration-tag {
     font-weight: 700;
     margin-top: 2rem;
     box-shadow: var(--shadow-md);
+}
+
+body.dark-mode .total-trip-cost {
+    color: #111827;
+}
+
+.primary-action {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    font-weight: 700;
+}
+
+.secondary-action {
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+}
+
+.secondary-action:hover {
+    color: #111827;
+}
+
+.history-action {
+    color: var(--color-text-secondary);
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.retry-button {
+    background: var(--color-error-text);
+    color: white;
+    margin-top: 1rem;
+    width: auto;
 }
 
 /* States */

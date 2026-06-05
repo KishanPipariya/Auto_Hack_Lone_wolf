@@ -1,15 +1,58 @@
 from fpdf import FPDF
+from fpdf.errors import FPDFUnicodeEncodingException
 from fastapi import Response
 import io
 import aiohttp
 import asyncio
 from app.models.domain import Itinerary
 import logging
+import re
+import unicodedata
 
 logger = logging.getLogger("travel_agent_server")
 
 
+PDF_TEXT_REPLACEMENTS = str.maketrans(
+    {
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201a": "'",
+        "\u201b": "'",
+        "\u201c": '"',
+        "\u201d": '"',
+        "\u201e": '"',
+        "\u201f": '"',
+        "\u2013": "-",
+        "\u2014": "-",
+        "\u2212": "-",
+        "\u2022": "-",
+        "\u2026": "...",
+        "\u00a0": " ",
+        "\u20ac": "EUR",
+        "\u00a3": "GBP",
+        "\u00a5": "JPY",
+    }
+)
+
+
+def pdf_safe_text(text: object) -> str:
+    normalized = str(text).translate(PDF_TEXT_REPLACEMENTS)
+    normalized = unicodedata.normalize("NFKD", normalized)
+    return normalized.encode("latin-1", "ignore").decode("latin-1")
+
+
+def pdf_safe_filename(value: object) -> str:
+    filename = re.sub(r"[^A-Za-z0-9._-]+", "_", pdf_safe_text(value)).strip("._")
+    return filename or "itinerary"
+
+
 class ItineraryPDF(FPDF):
+    def normalize_text(self, text):
+        try:
+            return super().normalize_text(text)
+        except FPDFUnicodeEncodingException:
+            return super().normalize_text(pdf_safe_text(text))
+
     def header(self):
         # Header with colored bar
         self.set_fill_color(37, 99, 235)  # Blue-600
@@ -162,8 +205,6 @@ async def generate_pdf(itinerary: Itinerary):
                         if isinstance(activity.cost, (int, float))
                         else str(activity.cost)
                     )
-                    # Sanitize for FPDF (Latin-1)
-                    cost_text = cost_text.encode("latin-1", "ignore").decode("latin-1")
                     pdf.cell(20, 5, cost_text)
                 pdf.set_text_color(107, 114, 128)  # Gray
                 if activity.duration_str:
@@ -205,7 +246,9 @@ async def generate_pdf(itinerary: Itinerary):
             content=pdf_bytes,
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f"attachment; filename=Trip_to_{itinerary.city}.pdf"
+                "Content-Disposition": (
+                    f"attachment; filename=Trip_to_{pdf_safe_filename(itinerary.city)}.pdf"
+                )
             },
         )
     except Exception as e:

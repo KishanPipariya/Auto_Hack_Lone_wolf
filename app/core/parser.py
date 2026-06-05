@@ -58,6 +58,7 @@ def normalize_itinerary_data(
         raise ValueError("LLM response JSON must be an object")
 
     data = dict(data)
+    normalize_itinerary_aliases(data)
 
     activity_total = 0.0
     days = data.get("days", [])
@@ -77,6 +78,69 @@ def normalize_itinerary_data(
     normalize_cost_breakdown(data, activity_total)
 
     return data
+
+
+def normalize_itinerary_aliases(data: dict[str, Any]) -> None:
+    if not data.get("city"):
+        data["city"] = data.get("destination") or data.get("name")
+
+    if not data.get("recommended_destination"):
+        data["recommended_destination"] = data.get("city")
+
+    suggestions = data.get("destination_suggestions", [])
+    if isinstance(suggestions, list):
+        for suggestion in suggestions:
+            normalize_destination_suggestion(suggestion)
+
+    days = data.get("days", [])
+    if isinstance(days, list):
+        for day in days:
+            normalize_day_aliases(day)
+
+
+def normalize_destination_suggestion(suggestion: Any) -> None:
+    if not isinstance(suggestion, dict):
+        return
+
+    if not suggestion.get("city"):
+        suggestion["city"] = suggestion.get("destination") or suggestion.get("name")
+    if not suggestion.get("estimated_total_cost"):
+        suggestion["estimated_total_cost"] = (
+            suggestion.get("estimated_total")
+            or suggestion.get("estimated_total_usd")
+            or suggestion.get("cost_estimate_usd")
+            or 0
+        )
+
+
+def normalize_day_aliases(day: Any) -> None:
+    if not isinstance(day, dict):
+        return
+
+    if not day.get("day_number"):
+        day["day_number"] = day.get("day")
+    if not day.get("activities") and isinstance(day.get("plan"), list):
+        day["activities"] = [
+            normalize_plan_item_aliases(item) for item in day["plan"] if isinstance(item, dict)
+        ]
+
+
+def normalize_plan_item_aliases(item: dict[str, Any]) -> dict[str, Any]:
+    activity = dict(item)
+    if not activity.get("name"):
+        activity["name"] = activity.get("activity") or activity.get("title") or "Activity"
+    if not activity.get("description"):
+        activity["description"] = activity.get("activity") or activity.get("name")
+    if not activity.get("cost"):
+        activity["cost"] = (
+            activity.get("cost_usd")
+            or activity.get("estimated_cost_usd")
+            or activity.get("cost_estimate_usd")
+            or 0
+        )
+    if activity.get("time") and not activity.get("tags"):
+        activity["tags"] = [str(activity["time"])]
+    return activity
 
 
 def normalize_day(
