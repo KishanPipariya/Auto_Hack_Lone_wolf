@@ -5,17 +5,43 @@ from pydantic import (
     BaseModel,
     Field,
     field_validator,
+    model_validator,
 )
 
 
 class Preferences(BaseModel):
     city: Optional[str] = None
-    budget: float
+    budget: Optional[float] = None
+    local_budget: Optional[float] = None
     days: int
     interests: List[str] = Field(default_factory=list)
     vibe: Optional[str] = None
     work_friendly: bool = False
     start_date: Optional[str] = None
+
+    @field_validator("budget", "local_budget")
+    @classmethod
+    def validate_budget_amount(cls, value: Optional[float]) -> Optional[float]:
+        if value is not None and value < 1:
+            raise ValueError("Budget amount must be at least 1.")
+        return value
+
+    @model_validator(mode="after")
+    def validate_single_budget_amount(self) -> "Preferences":
+        has_usd_budget = self.budget is not None
+        has_local_budget = self.local_budget is not None
+
+        if has_usd_budget == has_local_budget:
+            raise ValueError("Submit exactly one of budget or local_budget.")
+
+        if self.local_budget is not None:
+            self.budget = self.local_budget
+
+        return self
+
+    @property
+    def uses_local_budget(self) -> bool:
+        return self.local_budget is not None
 
 
 class Activity(BaseModel):
@@ -81,6 +107,7 @@ class Itinerary(BaseModel):
     destination_suggestions: List[DestinationSuggestion] = Field(default_factory=list)
     cost_breakdown: CostBreakdown = Field(default_factory=CostBreakdown)
     total_cost: float = 0.0
+    uses_local_budget: bool = False
     days: List[DayPlan]
     valid: bool = False
     validation_error: Optional[str] = None

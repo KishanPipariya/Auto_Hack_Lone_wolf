@@ -160,6 +160,19 @@
             outline: none;
         }
 
+        .budget-fields {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 1rem;
+            align-items: start;
+        }
+
+        @media (max-width: 520px) {
+            .budget-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Dashboard */
         .trip-history-grid {
             display: grid;
@@ -309,17 +322,34 @@
                     <span id="start-date-hint" class="sr-only">Leave this blank if your dates are flexible.</span>
                 </div>
 
-                <div class="form-group">
-                    <label for="budget">Total Budget ($)</label>
-                    <div class="number-control">
-                        <input type="number" id="budget" required placeholder="e.g. 500" min="1" step="1" data-step="50"
-                            value="500" aria-describedby="budget-error">
-                        <div class="spinner-controls">
-                            <button type="button" class="control-btn plus" aria-label="Increase budget">▲</button>
-                            <button type="button" class="control-btn minus" aria-label="Decrease budget">▼</button>
+                <div class="budget-fields">
+                    <div class="form-group">
+                        <label for="budget">Total Budget (USD)</label>
+                        <div class="number-control">
+                            <input type="number" id="budget" placeholder="e.g. 500" min="1" step="1" data-step="50"
+                                value="500" aria-describedby="budget-hint budget-error">
+                            <div class="spinner-controls">
+                                <button type="button" class="control-btn plus" aria-label="Increase budget">▲</button>
+                                <button type="button" class="control-btn minus" aria-label="Decrease budget">▼</button>
+                            </div>
                         </div>
+                        <span id="budget-hint" class="field-hint">Use either USD or local currency, not both.</span>
+                        <span id="budget-error" class="field-error" hidden></span>
                     </div>
-                    <span id="budget-error" class="field-error" hidden></span>
+
+                    <div class="form-group">
+                        <label for="local_budget">Total Budget (Local Currency)</label>
+                        <div class="number-control">
+                            <input type="number" id="local_budget" placeholder="e.g. 45000" min="1" step="1"
+                                data-step="500" aria-describedby="local-budget-hint local_budget-error">
+                            <div class="spinner-controls">
+                                <button type="button" class="control-btn plus" aria-label="Increase local currency budget">▲</button>
+                                <button type="button" class="control-btn minus" aria-label="Decrease local currency budget">▼</button>
+                            </div>
+                        </div>
+                        <span id="local-budget-hint" class="field-hint">Enter this only when you want the planner to treat the amount as the destination's local currency.</span>
+                        <span id="local_budget-error" class="field-error" hidden></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -390,6 +420,7 @@
         const destinations = new Set();
         let currentToken = localStorage.getItem('token');
         let authMode = 'login';
+        let activeBudgetUsesLocal = false;
 
         function escapeHTML(value) {
             return String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -549,6 +580,15 @@
             });
         });
 
+        const usdBudgetInput = document.getElementById('budget');
+        const localBudgetInput = document.getElementById('local_budget');
+        usdBudgetInput.addEventListener('input', () => {
+            if (usdBudgetInput.value.trim()) localBudgetInput.value = '';
+        });
+        localBudgetInput.addEventListener('input', () => {
+            if (localBudgetInput.value.trim()) usdBudgetInput.value = '';
+        });
+
         destInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault();
@@ -614,6 +654,7 @@
             resultDiv.style.display = 'none';
             resultDiv.innerHTML = '';
             destinations.clear();
+            activeBudgetUsesLocal = false;
             updateHiddenInput();
             destContainer.innerHTML = '';
             selectedInterests.clear();
@@ -625,15 +666,30 @@
             announce('Trip form reset.');
         }
 
+        function budgetValues() {
+            const usdBudget = document.getElementById('budget').value.trim();
+            const localBudget = document.getElementById('local_budget').value.trim();
+            return { usdBudget, localBudget };
+        }
+
         function validatePlanningFields() {
             clearFieldErrors();
             const budget = document.getElementById('budget');
+            const localBudget = document.getElementById('local_budget');
             const days = document.getElementById('days');
             const invalidFields = [];
+            const { usdBudget, localBudget: localBudgetValue } = budgetValues();
 
-            if (!budget.checkValidity()) {
+            if (Boolean(usdBudget) === Boolean(localBudgetValue)) {
+                setFieldError('budget', 'Enter either a USD budget or a local currency budget.');
+                setFieldError('local_budget', 'Enter either a USD budget or a local currency budget.');
+                invalidFields.push(budget);
+            } else if (usdBudget && !budget.checkValidity()) {
                 setFieldError('budget', 'Enter a budget of at least 1 dollar.');
                 invalidFields.push(budget);
+            } else if (localBudgetValue && !localBudget.checkValidity()) {
+                setFieldError('local_budget', 'Enter a local currency budget of at least 1.');
+                invalidFields.push(localBudget);
             }
             if (!days.checkValidity()) {
                 setFieldError('days', 'Enter a duration from 1 to 14 days.');
@@ -667,16 +723,23 @@
             const finalInterests = [...selectedInterests, ...customInput.split(',')]
                 .map(s => s.trim())
                 .filter(s => s);
+            const { usdBudget, localBudget } = budgetValues();
 
             const data = {
                 city: document.getElementById('city').value.trim() || null,
                 start_date: document.getElementById('start_date').value || null,
-                budget: parseFloat(document.getElementById('budget').value),
                 days: parseInt(document.getElementById('days').value),
                 interests: finalInterests,
                 vibe: document.getElementById('vibe').value.trim() || null,
                 work_friendly: document.getElementById('workFriendly').checked
             };
+            if (usdBudget) {
+                data.budget = parseFloat(usdBudget);
+                activeBudgetUsesLocal = false;
+            } else {
+                data.local_budget = parseFloat(localBudget);
+                activeBudgetUsesLocal = true;
+            }
 
             try {
                 const response = await fetch('/plan_stream', {
@@ -703,17 +766,22 @@
                         if (!line.trim()) continue;
                         const msg = JSON.parse(line);
                         if (msg.type === 'status') {
-                            btn.textContent = msg.message;
-                            announce(msg.message);
+                            const statusMessage = cleanTextForLocalBudget(msg.message, data);
+                            btn.textContent = statusMessage;
+                            announce(statusMessage);
                         } else if (msg.type === 'result') {
                             renderItinerary(msg.data);
                         } else if (msg.type === 'error') {
-                            throw new Error(msg.message);
+                            throw new Error(cleanTextForLocalBudget(msg.message, data));
                         }
                     }
                 }
             } catch (error) {
-                renderInlineError('Oops! Something went wrong', error.message.replace('API Error: ', ''), true);
+                renderInlineError(
+                    'Oops! Something went wrong',
+                    cleanTextForLocalBudget(error.message.replace('API Error: ', ''), data),
+                    true
+                );
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Plan My Trip';
@@ -723,16 +791,17 @@
 
         function renderInlineError(title, message, retry = false) {
             const resultDiv = document.getElementById('result');
+            const displayMessage = cleanTextForLocalBudget(message, window.itineraryData);
             resultDiv.style.display = 'block';
             resultDiv.innerHTML = `
                 <div class="error-card" role="alert">
                     <h3 tabindex="-1">${escapeHTML(title)}</h3>
-                    <p>${escapeHTML(message)}</p>
+                    <p>${escapeHTML(displayMessage)}</p>
                     ${retry ? '<button type="button" id="retry-plan-btn" class="retry-button">Try Again</button>' : ''}
                 </div>`;
             const retryBtn = document.getElementById('retry-plan-btn');
             if (retryBtn) retryBtn.addEventListener('click', () => document.getElementById('submitBtn').click());
-            announce(`${title}. ${message}`, true);
+            announce(`${title}. ${displayMessage}`, true);
             focusElement(resultDiv.querySelector('h3'));
         }
 
@@ -742,11 +811,15 @@
             resultDiv.style.display = 'block';
 
             if (!data.valid) {
+                data.uses_local_budget = Boolean(data.uses_local_budget || activeBudgetUsesLocal);
+                sanitizeItineraryForLocalBudget(data);
                 renderInlineError('Validation Error', data.validation_error || 'The itinerary could not be validated.');
                 return;
             }
 
             planForm.style.display = 'none';
+            data.uses_local_budget = Boolean(data.uses_local_budget || activeBudgetUsesLocal);
+            sanitizeItineraryForLocalBudget(data);
             window.itineraryData = data;
             const days = Array.isArray(data.days) ? data.days : [];
             const destination = data.recommended_destination || data.city || 'your destination';
@@ -759,9 +832,9 @@
                     <h2 id="itinerary-title" tabindex="-1" style="text-align:center; margin-bottom: 1rem;">Itinerary for ${escapeHTML(destination)}</h2>
                     ${renderTripSummary(data)}
                     <ol class="trip-days" aria-label="Itinerary days">
-                        ${days.map(day => renderDay(day, data.city || destination)).join('')}
+                        ${days.map(day => renderDay(day, data.city || destination, data)).join('')}
                     </ol>
-                    <p class="total-trip-cost">Total Trip Cost: $${formatMoney(total)}</p>
+                    <p class="total-trip-cost">Total Trip Cost: ${formatItineraryMoney(total, data)}</p>
                     <div class="summary-container export-actions" aria-label="Itinerary actions">
                         <button type="button" data-action="save-history" class="plan-btn primary-action">
                             <span class="icon" aria-hidden="true">💾</span> Save Trip
@@ -778,6 +851,7 @@
                     </div>
                 </section>`;
 
+            stripDollarSymbolsForLocalBudget(resultDiv, data);
             resultDiv.querySelector('[data-action="save-history"]').addEventListener('click', () => saveHistory(window.itineraryData));
             resultDiv.querySelector('[data-action="download-pdf"]').addEventListener('click', (event) => downloadPdf(event.currentTarget));
             resultDiv.querySelector('[data-action="download-calendar"]').addEventListener('click', (event) => downloadCalendar(event.currentTarget));
@@ -786,7 +860,7 @@
             focusElement(document.getElementById('itinerary-title'));
         }
 
-        function renderDay(day, city) {
+        function renderDay(day, city, itinerary) {
             const activities = Array.isArray(day.activities) ? day.activities : [];
             const dayTotal = activities.reduce((sum, act) => sum + (Number(act.cost) || 0), 0);
             const dayCity = day.city || city;
@@ -795,16 +869,16 @@
                     <section aria-labelledby="day-${escapeAttr(day.day_number || 1)}-title">
                         <div class="day-header">
                             <h3 id="day-${escapeAttr(day.day_number || 1)}-title">Day ${escapeHTML(day.day_number || '')}${dayCity ? ` - ${escapeHTML(dayCity)}` : ''}</h3>
-                            <span class="day-total">Day total: $${formatMoney(dayTotal)}</span>
+                            <span class="day-total">Day total: ${formatItineraryMoney(dayTotal, itinerary)}</span>
                         </div>
                         <ol class="activities-list">
-                            ${activities.map(activity => renderActivity(activity, dayCity)).join('')}
+                            ${activities.map(activity => renderActivity(activity, dayCity, itinerary)).join('')}
                         </ol>
                     </section>
                 </li>`;
         }
 
-        function renderActivity(activity, city) {
+        function renderActivity(activity, city, itinerary) {
             const name = activity.name || 'Activity';
             const imageUrl = activity.image_url || `https://image.pollinations.ai/prompt/${encodeURIComponent(`${name} ${city}`)}?width=800&height=600&nologo=true`;
             return `
@@ -817,7 +891,7 @@
                             <h4>${escapeHTML(name)}</h4>
                             <p>${escapeHTML(activity.description || '')}</p>
                             <div class="activity-meta">
-                                <span class="cost-tag">Cost: $${formatMoney(activity.cost)}</span>
+                                <span class="cost-tag">Cost: ${formatItineraryMoney(activity.cost, itinerary)}</span>
                                 ${activity.duration_str ? `<span class="duration-tag"><span aria-hidden="true">⏱</span> Duration: ${escapeHTML(activity.duration_str)}</span>` : ''}
                             </div>
                         </div>
@@ -827,7 +901,48 @@
 
         function formatMoney(value) {
             const numeric = Number(value || 0);
-            return numeric.toLocaleString(undefined, { maximumFractionDigits: 0 });
+            const fractionDigits = numeric !== 0 && Math.abs(numeric) < 1 ? 2 : 0;
+            return numeric.toLocaleString(undefined, {
+                minimumFractionDigits: fractionDigits,
+                maximumFractionDigits: fractionDigits
+            });
+        }
+
+        function formatItineraryMoney(value, itinerary) {
+            return formatMoney(value);
+        }
+
+        function itineraryUsesLocalBudget(itinerary) {
+            return Boolean(itinerary?.uses_local_budget || activeBudgetUsesLocal || window.itineraryData?.uses_local_budget);
+        }
+
+        function cleanTextForLocalBudget(text, itinerary) {
+            if (!itineraryUsesLocalBudget(itinerary)) return text;
+            return String(text ?? '').replace(/\$/g, '');
+        }
+
+        function sanitizeItineraryForLocalBudget(value) {
+            if (!itineraryUsesLocalBudget(value)) return value;
+            return sanitizeDollarStrings(value);
+        }
+
+        function sanitizeDollarStrings(value) {
+            if (typeof value === 'string') return value.replace(/\$/g, '');
+            if (!value || typeof value !== 'object') return value;
+            Object.keys(value).forEach(key => {
+                value[key] = sanitizeDollarStrings(value[key]);
+            });
+            return value;
+        }
+
+        function stripDollarSymbolsForLocalBudget(container, itinerary) {
+            if (!container || !itineraryUsesLocalBudget(itinerary)) return;
+            const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+            const textNodes = [];
+            while (walker.nextNode()) textNodes.push(walker.currentNode);
+            textNodes.forEach(node => {
+                node.textContent = node.textContent.replace(/\$/g, '');
+            });
         }
 
         function renderTripSummary(data) {
@@ -841,7 +956,7 @@
                 activities: 'Activities',
             };
             const warning = remaining < 0
-                ? `<div class="budget-warning">Budget warning: this plan is over budget by $${formatMoney(Math.abs(remaining))}.</div>`
+                ? `<div class="budget-warning">Budget warning: this plan is over budget by ${formatItineraryMoney(Math.abs(remaining), data)}.</div>`
                 : '';
 
             return `
@@ -853,11 +968,11 @@
                         </div>
                         <div>
                             <dt class="summary-label">Estimated total</dt>
-                            <dd><strong>$${formatMoney(breakdown.total ?? data.total_cost)}</strong></dd>
+                            <dd><strong>${formatItineraryMoney(breakdown.total ?? data.total_cost, data)}</strong></dd>
                         </div>
                         <div>
                             <dt class="summary-label">Remaining budget</dt>
-                            <dd><strong class="${remaining < 0 ? 'negative-budget' : ''}">$${formatMoney(remaining)}</strong></dd>
+                            <dd><strong class="${remaining < 0 ? 'negative-budget' : ''}">${formatItineraryMoney(remaining, data)}</strong></dd>
                         </div>
                     </dl>
                     ${data.vibe_rationale ? `<p class="summary-note">${escapeHTML(data.vibe_rationale)}</p>` : ''}
@@ -868,7 +983,7 @@
                             ${suggestions.map(suggestion => `
                                 <li class="suggestion-item">
                                     <strong>${escapeHTML(suggestion.city)}${suggestion.country ? `, ${escapeHTML(suggestion.country)}` : ''}</strong>
-                                    <span>$${formatMoney(suggestion.estimated_total_cost)} estimated</span>
+                                    <span>${formatItineraryMoney(suggestion.estimated_total_cost, data)} estimated</span>
                                     ${suggestion.rationale ? `<p>${escapeHTML(suggestion.rationale)}</p>` : ''}
                                 </li>
                             `).join('')}
@@ -878,7 +993,7 @@
                         ${['transport', 'stay', 'food', 'activities'].map(key => `
                             <div class="cost-cell">
                                 <dt>${costLabels[key]}</dt>
-                                <dd><strong>$${formatMoney(breakdown[key])}</strong></dd>
+                                <dd><strong>${formatItineraryMoney(breakdown[key], data)}</strong></dd>
                             </div>
                         `).join('')}
                     </dl>
@@ -962,8 +1077,8 @@
             const destination = data.recommended_destination || data.city;
             const lines = [
                 `Trip to ${destination}`,
-                `Estimated total: $${formatMoney(breakdown.total ?? data.total_cost)}`,
-                `Remaining budget: $${formatMoney(breakdown.remaining_budget || 0)}`,
+                `Estimated total: ${formatItineraryMoney(breakdown.total ?? data.total_cost, data)}`,
+                `Remaining budget: ${formatItineraryMoney(breakdown.remaining_budget || 0, data)}`,
             ];
 
             if (data.vibe_rationale) lines.push(`Why it fits: ${data.vibe_rationale}`);

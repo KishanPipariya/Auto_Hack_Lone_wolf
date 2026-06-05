@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timedelta
 from typing import Mapping
 
-from app.core.destinations import destination_context, requested_route_city_terms
+from app.core.destinations import requested_route_city_terms
 from app.models.domain import Activity, DestinationSuggestion, Itinerary, Preferences
 
 MODEL_CANDIDATES = [
@@ -69,13 +69,17 @@ def initial_plan_prompt(
         if preferences.work_friendly
         else "No special remote-work filtering is required."
     )
-    activities_context = activities_context_for_destination(destination, activities)
-    curated_context = destination_context(destination_suggestions or [])
+    activities_context = activities_context_for_destination(
+        destination, activities, preferences
+    )
+    curated_context = destination_context(destination_suggestions or [], preferences)
     budget_context = budget_targets_context(preferences, category_targets)
+    budget_cap = budget_cap_text(preferences)
+    currency_mode = cost_currency_mode(preferences)
 
     return f"""
         You are an expert travel agent. {destination_instruction}
-        Create a {preferences.days}-day itinerary with a hard all-inclusive budget cap of ${preferences.budget}.
+        Create a {preferences.days}-day itinerary with a hard all-inclusive budget cap of {budget_cap}.
         Vibe/aesthetic: {vibe_instruction}
         Work-friendly requirement: {work_instruction}
         User Interests: {", ".join(preferences.interests)}
@@ -92,7 +96,7 @@ def initial_plan_prompt(
            - Account for travel time between cities as an activity.
         3. REALISM: Account for opening hours and logical travel times between venues.
         4. IMAGES: For every activity, generate a specific, search-friendly image_url query or real image URL.
-        5. COSTS: Include transport, stay, food, and activities estimates in USD and keep the total under budget.
+        5. COSTS: {currency_mode} Keep the total under budget.
         6. VALID JSON: Return pure JSON matching the Itinerary pydantic schema. No markdown, no preamble.
 
         TRIP DATES & OPENING HOURS:
@@ -102,8 +106,8 @@ def initial_plan_prompt(
 
         REQUIREMENTS:
         - Return one curated destination or one requested multi-city route and a compact day-wise itinerary only.
-        - Include transport, stay, food, and activities estimates in USD.
-        - cost_breakdown.total MUST be less than or equal to ${preferences.budget}.
+        - {currency_mode}
+        - cost_breakdown.total MUST be less than or equal to {budget_cap}.
         - Activity costs must match cost_breakdown.activities.
         - transport + stay + food + activities MUST equal cost_breakdown.total.
         - Explain briefly why the destination matches the vibe.
@@ -158,10 +162,12 @@ def refinement_prompt(
 ) -> str:
     destination = (preferences.city or previous_plan.city or "").strip()
     activities_context = activities_context_for_destination(
-        destination, activities, refinement=True
+        destination, activities, preferences, refinement=True
     )
-    curated_context = destination_context(destination_suggestions or [])
+    curated_context = destination_context(destination_suggestions or [], preferences)
     budget_context = budget_targets_context(preferences, category_targets)
+    budget_cap = budget_cap_text(preferences)
+    currency_mode = cost_currency_mode(preferences)
     extra_instruction = ""
     if "0 days" in error or "valid JSON" in error:
         extra_instruction = """
@@ -175,8 +181,8 @@ def refinement_prompt(
         The previous itinerary for {destination or "the selected destination"} was INVALID.
         Error: {error}
 
-        Previous Plan Total Cost: ${previous_plan.total_cost}
-        Budget: ${preferences.budget}
+        Previous Plan Total Cost: {budget_amount_text(previous_plan.total_cost, preferences)}
+        Budget: {budget_cap}
 
         {budget_context}
 
@@ -184,7 +190,8 @@ def refinement_prompt(
         {calendar_context(preferences)}
 
         Please fix the plan by reducing category estimates and swapping activities to meet the constraints.
-        Keep the requested destination or multi-city route, exactly {preferences.days} days, and total cost <= ${preferences.budget}.
+        Keep the requested destination or multi-city route, exactly {preferences.days} days, and total cost <= {budget_cap}.
+        {currency_mode}
         If multiple cities were requested, every requested city must appear in at least one DayPlan city value.
         Include a full cost_breakdown with transport, stay, food, activities, total, and remaining_budget.
         Ensure activity costs add up to cost_breakdown.activities and all cost categories add up to cost_breakdown.total.
@@ -201,12 +208,19 @@ def refinement_prompt(
         """
 
 
-def json_repair_prompt(raw_response: str) -> str:
+def json_repair_prompt(raw_response: str, preferences: Preferences) -> str:
+    currency_mode = cost_currency_mode(preferences)
+    cost_aliases = (
+        "- cost_local/estimated_cost_local/local_cost -> cost"
+        if preferences.uses_local_budget
+        else "- cost_usd/estimated_cost_usd -> cost"
+    )
     return f"""
         Convert the following travel itinerary response into valid JSON matching
         the Itinerary schema exactly. Preserve the same trip content, dates,
         costs, activities, destination suggestions, and notes where possible.
         Do not add markdown, citations, source IDs, or explanatory text.
+        {currency_mode}
 
         Required top-level fields:
         - city: string
@@ -223,7 +237,7 @@ def json_repair_prompt(raw_response: str) -> str:
         Required activity fields:
         - name: string
         - description: string
-        - cost: number in USD
+        - cost: number
         - duration_hours: number
         - duration_str: string or null
         - image_url: string or null
@@ -234,7 +248,7 @@ def json_repair_prompt(raw_response: str) -> str:
         - day -> day_number
         - plan -> activities
         - activity/title -> activity name
-        - cost_usd/estimated_cost_usd -> cost
+        {cost_aliases}
 
         Return ONLY the corrected JSON object.
 
@@ -247,55 +261,127 @@ def budget_targets_context(
     preferences: Preferences,
     category_targets: Mapping[str, float] | None,
 ) -> str:
+    daily_target = preferences.budget / max(preferences.days, 1)
+    currency_note = budget_currency_note(preferences)
+
     if not category_targets:
         return (
             "BUDGET TARGETS:\n"
-            f"- Hard cap: ${preferences.budget:g}. Keep every estimate all-inclusive and under this cap."
+            f"- Hard cap: {budget_amount_text(preferences.budget, preferences)}. Keep every estimate all-inclusive and under this cap.\n"
+            f"- Daily target: about {budget_amount_text(daily_target, preferences)} per day across {preferences.days} day(s)."
+            f"{currency_note}"
         )
 
     return "\n".join(
         [
             "BUDGET TARGETS:",
-            f"- Hard cap: ${category_targets.get('total', preferences.budget):g}",
-            f"- Transport target: ${category_targets.get('transport', 0):g}",
-            f"- Stay target: ${category_targets.get('stay', 0):g}",
-            f"- Food target: ${category_targets.get('food', 0):g}",
-            f"- Activities target: ${category_targets.get('activities', 0):g}",
+            f"- Hard cap: {budget_amount_text(category_targets.get('total', preferences.budget), preferences)}",
+            f"- Daily target: about {budget_amount_text(daily_target, preferences)} per day across {preferences.days} day(s).",
+            f"- Transport target: {budget_amount_text(category_targets.get('transport', 0), preferences)}",
+            f"- Stay target: {budget_amount_text(category_targets.get('stay', 0), preferences)}",
+            f"- Food target: {budget_amount_text(category_targets.get('food', 0), preferences)}",
+            f"- Activities target: {budget_amount_text(category_targets.get('activities', 0), preferences)}",
             "- You may move small amounts between categories, but the final total must remain under the hard cap.",
+            currency_note.lstrip(),
         ]
+    )
+
+
+def destination_context(
+    suggestions: list[DestinationSuggestion],
+    preferences: Preferences,
+) -> str:
+    if not suggestions:
+        return "No curated destination context is available."
+
+    lines = ["CURATED DESTINATION CONTEXT:"]
+    for index, suggestion in enumerate(suggestions, start=1):
+        country = f", {suggestion.country}" if suggestion.country else ""
+        tags = ", ".join(suggestion.tags) if suggestion.tags else "general"
+        lines.append(
+            f"{index}. {suggestion.city}{country} - estimated total "
+            f"{budget_amount_text(suggestion.estimated_total_cost, preferences)}; "
+            f"tags: {tags}; rationale: {suggestion.rationale}"
+        )
+    lines.append(
+        "Use the #1 curated destination when the user did not provide a city. "
+        "Keep destination_suggestions in the final JSON if provided."
+    )
+    return "\n".join(lines)
+
+
+def format_budget_amount(value: float) -> str:
+    if value and abs(value) < 1:
+        return f"{value:.2f}".rstrip("0").rstrip(".")
+    return f"{value:g}"
+
+
+def budget_amount_text(value: float, preferences: Preferences) -> str:
+    formatted = format_budget_amount(value)
+    if preferences.uses_local_budget:
+        return f"{formatted} in the destination's local currency"
+    return f"${formatted}"
+
+
+def budget_cap_text(preferences: Preferences) -> str:
+    return budget_amount_text(preferences.budget, preferences)
+
+
+def budget_currency_note(preferences: Preferences) -> str:
+    if not preferences.uses_local_budget:
+        return ""
+    return (
+        "\n- The user entered the budget in the destination's local currency. "
+        "Do not convert this budget to USD. Keep transport, stay, food, activities, "
+        "total, remaining_budget, destination_suggestions.estimated_total_cost, "
+        "and every activity cost in the destination's local currency."
+    )
+
+
+def cost_currency_mode(preferences: Preferences) -> str:
+    if preferences.uses_local_budget:
+        return (
+            "All cost fields must be numeric amounts in the destination's local "
+            "currency only. Do not use USD, do not convert to USD, and do not include "
+            "currency symbols or currency codes in JSON number fields."
+        )
+    return (
+        "Include transport, stay, food, activities, destination suggestion estimates, "
+        "and every activity cost as numeric USD amounts."
     )
 
 
 def activities_context_for_destination(
     destination: str,
     activities: list[Activity],
+    preferences: Preferences,
     refinement: bool = False,
 ) -> str:
     if destination.lower() == "paris":
         instruction = "AVAILABLE ACTIVITIES:"
         if not refinement:
             instruction = "AVAILABLE ACTIVITIES (You must ONLY use these, do not invent new ones):"
+        currency_instruction = cost_currency_mode(preferences)
         return f"""
              {instruction}
              {json.dumps([a.model_dump() for a in activities], indent=2)}
+             COST CURRENCY: {currency_instruction}
              """
 
     if refinement:
-        return """
+        return f"""
              AVAILABLE ACTIVITIES:
              You are free to find real activities using web search.
-             **REMINDER**: Estimate costs in LOCAL currency, then convert to USD. Be realistic (e.g. Mumbai street food is <$5).
+             **REMINDER**: {cost_currency_mode(preferences)} Be realistic for the destination's actual prices.
              """
 
-    return """
+    return f"""
              AVAILABLE ACTIVITIES:
              You are free to find real activities using web search.
 
              **CRITICAL INSTRUCTION: COST & CURRENCY**
-             - Estimate costs in the destination's LOCAL currency first (e.g. Rupees, Yen, Euros).
-             - CONVERT all costs to USD using current exchange rates.
-             - **BE REALISTIC**: Street food in Asia is cheap (<$5 USD). Public transport is cheap. Fine dining is expensive.
-             - Output ONLY the USD number in the `cost` field.
+             - {cost_currency_mode(preferences)}
+             - **BE REALISTIC**: Use actual local price levels. Public transport and street food should reflect normal destination prices.
 
              **CRITICAL INSTRUCTION: IMAGE URLs**
              - You MUST SEARCH for a real, public, direct image URL for each activity.

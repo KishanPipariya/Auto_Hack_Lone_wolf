@@ -52,6 +52,8 @@ def test_generate_ics_valid_iso_date(mock_itinerary):
     assert "DTSTART;VALUE=DATE:20250501" in ics_str  # All-day event check
     assert "SUMMARY:Eiffel Tower (Paris)" in ics_str
     assert "DTSTART:20250501T090000" in ics_str  # 9 AM start check
+    assert "Cost: 25.0" in ics_str
+    assert "$" not in ics_str
 
 
 def test_generate_ics_valid_dmY_date(mock_itinerary):
@@ -84,3 +86,13 @@ def test_generate_ics_invalid_date_fallback(mock_itinerary):
     expected_date_str = tomorrow.strftime("%Y%m%d")
 
     assert f"DTSTART;VALUE=DATE:{expected_date_str}" in ics_str
+
+
+def test_generate_ics_local_budget_omits_dollar_symbol(mock_itinerary):
+    mock_itinerary.uses_local_budget = True
+    ics_bytes = generate_ics(mock_itinerary, "2025-05-01")
+    ics_str = ics_bytes.decode("utf-8")
+
+    assert "Cost: 25.0" in ics_str
+    assert "Total Cost for Day: 42.0" in ics_str
+    assert "$" not in ics_str

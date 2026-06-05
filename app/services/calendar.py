@@ -3,6 +3,10 @@ from app.models.domain import Itinerary
 from datetime import datetime, timedelta
 
 
+def itinerary_money(value: object, itinerary: Itinerary) -> str:
+    return f"{value}"
+
+
 def generate_ics(itinerary: Itinerary, start_date_str: str | None = None) -> bytes:
     """
     Generates an iCalendar (.ics) file content from an itinerary.
@@ -34,7 +38,12 @@ def generate_ics(itinerary: Itinerary, start_date_str: str | None = None) -> byt
         summary_event.name = f"Day {day.day_number}: {itinerary.city} Trip"
         summary_event.begin = datetime.combine(current_day_date, datetime.min.time())
         summary_event.make_all_day()
-        summary_event.description = f"Total Cost for Day: ${sum(a.cost for a in day.activities if isinstance(a.cost, (int, float)))}"
+        day_cost = sum(
+            a.cost for a in day.activities if isinstance(a.cost, (int, float))
+        )
+        summary_event.description = (
+            f"Total Cost for Day: {itinerary_money(day_cost, itinerary)}"
+        )
         cal.events.add(summary_event)
 
         # 3. Create Timed Events for Activities
@@ -46,7 +55,11 @@ def generate_ics(itinerary: Itinerary, start_date_str: str | None = None) -> byt
         for activity in day.activities:
             event = Event()
             event.name = f"{activity.name} ({itinerary.city})"
-            event.description = f"{activity.description}\n\nCost: ${activity.cost}\nTags: {', '.join(activity.tags)}"
+            event.description = (
+                f"{activity.description}\n\n"
+                f"Cost: {itinerary_money(activity.cost, itinerary)}\n"
+                f"Tags: {', '.join(activity.tags)}"
+            )
             if activity.image_url:
                 event.description += f"\nImage: {activity.image_url}"
 

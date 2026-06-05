@@ -56,6 +56,10 @@ def budget_targets(preferences: Preferences) -> dict[str, float]:
     return targets
 
 
+def itinerary_money(value: float, preferences: Preferences) -> str:
+    return f"{value:g}"
+
+
 class TravelAgent:
     def __init__(self):
         self.activities = MOCK_ACTIVITIES
@@ -100,14 +104,16 @@ class TravelAgent:
 
         raise RuntimeError(f"All model candidates failed. Last error: {last_error}")
 
-    def _parse_or_repair_response(self, response_text: str) -> Itinerary:
+    def _parse_or_repair_response(
+        self, response_text: str, preferences: Preferences
+    ) -> Itinerary:
         itinerary = parse_llm_response(response_text, image_search=search_real_image)
         if itinerary.city != "Unknown" and itinerary.days:
             return itinerary
 
         logger.info("Attempting LLM JSON schema repair for itinerary response")
         repaired_text = self._call_model_with_fallback(
-            json_repair_prompt(response_text),
+            json_repair_prompt(response_text, preferences),
             use_web_search=False,
             json_mode=True,
         )
@@ -193,7 +199,8 @@ class TravelAgent:
         if total_cost > preferences.budget:
             itinerary.valid = False
             itinerary.validation_error = (
-                f"Total cost ${total_cost} exceeds budget ${preferences.budget}."
+                f"Total cost {itinerary_money(total_cost, preferences)} exceeds "
+                f"budget {itinerary_money(preferences.budget, preferences)}."
             )
             return False
 
@@ -254,6 +261,7 @@ class TravelAgent:
         preferences: Preferences,
     ) -> Itinerary:
         itinerary.destination_suggestions = suggestions
+        itinerary.uses_local_budget = preferences.uses_local_budget
 
         if not itinerary.city and suggestions:
             itinerary.city = suggestions[0].city
@@ -286,7 +294,7 @@ class TravelAgent:
             preferences, self.activities, destination_suggestions or [], targets
         )
         response_text = self._call_model_with_fallback(prompt)
-        return self._parse_or_repair_response(response_text)
+        return self._parse_or_repair_response(response_text, preferences)
 
     def refine_plan(
         self,
@@ -306,7 +314,7 @@ class TravelAgent:
             targets,
         )
         response_text = self._call_model_with_fallback(prompt)
-        return self._parse_or_repair_response(response_text)
+        return self._parse_or_repair_response(response_text, preferences)
 
     def plan_trip_stream(self, preferences: Preferences) -> Iterator[str | Itinerary]:
         planning_preferences, destination_suggestions = self._prepare_destination_context(
@@ -326,7 +334,7 @@ class TravelAgent:
             itinerary, destination_suggestions, planning_preferences
         )
         cost = itinerary.calculate_total_cost()
-        yield f"Initial allocation complete. Estimated Cost: ${cost}"
+        yield f"Initial allocation complete. Estimated Cost: {itinerary_money(cost, planning_preferences)}"
 
         yield "Travel Agent: Step 2 - Verifying budget & time constraints..."
         is_valid = self._check_constraints(itinerary, planning_preferences)

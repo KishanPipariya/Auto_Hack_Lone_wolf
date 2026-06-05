@@ -1,4 +1,8 @@
-from app.core.destinations import recommend_destinations
+from app.core.destinations import (
+    recommend_destinations,
+    requested_destination_terms,
+    requested_route_city_terms,
+)
 from app.models.domain import Preferences
 
 
@@ -60,6 +64,22 @@ def test_explicit_multi_city_request_does_not_fall_back_to_unrelated_discovery()
     assert suggestions[0].city == "Amsterdam"
     assert suggestions[0].country == "Netherlands"
     assert all(suggestion.country != "Thailand" for suggestion in suggestions)
+
+
+def test_partial_destination_fragment_is_ignored_when_known_city_is_present():
+    assert requested_destination_terms("Amsterdam, Rott") == ["Amsterdam"]
+    assert requested_route_city_terms("Amsterdam, Rott") == ["Amsterdam"]
+
+
+def test_unknown_full_city_term_is_kept_for_multi_city_validation():
+    assert requested_destination_terms("Rotterdam, Amsterdam") == [
+        "Rotterdam",
+        "Amsterdam",
+    ]
+    assert requested_route_city_terms("Rotterdam, Amsterdam") == [
+        "Rotterdam",
+        "Amsterdam",
+    ]
 
 
 def test_interest_heavy_request_prioritizes_relevant_tags():

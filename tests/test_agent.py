@@ -8,7 +8,20 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.core.agent import TravelAgent, budget_targets
 from app.core.destinations import recommend_destinations
 from app.core.parser import parse_llm_response
-from app.models.domain import Activity, CostBreakdown, DayPlan, Itinerary, Preferences
+from app.core.prompts import (
+    budget_targets_context,
+    initial_plan_prompt,
+    json_repair_prompt,
+    refinement_prompt,
+)
+from app.models.domain import (
+    Activity,
+    CostBreakdown,
+    DayPlan,
+    DestinationSuggestion,
+    Itinerary,
+    Preferences,
+)
 
 
 VALID_JSON_RESPONSE = """
@@ -156,6 +169,29 @@ def test_constraint_checking(planner):
     )
 
 
+def test_local_budget_constraint_error_omits_dollar_symbol(planner):
+    itinerary = Itinerary(
+        city="Tokyo",
+        days=[
+            DayPlan(
+                day_number=1,
+                activities=[
+                    Activity(name="Dinner", description="Meal", cost=60000.0)
+                ],
+            )
+        ],
+    )
+
+    prefs = Preferences(city="Tokyo", local_budget=50000, days=1, interests=["Food"])
+
+    is_valid = planner._check_constraints(itinerary, prefs)
+
+    assert is_valid is False
+    assert itinerary.validation_error is not None
+    assert "exceeds budget" in itinerary.validation_error
+    assert "$" not in itinerary.validation_error
+
+
 def test_preferences_support_vibe_discovery_without_city():
     prefs = Preferences(
         budget=700,
@@ -204,6 +240,95 @@ def test_work_friendly_budget_targets_prioritize_stay():
 
     assert targets["stay"] == 200
     assert sum(targets[key] for key in ("transport", "stay", "food", "activities")) == 500
+
+
+def test_budget_targets_context_includes_nonzero_daily_target():
+    prefs = Preferences(city="Lisbon", budget=1, days=3, interests=["Food"])
+
+    context = budget_targets_context(prefs, budget_targets(prefs))
+
+    assert "Daily target: about $0.33 per day across 3 day(s)." in context
+    assert "Daily target: about $0 per day" not in context
+
+
+def test_local_budget_prompts_keep_costs_in_local_currency():
+    prefs = Preferences(
+        city="Tokyo",
+        local_budget=50000,
+        days=2,
+        interests=["Food"],
+    )
+
+    prompt = initial_plan_prompt(prefs, [], [], budget_targets(prefs))
+
+    assert "Do not use USD" in prompt
+    assert "do not convert to USD" in prompt
+    assert "destination's local currency only" in prompt
+    assert "CONVERT all costs to USD" not in prompt
+    assert "USD equivalent" not in prompt
+    assert "output only USD" not in prompt.lower()
+
+
+def test_local_budget_prompt_suggestion_context_omits_dollar_symbol():
+    prefs = Preferences(
+        local_budget=50000,
+        days=2,
+        interests=["Food"],
+        vibe="street food",
+    )
+    suggestions = [
+        DestinationSuggestion(
+            city="Tokyo",
+            country="Japan",
+            rationale="Dense local food scene.",
+            estimated_total_cost=45000,
+            tags=["Food"],
+        )
+    ]
+
+    prompt = initial_plan_prompt(prefs, [], suggestions, budget_targets(prefs))
+
+    assert "estimated total 45000 in the destination's local currency" in prompt
+    assert "estimated total $" not in prompt
+
+
+def test_local_budget_refinement_and_repair_do_not_reintroduce_usd():
+    prefs = Preferences(
+        city="Tokyo",
+        local_budget=50000,
+        days=1,
+        interests=["Food"],
+    )
+    previous_plan = Itinerary(
+        city="Tokyo",
+        cost_breakdown=CostBreakdown(total=60000),
+        total_cost=60000,
+        days=[
+            DayPlan(
+                day_number=1,
+                activities=[
+                    Activity(name="Ramen", description="Lunch", cost=1200),
+                ],
+            )
+        ],
+    )
+
+    refine = refinement_prompt(
+        previous_plan,
+        "Total cost exceeds budget",
+        prefs,
+        [],
+        [],
+        budget_targets(prefs),
+    )
+    repair = json_repair_prompt("{}", prefs)
+
+    combined = f"{refine}\n{repair}"
+    assert "Do not use USD" in combined
+    assert "do not convert to USD" in combined
+    assert "cost_usd/estimated_cost_usd" not in combined
+    assert "number in USD" not in combined
+    assert "USD equivalent" not in combined
 
 
 def test_parser_normalizes_current_schema(planner):
@@ -475,6 +600,45 @@ def test_constraint_checking_accepts_multi_city_day_coverage(planner):
     assert itinerary.city == "Rotterdam, Amsterdam"
 
 
+def test_constraint_checking_ignores_short_partial_destination_fragment(planner):
+    itinerary = Itinerary(
+        city="Amsterdam, Netherlands",
+        recommended_destination="Amsterdam, Netherlands",
+        cost_breakdown=CostBreakdown(
+            transport=50,
+            stay=100,
+            food=40,
+            activities=20,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                city="Amsterdam",
+                activities=[
+                    Activity(
+                        name="Canal walk",
+                        description="Amsterdam route",
+                        tags=["History"],
+                        duration_hours=2.0,
+                        cost=20.0,
+                    )
+                ],
+            )
+        ],
+    )
+    prefs = Preferences(
+        city="Amsterdam, Rott",
+        budget=500,
+        days=1,
+        interests=["History"],
+    )
+
+    is_valid = planner._check_constraints(itinerary, prefs)
+
+    assert is_valid is True
+    assert itinerary.city == "Amsterdam, Rott"
+
+
 def test_plan_trip_stream_yields_status_events_then_itinerary(planner):
     itinerary = Itinerary(
         city="Porto",
@@ -512,6 +676,44 @@ def test_plan_trip_stream_yields_status_events_then_itinerary(planner):
     assert all(isinstance(event, str) for event in events[:-1])
     assert isinstance(events[-1], Itinerary)
     assert events[-1].city == "Porto"
+
+
+def test_local_budget_plan_stream_status_omits_dollar_symbol(planner):
+    itinerary = Itinerary(
+        city="Tokyo",
+        cost_breakdown=CostBreakdown(
+            transport=10000,
+            stay=20000,
+            food=8000,
+            activities=5000,
+            total=43000,
+            remaining_budget=7000,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                activities=[
+                    Activity(name="Ramen walk", description="Food route", cost=5000)
+                ],
+            )
+        ],
+    )
+
+    with patch.object(planner, "generate_initial_plan", return_value=itinerary):
+        events = list(
+            planner.plan_trip_stream(
+                Preferences(
+                    city="Tokyo",
+                    local_budget=50000,
+                    days=1,
+                    interests=["Food"],
+                )
+            )
+        )
+
+    status_text = "\n".join(event for event in events if isinstance(event, str))
+    assert "Estimated Cost:" in status_text
+    assert "$" not in status_text
 
 
 def test_no_city_vibe_request_receives_destination_suggestions(planner):

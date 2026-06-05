@@ -125,7 +125,9 @@ def requested_destination_terms(value: str | None) -> list[str]:
     if not value:
         return []
     terms = re.split(r"\s*(?:,|\band\b|&|\+)\s*", value, flags=re.IGNORECASE)
-    return [term.strip() for term in terms if term.strip()]
+    return _without_incomplete_destination_fragments(
+        [term.strip() for term in terms if term.strip()]
+    )
 
 
 def requested_route_city_terms(value: str | None) -> list[str]:
@@ -138,6 +140,26 @@ def requested_route_city_terms(value: str | None) -> list[str]:
         term
         for term in requested_destination_terms(value)
         if term.lower() not in countries
+    ]
+
+
+def _without_incomplete_destination_fragments(terms: list[str]) -> list[str]:
+    if len(terms) <= 1:
+        return terms
+
+    known_cities = {
+        str(item.get("city", "")).lower()
+        for item in load_destinations()
+        if item.get("city")
+    }
+    has_known_city = any(term.lower() in known_cities for term in terms)
+    if not has_known_city:
+        return terms
+
+    return [
+        term
+        for term in terms
+        if term.lower() in known_cities or len(term) > 4
     ]
 
 

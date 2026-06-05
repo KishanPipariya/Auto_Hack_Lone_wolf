@@ -1,12 +1,20 @@
 import pytest
 from unittest.mock import AsyncMock, patch
 from app.models.domain import Itinerary, DayPlan, Activity
-from app.services.pdf import generate_pdf
+from app.services.pdf import generate_pdf, itinerary_money
 import sys
 import os
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+def test_itinerary_money_omits_currency_symbol():
+    usd_itinerary = Itinerary(city="Paris", days=[], uses_local_budget=False)
+    local_itinerary = Itinerary(city="Tokyo", days=[], uses_local_budget=True)
+
+    assert itinerary_money(500, usd_itinerary) == "500"
+    assert itinerary_money(500, local_itinerary) == "500"
 
 
 @pytest.mark.asyncio

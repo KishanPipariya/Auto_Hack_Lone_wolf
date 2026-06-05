@@ -63,6 +63,7 @@ def generate_plan(preferences: Preferences):
     """
     try:
         itinerary = agent.plan_trip(preferences)
+        itinerary.uses_local_budget = preferences.uses_local_budget
         return itinerary
     except Exception as e:
         error_msg = str(e)
@@ -102,6 +103,7 @@ async def stream_plan_endpoint(preferences: Preferences):
                 if isinstance(item, str):
                     yield json.dumps({"type": "status", "message": item}) + "\n"
                 else:
+                    item.uses_local_budget = preferences.uses_local_budget
                     yield (
                         json.dumps({"type": "result", "data": item.model_dump()}) + "\n"
                     )

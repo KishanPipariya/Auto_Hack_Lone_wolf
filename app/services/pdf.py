@@ -46,6 +46,10 @@ def pdf_safe_filename(value: object) -> str:
     return filename or "itinerary"
 
 
+def itinerary_money(value: object, itinerary: Itinerary) -> str:
+    return f"{value}"
+
+
 class ItineraryPDF(FPDF):
     def normalize_text(self, text):
         try:
@@ -123,7 +127,7 @@ async def generate_pdf(itinerary: Itinerary):
         pdf.set_text_color(255, 255, 255)
         pdf.set_font("helvetica", "B", 12)
         # Estimate width of text
-        total_str = f" Total Estimated Cost: ${itinerary.total_cost} "
+        total_str = f" Total Estimated Cost: {itinerary_money(itinerary.total_cost, itinerary)} "
         width = pdf.get_string_width(total_str) + 10
         pdf.set_x((210 - width) / 2)  # Center
         pdf.cell(
@@ -168,7 +172,7 @@ async def generate_pdf(itinerary: Itinerary):
             pdf.cell(
                 90,
                 8,
-                f"${day_cost}   ",
+                f"{itinerary_money(day_cost, itinerary)}   ",
                 align="R",
                 new_x="LMARGIN",
                 new_y="NEXT",
@@ -201,7 +205,7 @@ async def generate_pdf(itinerary: Itinerary):
                 pdf.set_text_color(5, 150, 105)  # Green
                 if activity.cost is not None:
                     cost_text = (
-                        f"${activity.cost}"
+                        itinerary_money(activity.cost, itinerary)
                         if isinstance(activity.cost, (int, float))
                         else str(activity.cost)
                     )

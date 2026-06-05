@@ -117,6 +117,65 @@ def test_plan_endpoint_allows_city_omitted_with_vibe():
         assert prefs.vibe == "coastal cafes"
 
 
+def test_plan_endpoint_accepts_local_budget_only():
+    from app.models.domain import CostBreakdown, Itinerary
+
+    with patch.object(agent, "plan_trip") as mock_plan:
+        mock_plan.return_value = Itinerary(
+            city="Tokyo",
+            recommended_destination="Tokyo",
+            cost_breakdown=CostBreakdown(total=450, remaining_budget=50),
+            days=[],
+            valid=True,
+        )
+
+        response = client.post(
+            "/plan",
+            json={
+                "city": "Tokyo",
+                "local_budget": 50000,
+                "days": 2,
+                "interests": ["Food"],
+            },
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["uses_local_budget"] is True
+        prefs = mock_plan.call_args.args[0]
+        assert prefs.local_budget == 50000
+        assert prefs.budget == 50000
+        assert prefs.uses_local_budget is True
+
+
+def test_plan_endpoint_rejects_both_budget_amounts():
+    response = client.post(
+        "/plan",
+        json={
+            "city": "Tokyo",
+            "budget": 500,
+            "local_budget": 50000,
+            "days": 2,
+            "interests": ["Food"],
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_plan_endpoint_rejects_missing_budget_amount():
+    response = client.post(
+        "/plan",
+        json={
+            "city": "Tokyo",
+            "days": 2,
+            "interests": ["Food"],
+        },
+    )
+
+    assert response.status_code == 422
+
+
 def test_plan_stream_structure():
     """Verifies POST /plan_stream returns NDJSON events."""
 

@@ -110,3 +110,50 @@ def test_cost_breakdown_uses_capitalized_display_labels() -> None:
     assert "activities: 'Activities'" in html
     assert "<dt>${costLabels[key]}</dt>" in html
     assert "<dt>${key}</dt>" not in html
+
+
+def test_money_formatter_preserves_small_nonzero_amounts() -> None:
+    html, _ = parse_index()
+
+    assert "Math.abs(numeric) < 1 ? 2 : 0" in html
+    assert "minimumFractionDigits: fractionDigits" in html
+    assert "maximumFractionDigits: fractionDigits" in html
+    assert "function formatItineraryMoney" in html
+    assert "return formatMoney(value);" in html
+
+
+def test_budget_form_supports_exactly_one_currency_amount() -> None:
+    html, elements = parse_index()
+    by_id = {attrs.get("id"): attrs for _, attrs in elements if attrs.get("id")}
+
+    assert 'class="budget-fields"' in html
+    assert "display: grid !important;" in html
+    assert "@media (max-width: 520px)" in html
+    assert "local_budget" in by_id
+    assert "required" not in by_id["budget"]
+    assert "local_budget" not in html.split("const data = {", 1)[1].split("};", 1)[0]
+    assert "data.budget = parseFloat(usdBudget)" in html
+    assert "data.local_budget = parseFloat(localBudget)" in html
+    assert "Boolean(usdBudget) === Boolean(localBudgetValue)" in html
+
+
+def test_itinerary_cost_rendering_uses_currency_formatter() -> None:
+    html, _ = parse_index()
+
+    assert "Total Trip Cost: $${formatMoney" not in html
+    assert "Day total: $${formatMoney" not in html
+    assert "Cost: $${formatMoney" not in html
+    assert "Estimated total: $${formatMoney" not in html
+    assert "Remaining budget: $${formatMoney" not in html
+    assert "const prefix = itineraryUsesLocalBudget" not in html
+    assert "Total Trip Cost: ${formatItineraryMoney(total, data)}" in html
+    assert "Day total: ${formatItineraryMoney(dayTotal, itinerary)}" in html
+    assert "Cost: ${formatItineraryMoney(activity.cost, itinerary)}" in html
+    assert "function stripDollarSymbolsForLocalBudget" in html
+    assert "function cleanTextForLocalBudget" in html
+    assert "function sanitizeItineraryForLocalBudget" in html
+    assert "function sanitizeDollarStrings" in html
+    assert "replace(/\\$/g, '')" in html
+    assert "stripDollarSymbolsForLocalBudget(resultDiv, data)" in html
+    assert "cleanTextForLocalBudget(msg.message, data)" in html
+    assert "sanitizeItineraryForLocalBudget(data)" in html

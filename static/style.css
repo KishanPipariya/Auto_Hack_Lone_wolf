@@ -91,6 +91,13 @@ h1 {
     margin-bottom: 1.5rem;
 }
 
+.budget-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
 label {
     display: block;
     margin-bottom: 0.5rem;
@@ -869,6 +876,7 @@ input:checked+.slider:before {
     }
 
     .toggle-row,
+    .budget-fields,
     .summary-main,
     .cost-grid {
         grid-template-columns: 1fr;
