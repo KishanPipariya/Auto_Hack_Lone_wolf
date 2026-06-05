@@ -343,6 +343,46 @@ def test_constraint_checking_requires_activity_category_match(planner):
     assert "Activity costs" in itinerary.validation_error
 
 
+def test_constraint_checking_rejects_unrequested_country_for_multi_city(planner):
+    itinerary = Itinerary(
+        city="Bangkok, Thailand",
+        recommended_destination="Bangkok, Thailand",
+        cost_breakdown=CostBreakdown(
+            transport=50,
+            stay=100,
+            food=40,
+            activities=20,
+        ),
+        days=[
+            DayPlan(
+                day_number=1,
+                city="Bangkok",
+                activities=[
+                    Activity(
+                        name="Temple walk",
+                        description="Bangkok old town route",
+                        tags=["History"],
+                        duration_hours=2.0,
+                        cost=20.0,
+                    )
+                ],
+            )
+        ],
+    )
+    prefs = Preferences(
+        city="Rotterdam, Amsterdam",
+        budget=500,
+        days=1,
+        interests=["History"],
+    )
+
+    is_valid = planner._check_constraints(itinerary, prefs)
+
+    assert is_valid is False
+    assert itinerary.validation_error is not None
+    assert "does not match requested destination" in itinerary.validation_error
+
+
 def test_plan_trip_stream_yields_status_events_then_itinerary(planner):
     itinerary = Itinerary(
         city="Porto",

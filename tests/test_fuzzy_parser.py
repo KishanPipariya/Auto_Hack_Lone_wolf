@@ -90,6 +90,33 @@ class TestFuzzyParser(unittest.TestCase):
         assert itinerary.cost_breakdown.activities == 25
         assert itinerary.cost_breakdown.total == 140
 
+    def test_cost_breakdown_activities_uses_activity_total(self):
+        itinerary = parse_llm_response(
+            """
+            {
+              "city": "Lisbon",
+              "cost_breakdown": {
+                "transport": 100,
+                "stay": 200,
+                "food": 80,
+                "activities": 10
+              },
+              "days": [
+                {
+                  "day_number": 1,
+                  "activities": [
+                    {"name": "Food walk", "cost": 25, "duration_hours": 2}
+                  ]
+                }
+              ]
+            }
+            """,
+            image_search=lambda _: None,
+        )
+
+        assert itinerary.cost_breakdown.activities == 25
+        assert itinerary.cost_breakdown.total == 405
+
     def test_parser_normalizes_llm_alias_schema(self):
         itinerary = parse_llm_response(
             """

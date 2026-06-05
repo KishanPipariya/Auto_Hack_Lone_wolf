@@ -45,6 +45,23 @@ def test_vibe_only_discovery_uses_mood_terms_without_city():
     assert "Food" in suggestions[0].tags
 
 
+def test_explicit_multi_city_request_does_not_fall_back_to_unrelated_discovery():
+    prefs = Preferences(
+        city="Rotterdam, Amsterdam",
+        budget=500,
+        days=3,
+        interests=["Food"],
+        vibe="budget cafes",
+    )
+
+    suggestions = recommend_destinations(prefs)
+
+    assert suggestions
+    assert suggestions[0].city == "Amsterdam"
+    assert suggestions[0].country == "Netherlands"
+    assert all(suggestion.country != "Thailand" for suggestion in suggestions)
+
+
 def test_interest_heavy_request_prioritizes_relevant_tags():
     prefs = Preferences(
         budget=1800,

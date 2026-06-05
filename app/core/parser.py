@@ -190,12 +190,10 @@ def normalize_cost_breakdown(data: dict[str, Any], activity_total: float) -> Non
         "transport": parse_money(raw_breakdown.get("transport", 0)),
         "stay": parse_money(raw_breakdown.get("stay", 0)),
         "food": parse_money(raw_breakdown.get("food", 0)),
-        "activities": parse_money(raw_breakdown.get("activities", activity_total)),
+        "activities": activity_total,
         "total": parse_money(raw_breakdown.get("total", data.get("total_cost", 0))),
         "remaining_budget": parse_money(raw_breakdown.get("remaining_budget", 0)),
     }
-    if not normalized_breakdown["activities"]:
-        normalized_breakdown["activities"] = activity_total
 
     computed_total = (
         normalized_breakdown["transport"]

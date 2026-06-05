@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 from app.core.data import MOCK_ACTIVITIES
-from app.core.destinations import recommend_destinations
+from app.core.destinations import recommend_destinations, requested_destination_terms
 from app.core.images import search_real_image
 from app.core.parser import parse_llm_response
 from app.core.prompts import (
@@ -125,6 +125,16 @@ class TravelAgent:
             )
             return False
 
+        if preferences.city and not self._covers_requested_destinations(
+            itinerary, preferences.city
+        ):
+            itinerary.valid = False
+            itinerary.validation_error = (
+                f"Itinerary destination '{itinerary.city}' does not match requested "
+                f"destination '{preferences.city}'."
+            )
+            return False
+
         if preferences.city and itinerary.city.lower() != preferences.city.lower():
             itinerary.city = preferences.city
 
@@ -176,6 +186,27 @@ class TravelAgent:
         itinerary.valid = True
         itinerary.validation_error = None
         return True
+
+    def _covers_requested_destinations(
+        self,
+        itinerary: Itinerary,
+        requested_destination: str,
+    ) -> bool:
+        requested_terms = requested_destination_terms(requested_destination)
+        if not requested_terms:
+            return True
+
+        destination_text = " ".join(
+            value
+            for value in [
+                itinerary.city,
+                itinerary.recommended_destination or "",
+                *(day.city or "" for day in itinerary.days),
+            ]
+            if value
+        ).lower()
+
+        return all(term.lower() in destination_text for term in requested_terms)
 
     def _prepare_destination_context(
         self, preferences: Preferences

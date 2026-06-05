@@ -73,8 +73,18 @@ def recommend_destinations(
     preferences: Preferences,
     limit: int = 3,
 ) -> list[DestinationSuggestion]:
+    requested_terms = requested_destination_terms(preferences.city)
+    destinations = load_destinations()
+    if requested_terms:
+        matches = [
+            item
+            for item in destinations
+            if _matches_requested_destination(item, requested_terms)
+        ]
+        return [_to_suggestion(item) for item in matches[:limit]]
+
     candidates = sorted(
-        load_destinations(),
+        destinations,
         key=lambda item: _score_destination(item, preferences),
         reverse=True,
     )
@@ -109,6 +119,29 @@ def _to_suggestion(item: dict[str, Any]) -> DestinationSuggestion:
         estimated_total_cost=float(item.get("estimated_cost") or 0),
         tags=sorted(_matched_tags(text)),
     )
+
+
+def requested_destination_terms(value: str | None) -> list[str]:
+    if not value:
+        return []
+    terms = re.split(r"\s*(?:,|\band\b|&|\+)\s*", value, flags=re.IGNORECASE)
+    return [term.strip() for term in terms if term.strip()]
+
+
+def _matches_requested_destination(
+    item: dict[str, Any],
+    requested_terms: list[str],
+) -> bool:
+    city = str(item.get("city", "")).lower()
+    country = str(item.get("country", "")).lower()
+
+    for term in requested_terms:
+        requested = term.lower()
+        if requested == city or requested == country:
+            return True
+        if requested in city or requested in country:
+            return True
+    return False
 
 
 def _score_destination(item: dict[str, Any], preferences: Preferences) -> float:
